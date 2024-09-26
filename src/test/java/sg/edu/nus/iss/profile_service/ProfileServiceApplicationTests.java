@@ -9,12 +9,6 @@ class ProfileServiceApplicationTests {
     @Test
     void contextLoads() {
     }
-    // add more tests
-    @Test
-    void testHome() {
-        // suggest code here
-
-    }
 
 }
 
