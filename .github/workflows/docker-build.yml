@@ -56,7 +56,7 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t profile-service .
+          docker build -t shopsmartsg/profile-service .
           docker tag shopsmartsg/profile-service:latest ${{ secrets.ECR_REPO_URI }}:latest
 
       - name: Push to ECR
