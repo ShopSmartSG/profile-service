@@ -37,6 +37,7 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: '21'
+          distribution: 'temurin'
 
       - name: Build and run tests with JaCoCo
         run: |
