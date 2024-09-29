@@ -1,11 +1,14 @@
+FROM maven:3.8.4-openjdk-11 AS build
+WORKDIR /app
+COPY pom.xml .
+COPY src ./src
+RUN mvn clean package
+
 # Use an official OpenJDK runtime as a parent image
 FROM openjdk:21-jdk-slim
 
-# Set the working directory in the container
-WORKDIR /app
-
 # Copy the project’s jar file into the container at /app
-COPY target/profile-service-0.0.1-SNAPSHOT.jar app.jar
+COPY --from=build /app/target/profile-service-0.0.1-SNAPSHOT.jar app.jar
 
 # Make port 8080 available to the world outside this container
 EXPOSE 8080
