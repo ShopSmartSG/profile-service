@@ -27,19 +27,7 @@ public class Merchant {
     private String addressLine2;
     @Pattern(regexp = "^\\+?[0-9. ()-]{7,25}$", message = "Phone number is invalid")
     private String phoneNumber;
-
-
-    @JsonIgnore
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
-    }
-
     private boolean deleted = false;
-
     @Pattern(regexp = "^[0-9]{6}$", message = "Pincode must be a 6-digit number")
     private String pincode;
 
@@ -97,6 +85,15 @@ public class Merchant {
 
     public void setPincode(String pincode) {
         this.pincode = pincode;
+    }
+
+    @JsonIgnore
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
     }
 
     // Getters and Setters
