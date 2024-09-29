@@ -63,8 +63,8 @@ jobs:
       - name: Build Docker image
         run: |
           docker build -t profile-service .
-          docker tag profile-service:latest ${{ ECR_REPO_URI }}:latest
+          docker tag profile-service:latest ${{ secrets.ECR_REPO_URI }}:latest
 
       - name: Push to ECR
         run: |
-          docker push ${{ ECR_REPO_URI }}:latest
+          docker push ${{ secrets.ECR_REPO_URI }}:latest
