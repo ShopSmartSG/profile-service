@@ -38,7 +38,7 @@ public class MerchantController {
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
-    @PutMapping("/update/{merchantId}")
+    @PutMapping("/{merchantId}")
     @Operation(summary = "Update merchants")
     public ResponseEntity<String> updateMerchant(@PathVariable UUID merchantId, @Valid @RequestBody Merchant merchant) {
         Optional<Merchant> existingMerchantOpt = merchantService.getMerchant(merchantId);
@@ -80,7 +80,7 @@ public class MerchantController {
         return ResponseEntity.ok("Delete: successful");
     }
 
-    @PostMapping("/register")
+    @PostMapping
     @Operation(summary = "Register a new merchant")
     public ResponseEntity<String> registerMerchant(@Valid @RequestBody Merchant merchant) {
         if (merchant.getMerchantEmail() == null || merchant.getMerchantEmail().isEmpty()) {
