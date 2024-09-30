@@ -57,6 +57,18 @@ jobs:
       - name: Log in to Amazon ECR Public
         run: |
           aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/l0d0i0v3
+          
+      - name: Prune older images in ECR
+        run: |
+          IMAGE_IDS=$(aws ecr list-images --repository-name profile-service --query 'imageIds[*]' --output json)
+          IMAGE_COUNT=$(echo "$IMAGE_IDS" | jq '. | length')
+          echo "Count of images in Repo : $IMAGE_COUNT"
+          if [ "$IMAGE_COUNT" -gt 10 ]; then
+            OLDER_IMAGES=$(aws ecr list-images --repository-name profile-service --query 'imageIds[*]' --output json | jq '.[10:]')
+            for image_id in $(echo "$OLDER_IMAGES" | jq -r '.[] | @base64'); do
+              aws ecr batch-delete-image --repository-name profile-service --image-ids "$(echo "$image_id" | base64 --decode)"
+            done
+          fi
 
       - name: Build Docker image
         run: |
