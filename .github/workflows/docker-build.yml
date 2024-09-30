@@ -54,6 +54,10 @@ jobs:
           echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}"
           echo "ECR_REPO_URI=${{ secrets.ECR_REPO_URI }}"
 
+      - name: Log in to Amazon ECR Public
+        run: |
+          aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/l0d0i0v3
+
       - name: Build Docker image
         run: |
           docker build -t shopsmartsg/profile-service .
