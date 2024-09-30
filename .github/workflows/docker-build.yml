@@ -57,18 +57,6 @@ jobs:
       - name: Log in to Amazon ECR Public
         run: |
           aws ecr-public get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin public.ecr.aws/l0d0i0v3
-          
-      - name: Prune older images in ECR
-        run: |
-          IMAGE_IDS=$(aws ecr-public describe-images --repository-name shopsmartsg/profile-service  --query 'sort_by(imageDetails, &imagePushedAt)[].imageDigest' --output json)
-          IMAGE_COUNT=$(echo "$IMAGE_IDS" | jq '. | length')
-          echo "Count of images in Repo : $IMAGE_COUNT"
-          if [ "$IMAGE_COUNT" -gt 10 ]; then
-            OLDER_IMAGES=$(aws ecr-public describe-images --repository-name shopsmartsg/profile-service  --query 'sort_by(imageDetails, &imagePushedAt)[].imageDigest' --output json | jq '.[10:]')
-            for image_id in $(echo "$OLDER_IMAGES" | jq -r '.[] | @base64'); do
-              aws ecr batch-delete-image --repository-name shopsmartsg/profile-service --image-ids "$(echo "$image_id" | base64 --decode)"
-            done
-          fi
 
       - name: Build Docker image
         run: |
