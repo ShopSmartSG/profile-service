@@ -60,13 +60,13 @@ jobs:
           
       - name: Prune older images in ECR
         run: |
-          IMAGE_IDS=$(aws ecr list-images --repository-name profile-service --query 'imageIds[*]' --output json)
+          IMAGE_IDS=$(aws ecr list-images --repository-name shopsmartsg/profile-service --query 'imageIds[*]' --output json)
           IMAGE_COUNT=$(echo "$IMAGE_IDS" | jq '. | length')
           echo "Count of images in Repo : $IMAGE_COUNT"
           if [ "$IMAGE_COUNT" -gt 10 ]; then
-            OLDER_IMAGES=$(aws ecr list-images --repository-name profile-service --query 'imageIds[*]' --output json | jq '.[10:]')
+            OLDER_IMAGES=$(aws ecr list-images --repository-name shopsmartsg/profile-service --query 'imageIds[*]' --output json | jq '.[10:]')
             for image_id in $(echo "$OLDER_IMAGES" | jq -r '.[] | @base64'); do
-              aws ecr batch-delete-image --repository-name profile-service --image-ids "$(echo "$image_id" | base64 --decode)"
+              aws ecr batch-delete-image --repository-name shopsmartsg/profile-service --image-ids "$(echo "$image_id" | base64 --decode)"
             done
           fi
 
