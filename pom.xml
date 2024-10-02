@@ -119,6 +119,7 @@
 						<exclude>sg/edu/nus/iss/profile_service/ProfileServiceApplication.class</exclude>
 						<!-- Exclude all classes in the model package from code coverage -->
 						<exclude>sg/edu/nus/iss/profile_service/model/**</exclude>
+						<exclude>sg/edu/nus/iss/profile_service/dto/**</exclude>
 					</excludes>
 				</configuration>
 				<executions>

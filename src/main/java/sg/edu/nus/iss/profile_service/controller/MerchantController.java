@@ -1,6 +1,7 @@
 package sg.edu.nus.iss.profile_service.controller;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+import sg.edu.nus.iss.profile_service.dto.MerchantDTO;
 import sg.edu.nus.iss.profile_service.model.Merchant;
 import sg.edu.nus.iss.profile_service.service.MerchantService;
 
@@ -22,6 +24,9 @@ public class MerchantController {
 
     @Autowired
     private MerchantService merchantService;
+
+    @Autowired
+    private ObjectMapper mapper;
 
     @GetMapping
     @Operation(summary = "Retrieve all merchants")
@@ -40,10 +45,17 @@ public class MerchantController {
 
     @PutMapping("/{merchantId}")
     @Operation(summary = "Update merchants")
-    public ResponseEntity<String> updateMerchant(@PathVariable UUID merchantId, @Valid @RequestBody Merchant merchant) {
+    public ResponseEntity<String> updateMerchant(@PathVariable UUID merchantId, @Valid @RequestBody MerchantDTO merchantDTO) {
         Optional<Merchant> existingMerchantOpt = merchantService.getMerchant(merchantId);
+
+        Merchant merchant = mapper.convertValue(merchantDTO, Merchant.class);
+
         if (existingMerchantOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Merchant not found");
+        }
+
+        if(!existingMerchantOpt.get().getMerchantId().equals(merchantDTO.getMerchantId())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Merchant ID mismatch");
         }
 
         if (merchant.getMerchantName().isEmpty() || merchant.getMerchantEmail().isEmpty()) {
@@ -60,7 +72,6 @@ public class MerchantController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email shouldn't be changed");
         }
 
-        merchant.setMerchantId(existingMerchant.getMerchantId());
         merchantService.updateMerchant(merchant);
         return ResponseEntity.ok("Updated: true");
 }
