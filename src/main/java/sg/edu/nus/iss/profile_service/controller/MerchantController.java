@@ -49,6 +49,7 @@ public class MerchantController {
         Optional<Merchant> existingMerchantOpt = merchantService.getMerchant(merchantId);
 
         Merchant merchant = mapper.convertValue(merchantDTO, Merchant.class);
+        merchant.setMerchantId(merchantDTO.getMerchantId());
 
         if (existingMerchantOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Merchant not found");
