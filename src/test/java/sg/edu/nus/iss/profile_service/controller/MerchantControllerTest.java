@@ -1,5 +1,6 @@
 package sg.edu.nus.iss.profile_service.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -7,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import sg.edu.nus.iss.profile_service.dto.MerchantDTO;
 import sg.edu.nus.iss.profile_service.model.Merchant;
 import sg.edu.nus.iss.profile_service.service.MerchantService;
 
@@ -19,6 +21,9 @@ public class MerchantControllerTest {
 
     @Mock
     private MerchantService merchantService;
+
+    @Mock
+    private ObjectMapper mapper;
 
     @InjectMocks
     private MerchantController merchantController;
@@ -62,30 +67,13 @@ public class MerchantControllerTest {
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
-    @Test
-    void testUpdateMerchant() {
-        UUID merchantId = UUID.randomUUID();
-        Merchant existingMerchant = new Merchant();
-        existingMerchant.setMerchantName("Existing Name");
-        existingMerchant.setMerchantEmail("existing@example.com");
-        when(merchantService.getMerchant(merchantId)).thenReturn(Optional.of(existingMerchant));
-
-        Merchant updatedMerchant = new Merchant();
-        updatedMerchant.setMerchantName("Existing Name");
-        updatedMerchant.setMerchantEmail("existing@example.com");
-
-        ResponseEntity<String> response = merchantController.updateMerchant(merchantId, updatedMerchant);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Updated: true", response.getBody());
-    }
 
     @Test
     void testUpdateMerchantNotFound() {
         UUID merchantId = UUID.randomUUID();
         when(merchantService.getMerchant(merchantId)).thenReturn(Optional.empty());
 
-        Merchant updatedMerchant = new Merchant();
+        MerchantDTO updatedMerchant = new MerchantDTO();
 
         ResponseEntity<String> response = merchantController.updateMerchant(merchantId, updatedMerchant);
 
@@ -94,40 +82,104 @@ public class MerchantControllerTest {
     }
 
     @Test
+    void testUpdateMerchant() {
+        UUID merchantId = UUID.randomUUID();
+        MerchantDTO updatedMerchantDTO = new MerchantDTO();
+        updatedMerchantDTO.setMerchantId(merchantId);
+        updatedMerchantDTO.setMerchantName("Existing Merchant");
+        updatedMerchantDTO.setMerchantEmail("existing@example.com");
+
+        Merchant existingMerchant = new Merchant();
+        existingMerchant.setMerchantId(merchantId);
+        existingMerchant.setMerchantName("Existing Merchant");
+        existingMerchant.setMerchantEmail("existing@example.com");
+
+        when(merchantService.getMerchant(merchantId)).thenReturn(Optional.of(existingMerchant));
+        when(mapper.convertValue(updatedMerchantDTO, Merchant.class)).thenReturn(existingMerchant);
+
+        ResponseEntity<String> response = merchantController.updateMerchant(merchantId, updatedMerchantDTO);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Updated: true", response.getBody());
+    }
+
+    @Test
     void testUpdateMerchantNameChanged() {
         UUID merchantId = UUID.randomUUID();
+        MerchantDTO updatedMerchantDTO = new MerchantDTO();
+        updatedMerchantDTO.setMerchantId(merchantId);
+        updatedMerchantDTO.setMerchantName("New Merchant Name");
+        updatedMerchantDTO.setMerchantEmail("existing@example.com");
+
         Merchant existingMerchant = new Merchant();
-        existingMerchant.setMerchantName("Existing Name");
+        existingMerchant.setMerchantId(merchantId);
+        existingMerchant.setMerchantName("Existing Merchant");
         existingMerchant.setMerchantEmail("existing@example.com");
-        when(merchantService.getMerchant(merchantId)).thenReturn(Optional.of(existingMerchant));
 
         Merchant updatedMerchant = new Merchant();
-        updatedMerchant.setMerchantName("New Name");
+        updatedMerchant.setMerchantId(merchantId);
+        updatedMerchant.setMerchantName("New Merchant Name");
         updatedMerchant.setMerchantEmail("existing@example.com");
 
-        ResponseEntity<String> response = merchantController.updateMerchant(merchantId, updatedMerchant);
+        when(merchantService.getMerchant(merchantId)).thenReturn(Optional.of(existingMerchant));
+        when(mapper.convertValue(updatedMerchantDTO, Merchant.class)).thenReturn(updatedMerchant);
+
+        ResponseEntity<String> response = merchantController.updateMerchant(merchantId, updatedMerchantDTO);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Merchant name shouldn't be changed", response.getBody());
     }
 
     @Test
-    void testUpdateMerchantEmailChanged() {
+    void testUpdateMerchantIdMismatch() {
         UUID merchantId = UUID.randomUUID();
+        MerchantDTO updatedMerchantDTO = new MerchantDTO();
+        updatedMerchantDTO.setMerchantId(UUID.randomUUID()); // Different UUID
+        updatedMerchantDTO.setMerchantName("Existing Merchant");
+        updatedMerchantDTO.setMerchantEmail("existing@example.com");
+
         Merchant existingMerchant = new Merchant();
-        existingMerchant.setMerchantName("Existing Name");
+        existingMerchant.setMerchantId(merchantId);
+        existingMerchant.setMerchantName("Existing Merchant");
         existingMerchant.setMerchantEmail("existing@example.com");
+
         when(merchantService.getMerchant(merchantId)).thenReturn(Optional.of(existingMerchant));
+        when(mapper.convertValue(updatedMerchantDTO, Merchant.class)).thenReturn(existingMerchant);
 
-        Merchant updatedMerchant = new Merchant();
-        updatedMerchant.setMerchantName("Existing Name");
-        updatedMerchant.setMerchantEmail("new@example.com");
-
-        ResponseEntity<String> response = merchantController.updateMerchant(merchantId, updatedMerchant);
+        ResponseEntity<String> response = merchantController.updateMerchant(merchantId, updatedMerchantDTO);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertEquals("Email shouldn't be changed", response.getBody());
+        assertEquals("Merchant ID mismatch", response.getBody());
     }
+
+    @Test
+    void testUpdateMerchantEmailChanged() {
+            UUID merchantId = UUID.randomUUID();
+            MerchantDTO updatedMerchantDTO = new MerchantDTO();
+            updatedMerchantDTO.setMerchantId(merchantId);
+            updatedMerchantDTO.setMerchantName("New Merchant Name");
+            updatedMerchantDTO.setMerchantEmail("existingOne@example.com");
+
+            Merchant existingMerchant = new Merchant();
+            existingMerchant.setMerchantId(merchantId);
+            existingMerchant.setMerchantName("Existing Merchant");
+            existingMerchant.setMerchantEmail("existing@example.com");
+
+            Merchant updatedMerchant = new Merchant();
+            updatedMerchant.setMerchantId(merchantId);
+            updatedMerchant.setMerchantName("Existing Merchant");
+            updatedMerchant.setMerchantEmail("existingOne@example.com");
+
+            when(merchantService.getMerchant(merchantId)).thenReturn(Optional.of(existingMerchant));
+            when(mapper.convertValue(updatedMerchantDTO, Merchant.class)).thenReturn(updatedMerchant);
+
+            ResponseEntity<String> response = merchantController.updateMerchant(merchantId, updatedMerchantDTO);
+
+            assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+            assertEquals("Email shouldn't be changed", response.getBody());
+        }
+
+
 
     @Test
     void testDeleteMerchant() {
