@@ -68,12 +68,16 @@ public class MerchantControllerTest {
     }
 
 
+
     @Test
     void testUpdateMerchantNotFound() {
         UUID merchantId = UUID.randomUUID();
+        MerchantDTO updatedMerchant = new MerchantDTO();
+        updatedMerchant.setMerchantId(merchantId);
+
         when(merchantService.getMerchant(merchantId)).thenReturn(Optional.empty());
 
-        MerchantDTO updatedMerchant = new MerchantDTO();
+        when(mapper.convertValue(updatedMerchant,Merchant.class)).thenReturn(new Merchant());
 
         ResponseEntity<String> response = merchantController.updateMerchant(merchantId, updatedMerchant);
 
@@ -134,7 +138,8 @@ public class MerchantControllerTest {
     void testUpdateMerchantIdMismatch() {
         UUID merchantId = UUID.randomUUID();
         MerchantDTO updatedMerchantDTO = new MerchantDTO();
-        updatedMerchantDTO.setMerchantId(UUID.randomUUID()); // Different UUID
+        UUID updatedMerchantId = UUID.randomUUID();
+        updatedMerchantDTO.setMerchantId(updatedMerchantId); // Different UUID
         updatedMerchantDTO.setMerchantName("Existing Merchant");
         updatedMerchantDTO.setMerchantEmail("existing@example.com");
 
@@ -143,8 +148,13 @@ public class MerchantControllerTest {
         existingMerchant.setMerchantName("Existing Merchant");
         existingMerchant.setMerchantEmail("existing@example.com");
 
+        Merchant merchant = new Merchant();
+        merchant.setMerchantId(updatedMerchantId);
+        merchant.setMerchantName("Existing Merchant");
+        merchant.setMerchantEmail("existing@example.com");
+
         when(merchantService.getMerchant(merchantId)).thenReturn(Optional.of(existingMerchant));
-        when(mapper.convertValue(updatedMerchantDTO, Merchant.class)).thenReturn(existingMerchant);
+        when(mapper.convertValue(updatedMerchantDTO, Merchant.class)).thenReturn(merchant);
 
         ResponseEntity<String> response = merchantController.updateMerchant(merchantId, updatedMerchantDTO);
 
