@@ -102,9 +102,6 @@ public class MerchantController {
         if (merchantByEmail.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email is already registered");
         }
-
-        // Generate UUID for merchantId
-        merchant.setMerchantId(UUID.randomUUID());
         merchantService.registerMerchant(merchant);
         return ResponseEntity.status(HttpStatus.CREATED).body("Created Merchant");
     }

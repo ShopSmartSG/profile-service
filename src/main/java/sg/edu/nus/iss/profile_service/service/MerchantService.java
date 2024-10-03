@@ -24,11 +24,6 @@ public class MerchantService {
         return true;
     }
 
-    public boolean deleteMerchant(UUID merchantId) {
-        merchantRepository.deleteById(merchantId);
-        return true;
-    }
-
     // implement a method to get merchants by emailID
     public Optional<Merchant> getMerchantByEmailId(String emailId) {
         return merchantRepository.findByMerchantEmailAndDeletedFalse(emailId);
