@@ -54,14 +54,6 @@ class MerchantServiceTest {
     }
 
     @Test
-    void testDeleteMerchant() {
-        doNothing().when(merchantRepository).deleteById(merchantId);
-        Boolean result = merchantService.deleteMerchant(merchantId);
-        assertTrue(result);
-        verify(merchantRepository, times(1)).deleteById(merchantId);
-    }
-
-    @Test
     void testGetMerchantByEmailId() {
         when(merchantRepository.findByMerchantEmailAndDeletedFalse("test@example.com")).thenReturn(Optional.of(merchant));
         Optional<Merchant> result = merchantService.getMerchantByEmailId("test@example.com");

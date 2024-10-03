@@ -7,6 +7,7 @@ import jakarta.persistence.Id;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import org.hibernate.annotations.UuidGenerator;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -16,6 +17,7 @@ import java.util.UUID;
 public class Merchant {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @UuidGenerator
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private UUID merchantId;
     @NotBlank(message = "Merchant name is mandatory")
