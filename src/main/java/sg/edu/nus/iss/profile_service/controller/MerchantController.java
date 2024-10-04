@@ -106,6 +106,35 @@ public class MerchantController {
         return ResponseEntity.status(HttpStatus.CREATED).body("Created Merchant");
     }
 
+    @PutMapping("/admin/blacklist/{merchantId}")
+    @Operation(summary = "Blacklist a merchant")
+    public ResponseEntity<String> blacklistMerchant(@PathVariable UUID merchantId) {
+        Optional<Merchant> existingMerchantOpt = merchantService.getMerchant(merchantId);
+        if (existingMerchantOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Merchant not found");
+        }
+
+        Merchant existingMerchant = existingMerchantOpt.get();
+        existingMerchant.setBlacklisted(true);
+        merchantService.updateMerchant(existingMerchant);
+        return ResponseEntity.ok("Merchant blacklisted successfully");
+    }
+
+    @PutMapping("/admin/unblacklist/{merchantId}")
+    @Operation(summary = "Unblacklist a merchant")
+    public ResponseEntity<String> unblacklistMerchant(@PathVariable UUID merchantId) {
+        Optional<Merchant> existingMerchantOpt = merchantService.getMerchant(merchantId);
+        if (existingMerchantOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Merchant not found");
+        }
+
+        Merchant existingMerchant = existingMerchantOpt.get();
+        existingMerchant.setBlacklisted(false);
+        merchantService.updateMerchant(existingMerchant);
+        return ResponseEntity.ok("Merchant unblacklisted successfully");
+    }
+
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException ex) {

@@ -7,6 +7,7 @@ import jakarta.persistence.Id;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import lombok.Getter;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -27,6 +28,8 @@ public class MerchantDTO {
     @Pattern(regexp = "^\\+?[0-9. ()-]{7,25}$", message = "Phone number is invalid")
     private String phoneNumber;
     private boolean deleted = false;
+    @Getter
+    private boolean blacklisted = false; // Admin Can Blacklist
     @Pattern(regexp = "^[0-9]{6}$", message = "Pincode must be a 6-digit number")
     private String pincode;
 
@@ -94,6 +97,11 @@ public class MerchantDTO {
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
     }
+
+    public void setBlacklisted(boolean blacklisted) {
+        this.blacklisted = blacklisted;
+    }
+
 
     // Getters and Setters
 }

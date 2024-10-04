@@ -76,4 +76,26 @@ class MerchantServiceTest {
         assertNotNull(result);
         assertEquals(merchantId, result.getMerchantId());
     }
+
+    @Test
+    void testBlacklistMerchant() {
+        merchant.setBlacklisted(true);
+        when(merchantRepository.save(any(Merchant.class))).thenReturn(merchant);
+        Boolean result = merchantService.updateMerchant(merchant);
+        assertTrue(result);
+        assertTrue(merchant.isBlacklisted());
+        verify(merchantRepository, times(1)).save(merchant);
+    }
+
+    @Test
+    void testUnblacklistMerchant() {
+        merchant.setBlacklisted(false);
+        when(merchantRepository.save(any(Merchant.class))).thenReturn(merchant);
+        Boolean result = merchantService.updateMerchant(merchant);
+        assertTrue(result);
+        assertFalse(merchant.isBlacklisted());
+        verify(merchantRepository, times(1)).save(merchant);
+    }
+
+
 }
