@@ -18,7 +18,7 @@ import sg.edu.nus.iss.profile_service.service.MerchantService;
 import java.util.*;
 
 @RestController
-@RequestMapping("/api/merchants")
+@RequestMapping("/merchants")
 @Tag(name = "Merchants", description = "Manage merchants in Shopsmart Profile Management API")
 public class MerchantController {
 
