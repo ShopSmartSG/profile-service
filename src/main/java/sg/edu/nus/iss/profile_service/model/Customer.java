@@ -7,19 +7,18 @@ import jakarta.persistence.GenerationType;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import org.hibernate.annotations.UuidGenerator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.UUID;
 
 @Data
 @Entity
-public class Merchant implements Profile {
+public class Customer implements Profile {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @UuidGenerator
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private UUID merchantId;
+    private UUID customerId;
 
     private String name;
     private String emailAddress;
@@ -33,7 +32,6 @@ public class Merchant implements Profile {
 
     @Pattern(regexp = "^[0-9]{6}$", message = "Pincode must be a 6-digit number")
     private String pincode;
-
 
 
     @Override

@@ -8,10 +8,10 @@ import lombok.Data;
 import java.util.UUID;
 
 @Data
-public class MerchantDTO {
+public class CustomerDTO {
 
-    private UUID merchantId;
-    @NotBlank(message = "Merchant name is mandatory")
+    private UUID customerId;
+    @NotBlank(message = "Customer name is mandatory")
     private String name;
     private String addressLine1;
     private String addressLine2;
@@ -21,6 +21,5 @@ public class MerchantDTO {
     private String emailAddress;
     @Pattern(regexp = "^\\+?[0-9. ()-]{7,25}$", message = "Phone number is invalid")
     private String phoneNumber;
-
 
 }

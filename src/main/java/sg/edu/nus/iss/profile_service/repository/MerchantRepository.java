@@ -9,9 +9,9 @@ import java.util.UUID;
 
 public interface MerchantRepository extends JpaRepository<Merchant, UUID> {
 
-    Optional<Merchant> findByMerchantEmail(String emailId);
-
-    Optional<Merchant> findByMerchantEmailAndDeletedFalse(String email);
+    Optional<Merchant> findByEmailAddressAndDeletedFalse(String email);
     List<Merchant> findAllByDeletedFalse();
     Optional<Merchant> findByMerchantIdAndDeletedFalse(UUID id);
+
+
 }
