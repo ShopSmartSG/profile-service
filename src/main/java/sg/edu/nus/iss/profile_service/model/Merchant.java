@@ -29,6 +29,7 @@ public class Merchant implements Profile {
     @Pattern(regexp = "^\\+?[0-9. ()-]{7,25}$", message = "Phone number is invalid")
     private String phoneNumber;
 
+    @JsonIgnore
     private boolean deleted = false;
 
     @Pattern(regexp = "^[0-9]{6}$", message = "Pincode must be a 6-digit number")

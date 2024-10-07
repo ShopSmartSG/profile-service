@@ -1,5 +1,6 @@
 package sg.edu.nus.iss.profile_service.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
@@ -28,6 +29,7 @@ public class Customer implements Profile {
     @Pattern(regexp = "^\\+?[0-9. ()-]{7,25}$", message = "Phone number is invalid")
     private String phoneNumber;
 
+    @JsonIgnore
     private boolean deleted = false;
 
     @Pattern(regexp = "^[0-9]{6}$", message = "Pincode must be a 6-digit number")

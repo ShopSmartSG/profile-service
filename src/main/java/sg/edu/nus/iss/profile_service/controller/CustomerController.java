@@ -98,11 +98,11 @@ public class CustomerController {
 
     @PostMapping
     @Operation(summary = "Register a new customer")
-    public ResponseEntity<String> registercustomer(@Valid @RequestBody Customer customer) {
+    public ResponseEntity<String> registerCustomer(@Valid @RequestBody Customer customer) {
         if (customer.getEmailAddress() == null || customer.getEmailAddress().isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        Optional<Customer> customerByEmail = Optional.of((Customer) profileServiceFactory.getProfileByEmailAddress(customer.getEmailAddress(), "customer" ).get());
+        Optional<Profile> customerByEmail = profileServiceFactory.getProfileByEmailAddress(customer.getEmailAddress(), "merchant" );
         if (customerByEmail.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email is already registered");
         }

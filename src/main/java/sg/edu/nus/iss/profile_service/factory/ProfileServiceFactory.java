@@ -104,10 +104,10 @@ public class ProfileServiceFactory implements ProfileService {
 
         if ("merchant".equalsIgnoreCase(type)) {
             Optional<Merchant> merchant = merchantRepository.findByEmailAddressAndDeletedFalse(email);
-            return Optional.of(merchant.get());
+            return Optional.ofNullable(merchant.orElse(null));
         }else if ("customer".equalsIgnoreCase(type)) {
             Optional<Customer> customer = customerRepository.findByEmailAddressAndDeletedFalse(email);
-            return Optional.of(customer.get());
+            return Optional.ofNullable(customer.orElse(null));
         }else {
             throw new IllegalArgumentException("Invalid profile type");
         }

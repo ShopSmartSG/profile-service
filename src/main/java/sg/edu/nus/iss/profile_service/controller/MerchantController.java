@@ -102,7 +102,7 @@ public class MerchantController {
         if (merchant.getEmailAddress() == null || merchant.getEmailAddress().isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        Optional<Merchant> merchantByEmail = Optional.of((Merchant) profileServiceFactory.getProfileByEmailAddress(merchant.getEmailAddress(), "merchant" ).get());
+        Optional<Profile> merchantByEmail = profileServiceFactory.getProfileByEmailAddress(merchant.getEmailAddress(), "merchant" );
         if (merchantByEmail.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email is already registered");
         }
