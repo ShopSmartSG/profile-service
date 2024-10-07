@@ -50,7 +50,8 @@ public class MerchantController {
     @PutMapping("/{merchantId}")
     @Operation(summary = "Update merchants")
     public ResponseEntity<String> updateMerchant(@PathVariable UUID merchantId, @Valid @RequestBody MerchantDTO merchantDTO) {
-        Optional<Merchant> existingMerchantOpt = Optional.of((Merchant) profileServiceFactory.getProfileById("merchant", merchantId).get());
+        Optional<Profile> existingMerchantOpt = profileServiceFactory.getProfileById("merchant", merchantId);
+
 
         Merchant merchant = mapper.convertValue(merchantDTO, Merchant.class);
         merchant.setMerchantId(merchantDTO.getMerchantId());
@@ -59,7 +60,7 @@ public class MerchantController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Merchant not found");
         }
 
-        if(!existingMerchantOpt.get().getMerchantId().equals(merchantDTO.getMerchantId())) {
+        if(!((Merchant) existingMerchantOpt.get()).getMerchantId().equals(merchantDTO.getMerchantId())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Merchant ID mismatch");
         }
 
@@ -67,7 +68,7 @@ public class MerchantController {
             return new ResponseEntity<>("Invalid Merchant data", HttpStatus.BAD_REQUEST);
         }
 
-        Merchant existingMerchant = existingMerchantOpt.get();
+        Merchant existingMerchant = (Merchant) existingMerchantOpt.get();
         // Check if the merchant name is changed
         if (merchant.getName() == null || !merchant.getName().equals(existingMerchant.getName())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Merchant name shouldn't be changed");
@@ -84,12 +85,12 @@ public class MerchantController {
     @DeleteMapping("/{merchantId}")
     @Operation(summary = "Delete merchant by ID")
     public ResponseEntity<String> deleteMerchant(@PathVariable UUID merchantId) {
-        Optional<Merchant> existingMerchantOpt = Optional.of((Merchant) profileServiceFactory.getProfileById("merchant", merchantId).get());
+        Optional<Profile> existingMerchantOpt = profileServiceFactory.getProfileById("merchant", merchantId);
         if (existingMerchantOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Merchant not found");
         }
 
-        Merchant existingMerchant = existingMerchantOpt.get();
+        Merchant existingMerchant = (Merchant) existingMerchantOpt.get();
         // soft delete
         existingMerchant.setDeleted(true);
         profileServiceFactory.updateProfile(existingMerchant);

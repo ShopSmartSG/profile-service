@@ -49,17 +49,17 @@ public class CustomerController {
 
     @PutMapping("/{customerId}")
     @Operation(summary = "Update customers")
-    public ResponseEntity<String> updatecustomer(@PathVariable UUID customerId, @Valid @RequestBody CustomerDTO customerDTO) {
-        Optional<Customer> existingcustomerOpt = Optional.of((Customer) profileServiceFactory.getProfileById("customer", customerId).get());
+    public ResponseEntity<String> updateCustomer(@PathVariable UUID customerId, @Valid @RequestBody CustomerDTO customerDTO) {
+        Optional<Profile> existingCustomerOpt =profileServiceFactory.getProfileById("customer", customerId);
 
         Customer customer = mapper.convertValue(customerDTO, Customer.class);
         customer.setCustomerId(customerDTO.getCustomerId());
 
-        if (existingcustomerOpt.isEmpty()) {
+        if (existingCustomerOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("customer not found");
         }
 
-        if(!existingcustomerOpt.get().getCustomerId().equals(customerDTO.getCustomerId())) {
+        if(!((Customer) existingCustomerOpt.get()).getCustomerId().equals(customerDTO.getCustomerId())){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("customer ID mismatch");
         }
 
@@ -67,7 +67,7 @@ public class CustomerController {
             return new ResponseEntity<>("Invalid customer data", HttpStatus.BAD_REQUEST);
         }
 
-        Customer existingcustomer = existingcustomerOpt.get();
+        Customer existingcustomer = (Customer) existingCustomerOpt.get();
         // Check if the customer name is changed
         if (customer.getName() == null || !customer.getName().equals(existingcustomer.getName())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("customer name shouldn't be changed");
@@ -83,13 +83,13 @@ public class CustomerController {
 
     @DeleteMapping("/{customerId}")
     @Operation(summary = "Delete customer by ID")
-    public ResponseEntity<String> deletecustomer(@PathVariable UUID customerId) {
-        Optional<Customer> existingcustomerOpt = Optional.of((Customer) profileServiceFactory.getProfileById("customer", customerId).get());
-        if (existingcustomerOpt.isEmpty()) {
+    public ResponseEntity<String> deleteCustomer(@PathVariable UUID customerId) {
+        Optional<Profile> existingCustomerOpt =profileServiceFactory.getProfileById("customer", customerId);
+        if (existingCustomerOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("customer not found");
         }
 
-        Customer existingcustomer = existingcustomerOpt.get();
+        Customer existingcustomer = (Customer) existingCustomerOpt.get();
         // soft delete
         existingcustomer.setDeleted(true);
         profileServiceFactory.updateProfile(existingcustomer);
