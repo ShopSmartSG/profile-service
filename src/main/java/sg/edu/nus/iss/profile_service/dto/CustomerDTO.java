@@ -16,7 +16,7 @@ public class CustomerDTO {
     private String addressLine1;
     private String addressLine2;
     private String pincode;
-    @NotBlank(message = "Merchant email is mandatory")
+    @NotBlank(message = "Customer email is mandatory")
     @Email(message = "Email should be valid")
     private String emailAddress;
     @Pattern(regexp = "^\\+?[0-9. ()-]{7,25}$", message = "Phone number is invalid")

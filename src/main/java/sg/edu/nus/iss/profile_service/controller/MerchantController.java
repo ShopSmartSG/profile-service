@@ -50,36 +50,35 @@ public class MerchantController {
     @PutMapping("/{merchantId}")
     @Operation(summary = "Update merchants")
     public ResponseEntity<String> updateMerchant(@PathVariable UUID merchantId, @Valid @RequestBody MerchantDTO merchantDTO) {
-        Optional<Profile> existingMerchantOpt = profileServiceFactory.getProfileById("merchant", merchantId);
+           Optional<Profile> existingMerchantOpt = profileServiceFactory.getProfileById("merchant", merchantId);
+               if (existingMerchantOpt.isEmpty()) {
+                   return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Merchant not found");
+               }
 
+               Merchant existingMerchant = (Merchant) existingMerchantOpt.get();
 
-        Merchant merchant = mapper.convertValue(merchantDTO, Merchant.class);
-        merchant.setMerchantId(merchantDTO.getMerchantId());
+               // Check if the Merchant ID matches
+               if (!existingMerchant.getMerchantId().equals(merchantDTO.getMerchantId())) {
+                   return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Merchant ID mismatch");
+               }
 
-        if (existingMerchantOpt.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Merchant not found");
-        }
+               // Ensure merchant name and email haven't changed
+               if (!merchantDTO.getName().equals(existingMerchant.getName())) {
+                   return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Merchant name shouldn't be changed");
+               }
 
-        if(!((Merchant) existingMerchantOpt.get()).getMerchantId().equals(merchantDTO.getMerchantId())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Merchant ID mismatch");
-        }
+               if (!merchantDTO.getEmailAddress().equals(existingMerchant.getEmailAddress())) {
+                   return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email shouldn't be changed");
+               }
 
-        if (merchant.getName().isEmpty() || merchant.getEmailAddress().isEmpty()) {
-            return new ResponseEntity<>("Invalid Merchant data", HttpStatus.BAD_REQUEST);
-        }
+               // Convert MerchantDTO to Merchant entity
+               Merchant merchant = mapper.convertValue(merchantDTO, Merchant.class);
+               merchant.setMerchantId(merchantDTO.getMerchantId()); // Set the merchantId from the DTO
 
-        Merchant existingMerchant = (Merchant) existingMerchantOpt.get();
-        // Check if the merchant name is changed
-        if (merchant.getName() == null || !merchant.getName().equals(existingMerchant.getName())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Merchant name shouldn't be changed");
-        }
-        // Check if the email is changed
-        if (merchant.getEmailAddress() == null || !merchant.getEmailAddress().equals(existingMerchant.getEmailAddress())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email shouldn't be changed");
-        }
+               // Update and save the merchant
+               profileServiceFactory.updateProfile(merchant);
 
-        profileServiceFactory.updateProfile(merchant);
-        return ResponseEntity.ok("Updated: true");
+               return ResponseEntity.ok("Merchant updated successfully");
 }
 
     @DeleteMapping("/{merchantId}")
@@ -100,9 +99,7 @@ public class MerchantController {
     @PostMapping
     @Operation(summary = "Register a new merchant")
     public ResponseEntity<String> registerMerchant(@Valid @RequestBody Merchant merchant) {
-        if (merchant.getEmailAddress() == null || merchant.getEmailAddress().isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+
         Optional<Profile> merchantByEmail = profileServiceFactory.getProfileByEmailAddress(merchant.getEmailAddress(), "merchant" );
         if (merchantByEmail.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email is already registered");
@@ -122,4 +119,5 @@ public class MerchantController {
         });
         return errors;
     }
+
 }

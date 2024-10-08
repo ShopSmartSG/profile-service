@@ -50,35 +50,35 @@ public class CustomerController {
     @PutMapping("/{customerId}")
     @Operation(summary = "Update customers")
     public ResponseEntity<String> updateCustomer(@PathVariable UUID customerId, @Valid @RequestBody CustomerDTO customerDTO) {
-        Optional<Profile> existingCustomerOpt =profileServiceFactory.getProfileById("customer", customerId);
+            Optional<Profile> existingCustomerOpt = profileServiceFactory.getProfileById("customer", customerId);
+            if (existingCustomerOpt.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Customer not found");
+            }
 
-        Customer customer = mapper.convertValue(customerDTO, Customer.class);
-        customer.setCustomerId(customerDTO.getCustomerId());
+            Customer existingCustomer = (Customer) existingCustomerOpt.get();
 
-        if (existingCustomerOpt.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("customer not found");
-        }
+            // Check if the Customer ID matches
+            if (!existingCustomer.getCustomerId().equals(customerDTO.getCustomerId())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Customer ID mismatch");
+            }
 
-        if(!((Customer) existingCustomerOpt.get()).getCustomerId().equals(customerDTO.getCustomerId())){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("customer ID mismatch");
-        }
+            // Ensure customer name and email haven't changed
+            if (!customerDTO.getName().equals(existingCustomer.getName())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Customer name shouldn't be changed");
+            }
 
-        if (customer.getName().isEmpty() || customer.getEmailAddress().isEmpty()) {
-            return new ResponseEntity<>("Invalid customer data", HttpStatus.BAD_REQUEST);
-        }
+            if (!customerDTO.getEmailAddress().equals(existingCustomer.getEmailAddress())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email shouldn't be changed");
+            }
 
-        Customer existingcustomer = (Customer) existingCustomerOpt.get();
-        // Check if the customer name is changed
-        if (customer.getName() == null || !customer.getName().equals(existingcustomer.getName())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("customer name shouldn't be changed");
-        }
-        // Check if the email is changed
-        if (customer.getEmailAddress() == null || !customer.getEmailAddress().equals(existingcustomer.getEmailAddress())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email shouldn't be changed");
-        }
+            // Convert CustomerDTO to Customer entity
+            Customer customer = mapper.convertValue(customerDTO, Customer.class);
+            customer.setCustomerId(customerDTO.getCustomerId()); // Set the customerId from the DTO
 
-        profileServiceFactory.updateProfile(customer);
-        return ResponseEntity.ok("Updated: true");
+            // Update and save the customer
+            profileServiceFactory.updateProfile(customer);
+
+            return ResponseEntity.ok("Customer updated successfully");
     }
 
     @DeleteMapping("/{customerId}")
@@ -99,15 +99,12 @@ public class CustomerController {
     @PostMapping
     @Operation(summary = "Register a new customer")
     public ResponseEntity<String> registerCustomer(@Valid @RequestBody Customer customer) {
-        if (customer.getEmailAddress() == null || customer.getEmailAddress().isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
-        Optional<Profile> customerByEmail = profileServiceFactory.getProfileByEmailAddress(customer.getEmailAddress(), "merchant" );
-        if (customerByEmail.isPresent()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email is already registered");
-        }
-        profileServiceFactory.createProfile(customer);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Created customer");
+            Optional<Profile> customerByEmail = profileServiceFactory.getProfileByEmailAddress(customer.getEmailAddress(), "merchant");
+            if (customerByEmail.isPresent()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email is already registered");
+            }
+            profileServiceFactory.createProfile(customer);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Created customer");
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

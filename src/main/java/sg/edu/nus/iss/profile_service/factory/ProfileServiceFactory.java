@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import sg.edu.nus.iss.profile_service.model.Customer;
+import sg.edu.nus.iss.profile_service.model.LatLng;
 import sg.edu.nus.iss.profile_service.model.Merchant;
 import sg.edu.nus.iss.profile_service.model.Profile;
 import sg.edu.nus.iss.profile_service.repository.CustomerRepository;
@@ -22,16 +23,17 @@ public class ProfileServiceFactory implements ProfileService {
     @Autowired
     private CustomerRepository customerRepository;
 
-    public ProfileServiceFactory(MerchantRepository merchantRepository, CustomerRepository customerRepository) {
-        this.merchantRepository = merchantRepository;
-        this.customerRepository = customerRepository;
-    }
+    @Autowired
+    private ExternalLocationService externalLocationService;
+
 
     @Override
     public Profile createProfile(Profile profile) {
         if (profile instanceof Merchant) {
+            setMerchantCoordinates((Merchant) profile);
             return merchantRepository.save((Merchant) profile);
         } else if (profile instanceof Customer) {
+            setCustomerCoordinates((Customer) profile);
             return customerRepository.save((Customer) profile);
         }
         throw new IllegalArgumentException("Invalid profile type");
@@ -40,9 +42,11 @@ public class ProfileServiceFactory implements ProfileService {
     @Override
     public void updateProfile(Profile profile) {
         if (profile instanceof Merchant) {
+            setMerchantCoordinates((Merchant) profile);
             merchantRepository.save((Merchant) profile);
             return;
         } else if (profile instanceof Customer) {
+            setCustomerCoordinates((Customer) profile);
             customerRepository.save((Customer) profile);
             return;
         }
@@ -111,6 +115,23 @@ public class ProfileServiceFactory implements ProfileService {
         }else {
             throw new IllegalArgumentException("Invalid profile type");
         }
+    }
+
+    private void setMerchantCoordinates(Merchant merchant) {
+        try {
+            LatLng coordinates = externalLocationService.getCoordinates(merchant.getPincode());
+            merchant.setLatitude(coordinates.getLat());
+            merchant.setLongitude(coordinates.getLng());
+        }catch (RuntimeException e){
+            throw new RuntimeException("Error fetching coordinates from external service", e);
+        }
+
+    }
+
+    private void setCustomerCoordinates(Customer customer) {
+        LatLng coordinates = externalLocationService.getCoordinates(customer.getPincode());
+        customer.setLatitude(coordinates.getLat());
+        customer.setLongitude(coordinates.getLng());
     }
 
 }
