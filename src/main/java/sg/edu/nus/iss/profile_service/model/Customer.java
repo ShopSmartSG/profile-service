@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import org.hibernate.annotations.UuidGenerator;
@@ -21,7 +23,10 @@ public class Customer implements Profile {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private UUID customerId;
 
+    @NotBlank(message = "Customer name is mandatory")
     private String name;
+    @NotBlank(message = "Customer email is mandatory")
+    @Email(message = "Email should be valid")
     private String emailAddress;
     private String addressLine1;
     private String addressLine2;

@@ -23,16 +23,22 @@ import java.util.*;
 @Tag(name = "Merchants", description = "Manage merchants in Shopsmart Profile Management API")
 public class MerchantController {
 
-    @Autowired
-    private ProfileServiceFactory profileServiceFactory;
+    private final ProfileServiceFactory profileServiceFactory;
+
+    private final ObjectMapper mapper;
+
+    private static final String MERCHANT_STRING = "merchant";
 
     @Autowired
-    private ObjectMapper mapper;
+    public MerchantController(ProfileServiceFactory profileServiceFactory, ObjectMapper mapper) {
+        this.profileServiceFactory = profileServiceFactory;
+        this.mapper = mapper;
+    }
 
     @GetMapping
     @Operation(summary = "Retrieve all merchants")
     public ResponseEntity<List<Merchant>> getAllMerchants() {
-        List<Merchant> merchantList = profileServiceFactory.getProfilesByType("merchant").stream().map(merchant -> (Merchant) merchant).toList();
+        List<Merchant> merchantList = profileServiceFactory.getProfilesByType(MERCHANT_STRING).stream().map(Merchant.class::cast).toList();
         return ResponseEntity.ok(merchantList);
     }
 
@@ -40,9 +46,9 @@ public class MerchantController {
     @Operation(summary = "Retrieve merchants by ID")
     public ResponseEntity<Merchant> getMerchant(@PathVariable UUID merchantId) {
 
-            Optional<Profile> profile = profileServiceFactory.getProfileById("merchant", merchantId);
-            if (profile.isPresent() && profile.get() instanceof Merchant) {
-                return ResponseEntity.ok((Merchant) profile.get());
+            Optional<Profile> profile = profileServiceFactory.getProfileById(MERCHANT_STRING, merchantId);
+            if (profile.isPresent() && profile.get() instanceof Merchant merchant) {
+                return ResponseEntity.ok(merchant);
             }
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
@@ -50,7 +56,7 @@ public class MerchantController {
     @PutMapping("/{merchantId}")
     @Operation(summary = "Update merchants")
     public ResponseEntity<String> updateMerchant(@PathVariable UUID merchantId, @Valid @RequestBody MerchantDTO merchantDTO) {
-           Optional<Profile> existingMerchantOpt = profileServiceFactory.getProfileById("merchant", merchantId);
+           Optional<Profile> existingMerchantOpt = profileServiceFactory.getProfileById(MERCHANT_STRING, merchantId);
                if (existingMerchantOpt.isEmpty()) {
                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Merchant not found");
                }
@@ -84,15 +90,7 @@ public class MerchantController {
     @DeleteMapping("/{merchantId}")
     @Operation(summary = "Delete merchant by ID")
     public ResponseEntity<String> deleteMerchant(@PathVariable UUID merchantId) {
-        Optional<Profile> existingMerchantOpt = profileServiceFactory.getProfileById("merchant", merchantId);
-        if (existingMerchantOpt.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Merchant not found");
-        }
-
-        Merchant existingMerchant = (Merchant) existingMerchantOpt.get();
-        // soft delete
-        existingMerchant.setDeleted(true);
-        profileServiceFactory.updateProfile(existingMerchant);
+        profileServiceFactory.deleteProfile(merchantId);
         return ResponseEntity.ok("Delete: successful");
     }
 
@@ -100,7 +98,7 @@ public class MerchantController {
     @Operation(summary = "Register a new merchant")
     public ResponseEntity<String> registerMerchant(@Valid @RequestBody Merchant merchant) {
 
-        Optional<Profile> merchantByEmail = profileServiceFactory.getProfileByEmailAddress(merchant.getEmailAddress(), "merchant" );
+        Optional<Profile> merchantByEmail = profileServiceFactory.getProfileByEmailAddress(merchant.getEmailAddress(), MERCHANT_STRING );
         if (merchantByEmail.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email is already registered");
         }
