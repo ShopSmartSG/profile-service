@@ -6,6 +6,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -37,10 +40,24 @@ public class CustomerController {
     }
 
     @GetMapping
-    @Operation(summary = "Retrieve all customer")
-    public ResponseEntity<List<Customer>> getAllCustomers() {
-        List<Customer> customerList = profileServiceFactory.getProfilesByType(CUSTOMER_TYPE).stream().map(Customer.class::cast).toList();
-        return ResponseEntity.ok(customerList);
+    @Operation(summary = "Retrieve all customers")
+    public ResponseEntity<?> getAllCustomers(
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "size", required = false) Integer size) {
+
+        // If pagination parameters are not provided, return list of customers
+        if (page == null || size == null) {
+            List<Customer> customerList = profileServiceFactory.getProfilesByType(CUSTOMER_TYPE).stream()
+                    .map(Customer.class::cast)
+                    .toList();
+            return ResponseEntity.ok(customerList);
+        }
+
+        // If pagination parameters are provided, return a page of customers
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Profile> customerPage = profileServiceFactory.getProfilesWithPagination(CUSTOMER_TYPE, pageable);
+
+        return ResponseEntity.ok(customerPage);
     }
 
     @GetMapping("/{customerId}")

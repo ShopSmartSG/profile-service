@@ -6,6 +6,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -37,9 +40,21 @@ public class MerchantController {
 
     @GetMapping
     @Operation(summary = "Retrieve all merchants")
-    public ResponseEntity<List<Merchant>> getAllMerchants() {
-        List<Merchant> merchantList = profileServiceFactory.getProfilesByType(MERCHANT_STRING).stream().map(Merchant.class::cast).toList();
-        return ResponseEntity.ok(merchantList);
+    public ResponseEntity<?> getAllMerchants(
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "size", required = false) Integer size) {
+        if (page == null || size == null) {
+            List<Merchant> merchantList = profileServiceFactory.getProfilesByType(MERCHANT_STRING).stream()
+                    .map(Merchant.class::cast)
+                    .toList();
+            return ResponseEntity.ok(merchantList);
+        }
+
+        // If pagination parameters are provided, return a page of merchants
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Profile> merchantPage = profileServiceFactory.getProfilesWithPagination(MERCHANT_STRING, pageable);
+
+        return ResponseEntity.ok(merchantPage);
     }
 
     @GetMapping("/{merchantId}")

@@ -1,5 +1,7 @@
 package sg.edu.nus.iss.profile_service.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import sg.edu.nus.iss.profile_service.model.Profile;
 
 import java.util.List;
@@ -14,5 +16,8 @@ public interface ProfileService {
 
     List<Profile> getProfilesByType(String type);
 
+    Page<Profile> getProfilesWithPagination(String type, Pageable pageable);
+
     Optional<Profile> getProfileByEmailAddress(String email, String type);
+
 }
