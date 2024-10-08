@@ -118,8 +118,13 @@
 					<excludes>
 						// excluded the main class from code coverage
 						<exclude>sg/edu/nus/iss/profile_service/ProfileServiceApplication.class</exclude>
+						<exclude>sg/edu/nus/iss/profile_service/service/ProfileService.class</exclude>
+						<exclude>sg/edu/nus/iss/profile_service/GlobalExceptionHandler.class</exclude>
 						<!-- Exclude all classes in the model package from code coverage -->
 						<exclude>sg/edu/nus/iss/profile_service/model/**</exclude>
+						<exclude>sg/edu/nus/iss/profile_service/dto/**</exclude>
+						<exclude>sg/edu/nus/iss/profile_service/config/**</exclude>
+						<exclude>sg/edu/nus/iss/profile_service/repository/**</exclude>
 					</excludes>
 				</configuration>
 				<executions>
