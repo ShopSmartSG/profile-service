@@ -8,8 +8,12 @@ import sg.edu.nus.iss.profile_service.model.LatLng;
 @Service
 public class ExternalLocationService {
 
+    private final RestTemplate restTemplate;
+
     @Autowired
-    private RestTemplate restTemplate;
+    public ExternalLocationService(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
 
     public LatLng getCoordinates(String pincode) {
         String url = "http://localhost:8083/location/coordinates?pincode=" + pincode;
