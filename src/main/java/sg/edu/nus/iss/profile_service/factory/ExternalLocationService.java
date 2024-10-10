@@ -13,6 +13,8 @@ public class ExternalLocationService {
 
     private final RestTemplate restTemplate;
 
+
+
     @Autowired
     public ExternalLocationService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
