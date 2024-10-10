@@ -1,0 +1,61 @@
+2024-10-10 15:13:35 - HV000001: Hibernate Validator 8.0.1.Final
+2024-10-10 15:13:35 - Starting ProfileServiceApplicationTests using Java 22.0.1 with PID 57983 (started by inderpreet in /Users/inderpreet/Downloads/profile-service)
+2024-10-10 15:13:35 - No active profile set, falling back to 1 default profile: "default"
+2024-10-10 15:13:35 - Multiple Spring Data modules found, entering strict repository configuration mode
+2024-10-10 15:13:35 - Bootstrapping Spring Data JDBC repositories in DEFAULT mode.
+2024-10-10 15:13:35 - Spring Data JDBC - Could not safely identify store assignment for repository candidate interface sg.edu.nus.iss.profile_service.repository.CustomerRepository; If you want this repository to be a JDBC repository, consider annotating your entities with one of these annotations: org.springframework.data.relational.core.mapping.Table.
+2024-10-10 15:13:35 - Spring Data JDBC - Could not safely identify store assignment for repository candidate interface sg.edu.nus.iss.profile_service.repository.MerchantRepository; If you want this repository to be a JDBC repository, consider annotating your entities with one of these annotations: org.springframework.data.relational.core.mapping.Table.
+2024-10-10 15:13:35 - Finished Spring Data repository scanning in 14 ms. Found 0 JDBC repository interfaces.
+2024-10-10 15:13:35 - Multiple Spring Data modules found, entering strict repository configuration mode
+2024-10-10 15:13:35 - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-10-10 15:13:35 - Finished Spring Data repository scanning in 10 ms. Found 2 JPA repository interfaces.
+2024-10-10 15:13:35 - Multiple Spring Data modules found, entering strict repository configuration mode
+2024-10-10 15:13:35 - Bootstrapping Spring Data MongoDB repositories in DEFAULT mode.
+2024-10-10 15:13:35 - Spring Data MongoDB - Could not safely identify store assignment for repository candidate interface sg.edu.nus.iss.profile_service.repository.CustomerRepository; If you want this repository to be a MongoDB repository, consider annotating your entities with one of these annotations: org.springframework.data.mongodb.core.mapping.Document (preferred), or consider extending one of the following types with your repository: org.springframework.data.mongodb.repository.MongoRepository
+2024-10-10 15:13:35 - Spring Data MongoDB - Could not safely identify store assignment for repository candidate interface sg.edu.nus.iss.profile_service.repository.MerchantRepository; If you want this repository to be a MongoDB repository, consider annotating your entities with one of these annotations: org.springframework.data.mongodb.core.mapping.Document (preferred), or consider extending one of the following types with your repository: org.springframework.data.mongodb.repository.MongoRepository
+2024-10-10 15:13:35 - Finished Spring Data repository scanning in 2 ms. Found 0 MongoDB repository interfaces.
+2024-10-10 15:13:35 - HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-10-10 15:13:35 - HHH000412: Hibernate ORM core version 6.5.3.Final
+2024-10-10 15:13:36 - HHH000026: Second-level cache disabled
+2024-10-10 15:13:36 - No LoadTimeWeaver setup: ignoring JPA class transformer
+2024-10-10 15:13:36 - HikariPool-1 - Starting...
+2024-10-10 15:13:36 - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@27ddc4d3
+2024-10-10 15:13:36 - HikariPool-1 - Start completed.
+2024-10-10 15:13:36 - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2024-10-10 15:13:36 - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2024-10-10 15:13:37 - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-10-10 15:13:37 - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2024-10-10 15:13:37 - Exception in monitor thread while connecting to server localhost:27017
+com.mongodb.MongoSocketOpenException: Exception opening socket
+	at com.mongodb.internal.connection.SocketStream.lambda$open$0(SocketStream.java:86)
+	at java.base/java.util.Optional.orElseThrow(Optional.java:403)
+	at com.mongodb.internal.connection.SocketStream.open(SocketStream.java:86)
+	at com.mongodb.internal.connection.InternalStreamConnection.open(InternalStreamConnection.java:201)
+	at com.mongodb.internal.connection.DefaultServerMonitor$ServerMonitorRunnable.lookupServerDescription(DefaultServerMonitor.java:193)
+	at com.mongodb.internal.connection.DefaultServerMonitor$ServerMonitorRunnable.run(DefaultServerMonitor.java:153)
+	at java.base/java.lang.Thread.run(Thread.java:1570)
+Caused by: java.net.ConnectException: Connection refused
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method)
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:682)
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:549)
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592)
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327)
+	at java.base/java.net.Socket.connect(Socket.java:752)
+	at com.mongodb.internal.connection.SocketStreamHelper.initialize(SocketStreamHelper.java:76)
+	at com.mongodb.internal.connection.SocketStream.initializeSocket(SocketStream.java:105)
+	at com.mongodb.internal.connection.SocketStream.open(SocketStream.java:80)
+	... 4 common frames omitted
+2024-10-10 15:13:37 - MongoClient with metadata {"driver": {"name": "mongo-java-driver|sync|spring-boot", "version": "5.0.1"}, "os": {"type": "Darwin", "name": "Mac OS X", "architecture": "aarch64", "version": "14.6.1"}, "platform": "Java/Oracle Corporation/22.0.1+8-16"} created with settings MongoClientSettings{readPreference=primary, writeConcern=WriteConcern{w=null, wTimeout=null ms, journal=null}, retryWrites=true, retryReads=true, readConcern=ReadConcern{level=null}, credential=null, transportSettings=null, commandListeners=[], codecRegistry=ProvidersCodecRegistry{codecProviders=[ValueCodecProvider{}, BsonValueCodecProvider{}, DBRefCodecProvider{}, DBObjectCodecProvider{}, DocumentCodecProvider{}, CollectionCodecProvider{}, IterableCodecProvider{}, MapCodecProvider{}, GeoJsonCodecProvider{}, GridFSFileCodecProvider{}, Jsr310CodecProvider{}, JsonObjectCodecProvider{}, BsonCodecProvider{}, EnumCodecProvider{}, com.mongodb.client.model.mql.ExpressionCodecProvider@7afd098a, com.mongodb.Jep395RecordCodecProvider@1af2f794, com.mongodb.KotlinCodecProvider@3592e216]}, loggerSettings=LoggerSettings{maxDocumentLength=1000}, clusterSettings={hosts=[localhost:27017], srvServiceName=mongodb, mode=SINGLE, requiredClusterType=UNKNOWN, requiredReplicaSetName='null', serverSelector='null', clusterListeners='[]', serverSelectionTimeout='30000 ms', localThreshold='15 ms'}, socketSettings=SocketSettings{connectTimeoutMS=10000, readTimeoutMS=0, receiveBufferSize=0, proxySettings=ProxySettings{host=null, port=null, username=null, password=null}}, heartbeatSocketSettings=SocketSettings{connectTimeoutMS=10000, readTimeoutMS=10000, receiveBufferSize=0, proxySettings=ProxySettings{host=null, port=null, username=null, password=null}}, connectionPoolSettings=ConnectionPoolSettings{maxSize=100, minSize=0, maxWaitTimeMS=120000, maxConnectionLifeTimeMS=0, maxConnectionIdleTimeMS=0, maintenanceInitialDelayMS=0, maintenanceFrequencyMS=60000, connectionPoolListeners=[], maxConnecting=2}, serverSettings=ServerSettings{heartbeatFrequencyMS=10000, minHeartbeatFrequencyMS=500, serverListeners='[]', serverMonitorListeners='[]'}, sslSettings=SslSettings{enabled=false, invalidHostNameAllowed=false, context=null}, applicationName='null', compressorList=[], uuidRepresentation=JAVA_LEGACY, serverApi=null, autoEncryptionSettings=null, dnsClient=null, inetAddressResolver=null, contextProvider=null}
+2024-10-10 15:13:37 - Started ProfileServiceApplicationTests in 2.934 seconds (process running for 3.71)
+2024-10-10 15:13:38 - Could not detect default configuration classes for test class [sg.edu.nus.iss.profile_service.HomeControllerTest]: HomeControllerTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2024-10-10 15:13:38 - Found @SpringBootConfiguration sg.edu.nus.iss.profile_service.ProfileServiceApplication for test class sg.edu.nus.iss.profile_service.HomeControllerTest
+2024-10-10 15:13:38 - Restart disabled due to context in which it is running
+2024-10-10 15:13:38 - Starting HomeControllerTest using Java 22.0.1 with PID 57983 (started by inderpreet in /Users/inderpreet/Downloads/profile-service)
+2024-10-10 15:13:38 - No active profile set, falling back to 1 default profile: "default"
+2024-10-10 15:13:38 - Initializing Spring TestDispatcherServlet ''
+2024-10-10 15:13:38 - Initializing Servlet ''
+2024-10-10 15:13:39 - Completed initialization in 1 ms
+2024-10-10 15:13:39 - Started HomeControllerTest in 0.177 seconds (process running for 4.901)
+2024-10-10 15:13:39 - Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-10-10 15:13:39 - HikariPool-1 - Shutdown initiated...
+2024-10-10 15:13:39 - HikariPool-1 - Shutdown completed.

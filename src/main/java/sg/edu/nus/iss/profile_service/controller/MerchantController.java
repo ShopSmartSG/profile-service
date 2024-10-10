@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+import sg.edu.nus.iss.profile_service.ProfileServiceApplication;
 import sg.edu.nus.iss.profile_service.dto.MerchantDTO;
 import sg.edu.nus.iss.profile_service.factory.ProfileServiceFactory;
 import sg.edu.nus.iss.profile_service.model.Merchant;
@@ -25,6 +28,8 @@ import java.util.*;
 @RequestMapping("/merchants")
 @Tag(name = "Merchants", description = "Manage merchants in Shopsmart Profile Management API")
 public class MerchantController {
+
+    private static final Logger log = LoggerFactory.getLogger(MerchantController.class);
 
     private final ProfileServiceFactory profileServiceFactory;
 
@@ -43,12 +48,16 @@ public class MerchantController {
     public ResponseEntity<?> getAllMerchants(
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "size", required = false) Integer size) {
+
+        log.info("Fetching page {} of size {}", page, size);
         if (page == null || size == null) {
             List<Merchant> merchantList = profileServiceFactory.getProfilesByType(MERCHANT_STRING).stream()
                     .map(Merchant.class::cast)
                     .toList();
             return ResponseEntity.ok(merchantList);
         }
+
+
 
         // If pagination parameters are provided, return a page of merchants
         Pageable pageable = PageRequest.of(page, size);
