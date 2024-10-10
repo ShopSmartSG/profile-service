@@ -9,6 +9,8 @@ services:
       POSTGRES_PASSWORD: Simr@7659
     ports:
       - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
   app:
     image: profile-service
     build:
@@ -33,6 +35,8 @@ services:
     ports:
       - "9200:9200"
       - "9300:9300"
+    volumes:
+      - es-data:/usr/share/elasticsearch/data
 
   kibana:
     image: docker.elastic.co/kibana/kibana:7.6.0
@@ -54,3 +58,9 @@ services:
       - "5044:5044"
     depends_on:
       - elasticsearch
+
+volumes:
+  db-data:
+    driver: local  # This volume stores PostgreSQL data
+  es-data:
+    driver: local  # This volume stores Elasticsearch data

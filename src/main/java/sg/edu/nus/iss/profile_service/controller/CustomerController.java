@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 import sg.edu.nus.iss.profile_service.dto.CustomerDTO;
 import sg.edu.nus.iss.profile_service.factory.ProfileServiceFactory;
 import sg.edu.nus.iss.profile_service.model.Customer;
-import sg.edu.nus.iss.profile_service.model.Merchant;
 import sg.edu.nus.iss.profile_service.model.Profile;
 
 import java.util.*;
