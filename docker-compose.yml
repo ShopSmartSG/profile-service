@@ -1,4 +1,5 @@
 version: '3.8'
+
 services:
   db:
     image: postgres:latest
@@ -18,5 +19,38 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/shopsmart
       SPRING_DATASOURCE_USERNAME: inderpreet
       SPRING_DATASOURCE_PASSWORD: Simr@7659
+    volumes:
+      - /var/log/profile-service:/var/log/profile-service  # Mount log directory
     depends_on:
       - db
+      - logstash
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.6.0
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.6.0
+    container_name: kibana
+    environment:
+      SERVER_NAME: kibana
+      ELASTICSEARCH_URL: http://elasticsearch:9200/
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:7.6.0
+    container_name: logstash
+    volumes:
+      - ./logstash/conf/logstash-profile-service.conf:/usr/share/logstash/pipeline/logstash.conf  # Mount your logstash config
+    ports:
+      - "5044:5044"
+    depends_on:
+      - elasticsearch
