@@ -49,14 +49,17 @@ public class MerchantController {
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "size", required = false) Integer size) {
 
-        log.info("Fetching page {} of size {}", page, size);
+
         if (page == null || size == null) {
+            log.info("Fetching all merchants with no pagination");
             List<Merchant> merchantList = profileServiceFactory.getProfilesByType(MERCHANT_STRING).stream()
                     .map(Merchant.class::cast)
                     .toList();
             return ResponseEntity.ok(merchantList);
         }
 
+
+        log.info("Fetching page {} of size {}", page, size);
 
 
         // If pagination parameters are provided, return a page of merchants
@@ -70,6 +73,7 @@ public class MerchantController {
     @Operation(summary = "Retrieve merchants by ID")
     public ResponseEntity<Merchant> getMerchant(@PathVariable UUID merchantId) {
 
+          log.info("Fetching merchant with ID: {}", merchantId);
             Optional<Profile> profile = profileServiceFactory.getProfileById(MERCHANT_STRING, merchantId);
             if (profile.isPresent() && profile.get() instanceof Merchant merchant) {
                 return ResponseEntity.ok(merchant);
@@ -80,7 +84,11 @@ public class MerchantController {
     @PutMapping("/{merchantId}")
     @Operation(summary = "Update merchants")
     public ResponseEntity<String> updateMerchant(@PathVariable UUID merchantId, @Valid @RequestBody MerchantDTO merchantDTO) {
-           Optional<Profile> existingMerchantOpt = profileServiceFactory.getProfileById(MERCHANT_STRING, merchantId);
+
+        log.info("Updating merchant with ID: {}", merchantId);
+
+               // Check if the merchant exists
+        Optional<Profile> existingMerchantOpt = profileServiceFactory.getProfileById(MERCHANT_STRING, merchantId);
                if (existingMerchantOpt.isEmpty()) {
                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Merchant not found");
                }
@@ -114,6 +122,8 @@ public class MerchantController {
     @DeleteMapping("/{merchantId}")
     @Operation(summary = "Delete merchant by ID")
     public ResponseEntity<String> deleteMerchant(@PathVariable UUID merchantId) {
+
+        log.info("Deleting merchant with ID: {}", merchantId);
         profileServiceFactory.deleteProfile(merchantId);
         return ResponseEntity.ok("Delete: successful");
     }
@@ -122,6 +132,7 @@ public class MerchantController {
     @Operation(summary = "Register a new merchant")
     public ResponseEntity<String> registerMerchant(@Valid @RequestBody Merchant merchant) {
 
+        log.info("Registering new merchant: {}", merchant);
         Optional<Profile> merchantByEmail = profileServiceFactory.getProfileByEmailAddress(merchant.getEmailAddress(), MERCHANT_STRING );
         if (merchantByEmail.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email is already registered");
