@@ -32,13 +32,29 @@ spec:
               value: org.postgresql.Driver
             - name: LOGGING_FILE_PATH
               value: /var/log/profile-service/profile-service.log
+            - name: LOGSTASH_HOST
+              value: "logstash"
+            - name: LOGSTASH_PORT
+              value: "5044"
           volumeMounts:
             - name: log-volume
               mountPath: /var/log/profile-service
+        - name: filebeat
+          image: docker.elastic.co/beats/filebeat:7.14.1
+          volumeMounts:
+            - name: log-volume
+              mountPath: /var/log/profile-service
+            - name: filebeat-config
+              mountPath: /usr/share/filebeat/filebeat.yml
+              subPath: filebeat.yml
       volumes:
         - name: log-volume
           persistentVolumeClaim:
             claimName: profile-service-log-pvc
+        - name: filebeat-config
+          configMap:
+            name: filebeat-config
+
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
