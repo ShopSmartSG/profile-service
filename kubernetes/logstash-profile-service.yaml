@@ -12,17 +12,11 @@ data:
         }
     }
 
-    filter {
-        mutate {
-            lowercase => ["appName"]
-        }
-    }
-
     output {
         elasticsearch {
             hosts => ["elasticsearch:9200"]
             manage_template => false
-            index => "%{appName}-%{+YYYY.MM.dd}"
+            index => "profile-service-%{+YYYY.MM.dd}"  # Set a static index name
         }
         stdout { codec => rubydebug }
-}
+    }

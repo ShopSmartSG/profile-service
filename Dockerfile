@@ -5,9 +5,18 @@ COPY pom.xml .
 COPY src ./src
 RUN mvn clean package
 
+# install curl
+RUN apt-get update && apt-get install -y curl
+RUN apt-get update && apt-get install -y curl dnsutils
+
 # Stage 2: Set up the runtime environment
 # Use an official OpenJDK runtime as a parent image
 FROM openjdk:21-jdk-slim
+
+# Install curl in the runtime environment as well
+RUN apt-get update && apt-get install -y curl
+
+RUN apt-get update && apt-get install -y curl dnsutils
 
 # Create the log directory and set proper permissions
 RUN mkdir -p /var/log/profile-service && \
@@ -23,8 +32,9 @@ EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
 
 # to build image after building jar post any changes
-# docker build -t profile-service .
+# docker build -t profile-service:latest .
 # docker-compose up --build
+# docker push simranarora264/profile-service:latest
 # docker file and docker-compose port should be same
 # docker-compose down : shutdown the container
 # till we shutdown the postgres image , db remains intact

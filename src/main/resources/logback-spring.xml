@@ -1,26 +1,25 @@
 <configuration>
-
-    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
-
-    <springProperty name="profileServiceAppName" source="spring.application.name" defaultValue="profile-service"/>
-
-    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+    <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+        <destination>logstash:5000</destination>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <customFields>{"appname":"profile-service"}</customFields>
         </encoder>
     </appender>
 
-    <appender name="logstash" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
-        <destination>logstash:4560</destination>
-        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-            <customFields>{"appName":"${profileServiceAppName}"}</customFields>
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>/var/log/profile-service/profile-service.log</file>  <!-- Use absolute path -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>/var/log/profile-service/profile-service.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
 
     <root level="INFO">
-        <appender-ref ref="console"/>
-        <appender-ref ref="logstash"/>
+        <appender-ref ref="LOGSTASH" />
+        <appender-ref ref="FILE" />
+        <appender-ref ref="STDOUT" />
     </root>
-
-    <logger name="org.springframework" level="INFO"/>
 </configuration>
