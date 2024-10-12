@@ -30,12 +30,26 @@ spec:
               value: update
             - name: SPRING_DATASOURCE_DRIVER_CLASS_NAME
               value: org.postgresql.Driver
+            - name: LOGGING_FILE_PATH
+              value: /var/log/profile-service/profile-service.log
           volumeMounts:
             - name: log-volume
               mountPath: /var/log/profile-service
       volumes:
         - name: log-volume
-          emptyDir: {}
+          persistentVolumeClaim:
+            claimName: profile-service-log-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: profile-service-log-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
 ---
 apiVersion: v1
 kind: Service

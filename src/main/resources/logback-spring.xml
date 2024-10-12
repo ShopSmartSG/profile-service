@@ -1,25 +1,14 @@
 <configuration>
-    <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
-        <destination>logstash:5000</destination>
-        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-            <customFields>{"appname":"profile-service"}</customFields>
-        </encoder>
-    </appender>
+<springProperty scope="context" name="springAppName" source="profile-service"/>
 
-    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>/var/log/profile-service/profile-service.log</file>  <!-- Use absolute path -->
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>/var/log/profile-service/profile-service.%d{yyyy-MM-dd}.log</fileNamePattern>
-            <maxHistory>30</maxHistory>
-        </rollingPolicy>
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>/var/log/profile-service/profile-service.log</file>
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
 
-    <root level="INFO">
-        <appender-ref ref="LOGSTASH" />
-        <appender-ref ref="FILE" />
-        <appender-ref ref="STDOUT" />
-    </root>
+<root level="INFO">
+    <appender-ref ref="FILE"/>
+</root>
 </configuration>
