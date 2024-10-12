@@ -73,7 +73,7 @@ public class MerchantController {
     @Operation(summary = "Retrieve merchants by ID")
     public ResponseEntity<Merchant> getMerchant(@PathVariable UUID merchantId) {
 
-          log.info("Fetching merchant with ID: {}", merchantId);
+        log.info("{\"message\": \"Fetching merchant with ID: " + merchantId + "\"}");
             Optional<Profile> profile = profileServiceFactory.getProfileById(MERCHANT_STRING, merchantId);
             if (profile.isPresent() && profile.get() instanceof Merchant merchant) {
                 return ResponseEntity.ok(merchant);

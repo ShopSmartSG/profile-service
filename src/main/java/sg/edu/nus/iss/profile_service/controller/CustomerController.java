@@ -69,7 +69,7 @@ public class CustomerController {
     @Operation(summary = "Retrieve customers by ID")
     public ResponseEntity<Customer> getCustomer(@PathVariable UUID customerId) {
 
-        log.info("Fetching customer with ID: {}", customerId);
+        log.info("{\"message\": \"Fetching customer with ID: {}\"}", customerId);
 
         Optional<Profile> profile = profileServiceFactory.getProfileById(CUSTOMER_TYPE, customerId);
         if (profile.isPresent() && profile.get() instanceof Customer customer) {

@@ -123,11 +123,11 @@ public class ProfileServiceFactory implements ProfileService {
     public Optional<Profile> getProfileById(String type, UUID id) {
 
         if (MERCHANT.equalsIgnoreCase(type)) {
-            log.info("Fetching merchant with ID: {}", id);
+            log.info("{\"message\": \"Fetching merchant with ID: " + id + "\"}");
             Optional<Merchant> merchant = merchantRepository.findByMerchantIdAndDeletedFalse(id);
             return Optional.ofNullable(merchant.orElse(null));
         }else if (CUSTOMER.equalsIgnoreCase(type)) {
-            log.info("Fetching customer with ID: {}", id);
+            log.info("{\"message\": \"Fetching customer with ID: {}\"}", id);
             Optional<Customer> customer = customerRepository.findByCustomerIdAndDeletedFalse(id);
             return Optional.ofNullable(customer.orElse(null));
         }else {
