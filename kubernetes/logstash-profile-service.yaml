@@ -5,18 +5,19 @@ metadata:
 data:
   logstash-profile-service.conf: |
     input {
-        tcp {
-            port => 5000
-            codec => plain
-            tags => ["tcp"]
+        http {
+            port => 9600
+            host => "0.0.0.0"
         }
     }
 
     output {
         elasticsearch {
             hosts => ["elasticsearch:9200"]
-            manage_template => false
             index => "profile-service-%{+YYYY.MM.dd}"  # Set a static index name
         }
         stdout { codec => rubydebug }
     }
+  logstash.yml: |
+    http.host: "0.0.0.0"
+    http.port: 9600
