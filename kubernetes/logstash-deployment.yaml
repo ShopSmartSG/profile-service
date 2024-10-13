@@ -18,13 +18,19 @@ spec:
           ports:
             - containerPort: 5044
             - containerPort: 9600
+          env:
+            - name: LS_JAVA_OPTS
+              value: "-Xmx512m -Xms512m"
           volumeMounts:
             - name: config-volume
-              mountPath: /usr/share/logstash/pipeline/logstash-profile-service.conf
+              mountPath: /usr/share/logstash/pipeline/
       volumes:
         - name: config-volume
           configMap:
             name: logstash-config
+            items:
+              - key: logstash-profile-service.conf
+                path: logstash.conf
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -37,21 +43,18 @@ data:
         port => 5044
       }
     }
-    filter {
-      grok {
-        match => { "message" => "%{GREEDYDATA:message}" }
-        add_tag => [ "profile_service" ]
-      }
-    }
 
     output {
       elasticsearch {
         hosts => ["elasticsearch:9200"]
-        index => "profile-service-%{+YYYY.MM.dd}"
-        ssl => true
-        ssl_certificate_verification => false 
+        index => "profile-service-simplified"
+        action => "create"
       }
       stdout { codec => rubydebug }
+      file {
+        path => "/tmp/logstash.log"
+        codec => rubydebug
+      }  
     }
 
   logstash.yml: |
