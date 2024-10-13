@@ -47,7 +47,7 @@ data:
     output {
       elasticsearch {
         hosts => ["elasticsearch:9200"]
-        index => "profile-service-simplified"
+        index => "profile-service-logs-%{+YYYY.MM.dd}"
         action => "create"
       }
       stdout { codec => rubydebug }
