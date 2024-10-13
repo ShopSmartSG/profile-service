@@ -5,18 +5,9 @@ COPY pom.xml .
 COPY src ./src
 RUN mvn clean package
 
-# install curl
-RUN apt-get update && apt-get install -y curl
-RUN apt-get update && apt-get install -y curl dnsutils
-
 # Stage 2: Set up the runtime environment
 # Use an official OpenJDK runtime as a parent image
 FROM openjdk:21-jdk-slim
-
-# Install curl in the runtime environment as well
-RUN apt-get update && apt-get install -y curl
-
-RUN apt-get update && apt-get install -y curl dnsutils
 
 # Create the log directory and set proper permissions
 RUN mkdir -p /var/log/profile-service && \
