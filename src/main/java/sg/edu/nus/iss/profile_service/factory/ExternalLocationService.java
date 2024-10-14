@@ -28,7 +28,7 @@ public class ExternalLocationService {
     public LatLng getCoordinates(String pincode) {
         String url = locationServiceUrl+"/location/coordinates?pincode=" + pincode;
 
-        log.info("Fetching coordinates from external service: {}", url);
+        log.error("Fetching coordinates from external service: {}", url);
         try {
             return restTemplate.getForObject(url, LatLng.class);
         } catch (Exception e) {

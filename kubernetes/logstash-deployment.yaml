@@ -44,10 +44,20 @@ data:
       }
     }
 
+    filter {
+      grok {
+        match => { "message" => "%{TIMESTAMP_ISO8601:timestamp} %{LOGLEVEL:log.level}%{SPACE}%{JAVACLASS:class} - %{GREEDYDATA:message}" }
+      }
+    
+      mutate {
+        copy => { "log.level" => "log.type" }
+      }
+    }
+
     output {
       elasticsearch {
         hosts => ["elasticsearch:9200"]
-        index => "profile-service-logs-%{+YYYY.MM.dd}"
+        index => "profile-service-%{+YYYY.MM.dd}"
         action => "create"
       }
       stdout { codec => rubydebug }
