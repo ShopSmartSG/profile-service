@@ -24,6 +24,8 @@ spec:
               value: "discover"
             - name: KIBANA_SERVER_NAME
               value: "kibana"
+            - name: XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY
+              value: "0Dif5pbCi8U9toovI224VBM8iYc3kkTh"
           resources:
             limits:
               cpu: "500m"
