@@ -50,7 +50,7 @@ public class CustomerController {
 
         // If pagination parameters are not provided, return list of customers
         if (page == null || size == null) {
-            log.info("Fetching all customers with no pagination");
+            log.info("{\"message\": \"Fetching all customers with no pagination"+"\"}");
             List<Customer> customerList = profileServiceFactory.getProfilesByType(CUSTOMER_TYPE).stream()
                     .map(Customer.class::cast)
                     .toList();
@@ -59,7 +59,7 @@ public class CustomerController {
 
         // If pagination parameters are provided, return a page of customers
         Pageable pageable = PageRequest.of(page, size);
-        log.info("Fetching customers with pagination attributes: page {} and size {}", page, size);
+        log.info("{\"message\": \"Fetching customers with pagination attributes: page {} and size {} "+page +","+size+ "\"}");
         Page<Profile> customerPage = profileServiceFactory.getProfilesWithPagination(CUSTOMER_TYPE, pageable);
 
         return ResponseEntity.ok(customerPage);
@@ -82,7 +82,7 @@ public class CustomerController {
     @Operation(summary = "Update customers")
     public ResponseEntity<String> updateCustomer(@PathVariable UUID customerId, @Valid @RequestBody CustomerDTO customerDTO) {
             Optional<Profile> existingCustomerOpt = profileServiceFactory.getProfileById(CUSTOMER_TYPE, customerId);
-           log.info("Updating customer with ID: {}", customerId);
+        log.info("{\"message\": \"Updating customer with ID: {}\"}", customerId);
             if (existingCustomerOpt.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Customer not found");
             }
@@ -116,7 +116,7 @@ public class CustomerController {
     @DeleteMapping("/{customerId}")
     @Operation(summary = "Delete customer by ID")
     public ResponseEntity<String> deleteCustomer(@PathVariable UUID customerId) {
-        log.info("Deleting customer with ID: {}", customerId);
+        log.info("{\"message\": \"Deleting customer with ID: {}\"}", customerId);
         profileServiceFactory.deleteProfile(customerId);
         return ResponseEntity.ok("Delete: successful");
     }
@@ -124,7 +124,7 @@ public class CustomerController {
     @PostMapping
     @Operation(summary = "Register a new customer")
     public ResponseEntity<String> registerCustomer(@Valid @RequestBody Customer customer) {
-        log.info("Registering new merchant: {}", customer);
+        log.info("{\"message\": \"Registering new customer: {}\"}", customer);
             Optional<Profile> customerByEmail = profileServiceFactory.getProfileByEmailAddress(customer.getEmailAddress(), CUSTOMER_TYPE);
             if (customerByEmail.isPresent()) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email is already registered");

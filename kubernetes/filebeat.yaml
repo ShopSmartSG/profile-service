@@ -9,5 +9,15 @@ data:
         enabled: true
         paths:
           - /var/log/profile-service/*.log
+        fields:
+          service: profile-service
+
+      - type: log
+        enabled: true
+        paths:
+          - /var/log/utility-service/*.log  # New log path for utility-service
+        fields:
+          service: utility-service
+
     output.logstash:
       hosts: ["logstash:5044"]

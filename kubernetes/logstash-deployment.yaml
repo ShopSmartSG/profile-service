@@ -44,21 +44,19 @@ data:
       }
     }
 
-    filter {
-      grok {
-        match => { "message" => "%{TIMESTAMP_ISO8601:timestamp} %{LOGLEVEL:log.level}%{SPACE}%{JAVACLASS:class} - %{GREEDYDATA:message}" }
-      }
-    
-      mutate {
-        copy => { "log.level" => "log.type" }
-      }
-    }
-
     output {
-      elasticsearch {
-        hosts => ["elasticsearch:9200"]
-        index => "profile-service-%{+YYYY.MM.dd}"
-        action => "create"
+      if [fields][service] == "profile-service" {
+        elasticsearch {
+          hosts => ["elasticsearch:9200"]
+          index => "profile-service-%{+YYYY.MM.dd}"
+          action => "create"
+        }
+      } else if [fields][service] == "utility-service" {
+        elasticsearch {
+          hosts => ["elasticsearch:9200"]
+          index => "utility-service-%{+YYYY.MM.dd}"
+          action => "create"
+        }
       }
       stdout { codec => rubydebug }
       file {
