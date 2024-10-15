@@ -41,6 +41,7 @@ data:
     input {
       beats {
         port => 5044
+        ssl => false
       }
     }
 
