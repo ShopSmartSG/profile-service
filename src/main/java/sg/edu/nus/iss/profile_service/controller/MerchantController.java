@@ -51,7 +51,7 @@ public class MerchantController {
 
 
         if (page == null || size == null) {
-            log.info("Fetching all merchants with no pagination");
+            log.info("{\"message\": \"Fetching all merchants with no pagination"+"\"}");
             List<Merchant> merchantList = profileServiceFactory.getProfilesByType(MERCHANT_STRING).stream()
                     .map(Merchant.class::cast)
                     .toList();
@@ -59,7 +59,7 @@ public class MerchantController {
         }
 
 
-        log.info("Fetching page {} of size {}", page, size);
+        log.info("{\"message\": \"Fetching all merchants with pagination\"}", page, size);
 
 
         // If pagination parameters are provided, return a page of merchants
@@ -85,7 +85,7 @@ public class MerchantController {
     @Operation(summary = "Update merchants")
     public ResponseEntity<String> updateMerchant(@PathVariable UUID merchantId, @Valid @RequestBody MerchantDTO merchantDTO) {
 
-        log.info("Updating merchant with ID: {}", merchantId);
+        log.info("{\"message\": \"Updating merchant with ID: {}\"}", merchantId);
 
                // Check if the merchant exists
         Optional<Profile> existingMerchantOpt = profileServiceFactory.getProfileById(MERCHANT_STRING, merchantId);
@@ -123,7 +123,7 @@ public class MerchantController {
     @Operation(summary = "Delete merchant by ID")
     public ResponseEntity<String> deleteMerchant(@PathVariable UUID merchantId) {
 
-        log.info("Deleting merchant with ID: {}", merchantId);
+        log.info("{\"message\": \"Deleting merchant with ID: {}\"}", merchantId);
         profileServiceFactory.deleteProfile(merchantId);
         return ResponseEntity.ok("Delete: successful");
     }
@@ -148,7 +148,7 @@ public class MerchantController {
     @Operation(summary = "Register a new merchant")
     public ResponseEntity<String> registerMerchant(@Valid @RequestBody Merchant merchant) {
 
-        log.info("Registering new merchant: {}", merchant);
+        log.info("{\"message\": \"Registering new merchant\"}", merchant);
         Optional<Profile> merchantByEmail = profileServiceFactory.getProfileByEmailAddress(merchant.getEmailAddress(), MERCHANT_STRING );
         if (merchantByEmail.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email is already registered");

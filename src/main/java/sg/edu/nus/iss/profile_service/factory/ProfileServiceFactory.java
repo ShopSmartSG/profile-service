@@ -42,11 +42,11 @@ public class ProfileServiceFactory implements ProfileService {
     @Override
     public Profile createProfile(Profile profile) {
         if (profile instanceof Merchant merchant) {
-            log.info("Creating merchant profile : {} ", merchant);
+            log.info("{\"message\": \"Creating merchant profile : {}\"}", merchant);
             setMerchantCoordinates(merchant);
             return merchantRepository.save(merchant);
         } else if (profile instanceof Customer customer) {
-            log.info("Creating customer profile : {} ", customer);
+            log.info("{\"message\": \"Creating customer profile : {}\"}", customer);
             setCustomerCoordinates(customer);
             return customerRepository.save(customer);
         }
@@ -56,12 +56,12 @@ public class ProfileServiceFactory implements ProfileService {
     @Override
     public void updateProfile(Profile profile) {
         if (profile instanceof Merchant merchant) {
-            log.info("Updating merchant profile : {} ", merchant);
+            log.info("{\"message\": \"Updating merchant profile : {}\"}", merchant);
             setMerchantCoordinates(merchant);
             merchantRepository.save(merchant);
             return;
         } else if (profile instanceof Customer customer) {
-            log.info("Updating customer profile : {} ", customer);
+            log.info("{\"message\": \"Updating customer profile : {}\"}", customer);
             setCustomerCoordinates(customer);
             customerRepository.save(customer);
             return;
@@ -73,7 +73,7 @@ public class ProfileServiceFactory implements ProfileService {
     public void deleteProfile(UUID id) {
         Optional<Merchant> merchant = merchantRepository.findByMerchantIdAndDeletedFalse(id);
         if (merchant.isPresent()) {
-            log.info("Deleting merchant profile with ID: {}", id);
+            log.info("{\"message\": \"Deleting merchant profile with ID: {}\"}", id);
             Merchant m = merchant.get();
             m.setDeleted(true);
             merchantRepository.save(m);
@@ -82,7 +82,7 @@ public class ProfileServiceFactory implements ProfileService {
 
         Optional<Customer> customer = customerRepository.findByCustomerIdAndDeletedFalse(id);
         if (customer.isPresent()) {
-            log.info("Deleting customer profile with ID: {}", id);
+            log.info("{\"message\": \"Deleting customer profile with ID: {}\"}", id);
             Customer c = customer.get();
             c.setDeleted(true);
             customerRepository.save(c);
@@ -140,10 +140,10 @@ public class ProfileServiceFactory implements ProfileService {
 
     public List<Profile> getProfilesByType(String type) {
         if (MERCHANT.equalsIgnoreCase(type)) {
-            log.info("Fetching all merchants via factory");
+            log.info("{\"message\": \"Fetching all merchants\"}");
             return new ArrayList<>(merchantRepository.findAllByDeletedFalse());
         } else if (CUSTOMER.equalsIgnoreCase(type)) {
-            log.info("Fetching all customers via factory");
+            log.info("{\"message\": \"Fetching all customers\"}");
             return new ArrayList<>(customerRepository.findAllByDeletedFalse());
         } else {
             throw new IllegalArgumentException(INVALID_PROFILE_TYPE);
@@ -153,11 +153,11 @@ public class ProfileServiceFactory implements ProfileService {
     @Override
     public Page<Profile> getProfilesWithPagination(String type, Pageable pageable) {
         if (MERCHANT.equalsIgnoreCase(type)) {
-            log.info("Fetching merchants with pagination attributes: page {} and size {}", pageable.getPageNumber(), pageable.getPageSize());
+            log.info("{\"message\": \"Fetching merchants with pagination attributes: page {} and size {}\"}", pageable.getPageNumber(), pageable.getPageSize());
             Page<Merchant> merchantPage = merchantRepository.findAllByDeletedFalse(pageable);
             return merchantPage.map(merchant -> (Profile) merchant);
         } else if (CUSTOMER.equalsIgnoreCase(type)) {
-            log.info("Fetching customers with pagination attributes: page {} and size {}", pageable.getPageNumber(), pageable.getPageSize());
+            log.info("{\"message\": \"Fetching customers with pagination attributes: page {} and size {}\"}", pageable.getPageNumber(), pageable.getPageSize());
             Page<Customer> customerPage = customerRepository.findAllByDeletedFalse(pageable);
             return customerPage.map(customer -> (Profile) customer);
         } else {
@@ -170,11 +170,11 @@ public class ProfileServiceFactory implements ProfileService {
     public Optional<Profile> getProfileByEmailAddress(String email, String type) {
 
         if (MERCHANT.equalsIgnoreCase(type)) {
-            log.info("Fetching merchant with email: {}", email);
+            log.info("{\"message\": \"Fetching merchant with email: {}\"}", email);
             Optional<Merchant> merchant = merchantRepository.findByEmailAddressAndDeletedFalse(email);
             return Optional.ofNullable(merchant.orElse(null));
         }else if (CUSTOMER.equalsIgnoreCase(type)) {
-            log.info("Fetching customer with email: {}", email);
+            log.info("{\"message\": \"Fetching customer with email: {}\"}", email);
             Optional<Customer> customer = customerRepository.findByEmailAddressAndDeletedFalse(email);
             return Optional.ofNullable(customer.orElse(null));
         }else {
@@ -190,7 +190,7 @@ public class ProfileServiceFactory implements ProfileService {
                 throw new IllegalArgumentException("Coordinates not found for pincode: " + merchant.getPincode());
             }
 
-            log.info("Setting coordinates for merchant with pincode: {} - {}", merchant.getPincode(), coordinates);
+            log.info("{\"message\": \"Setting coordinates for merchant with pincode: {} - {}\"}", merchant.getPincode(), coordinates);
             merchant.setLatitude(coordinates.getLat());
             merchant.setLongitude(coordinates.getLng());
 
@@ -210,7 +210,7 @@ public class ProfileServiceFactory implements ProfileService {
             }
 
 
-            log.info("Setting coordinates for customer with pincode: {} - {}", customer.getPincode(), coordinates);
+            log.info("{\"message\": \"Setting coordinates for customer with pincode: {} - {}\"}", customer.getPincode(), coordinates);
             customer.setLatitude(coordinates.getLat());
             customer.setLongitude(coordinates.getLng());
 

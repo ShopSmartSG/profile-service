@@ -13,7 +13,7 @@ public class ProfileServiceApplication {
 	private static final Logger log = LoggerFactory.getLogger(ProfileServiceApplication.class);
 
 	public static void main(String[] args) {
-		log.info("Starting application");
+		log.info("{\"message\": \"Starting Profile Service Application\"}");
 		SpringApplication.run(ProfileServiceApplication.class, args);
 	}
 
