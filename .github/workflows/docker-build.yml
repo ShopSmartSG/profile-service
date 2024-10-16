@@ -35,14 +35,14 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: '21'
-          distribution: 'temurin'
-        env:
-          JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.4-7/x64
-          PATH: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.4-7/x64/bin:${{ env.PATH }}  
+          distribution: 'temurin' 
 
       # **Updated Step**: Use SonarCloud GitHub Action for SAST and Linting
       - name: SonarCloud Scan with Linting
         uses: sonarsource/sonarcloud-github-action@v1.5
+        env:
+          JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.4-7/x64
+          PATH: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.4-7/x64/bin:${{ env.PATH }} 
         with:
           entryPoint: sonar-scanner
           args: >
