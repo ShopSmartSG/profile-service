@@ -41,6 +41,10 @@ jobs:
         run: java -version
         shell: bash
 
+      - name: Check Bash Availability
+        run: which bash
+        shell: bash
+
       - name: Debug Environment Variables
         run: |
           echo "JAVA_HOME=$JAVA_HOME"
