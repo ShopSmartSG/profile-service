@@ -69,4 +69,5 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: sonarcloud-reports
-          path: ./target/sonar-reports/
+          path: |
+            ./SAST-report
