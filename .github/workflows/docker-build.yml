@@ -74,6 +74,14 @@ jobs:
             echo "SonarCloud Quality Gate passed: $STATUS"
           fi
 
+      # Upload SAST and Lint Reports
+      - name: Upload SAST and Lint Reports
+        uses: actions/upload-artifact@v2
+        with:
+          name: sonarcloud-reports
+          path: ./target/sonar-reports/  # Adjust the path to where the reports are stored
+
+      # Build and run tests with JaCoCo
       - name: Build and run tests with JaCoCo
         run: |
           mvn clean test
@@ -103,6 +111,6 @@ jobs:
           docker build -t shopsmartsg/profile-service .
           docker tag shopsmartsg/profile-service:latest ${{ secrets.ECR_REPO_URI }}:latest
 
-      - name: Push to ECR
+      - name: Push Docker image to ECR
         run: |
           docker push ${{ secrets.ECR_REPO_URI }}:latest
