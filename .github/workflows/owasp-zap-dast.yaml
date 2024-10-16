@@ -18,9 +18,14 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      # List files in zap-output directory
+      - name: List ZAP output files
+        run: ls -R zap-output
+
       # Upload ZAP DAST Report
       - name: Upload ZAP Scan Report
         uses: actions/upload-artifact@v2
         with:
           name: zap-report
           path: ./zap-output/
+          if-no-files-found: warn
