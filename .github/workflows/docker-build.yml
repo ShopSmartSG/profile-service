@@ -41,18 +41,16 @@ jobs:
       - name: Verify Java Installation
         run: java -version
 
-      - name: Build and run tests with JaCoCo
+      - name: Build, Test, and Analyze with Maven
         run: |
-          mvn clean test
-          mvn jacoco:report
-
-      - name: Check JaCoCo Coverage Threshold
-        run: |
-          COVERAGE=$(grep -oPm1 "(?<=<counter type=\"LINE\" missed=\")\d+" target/site/jacoco/jacoco.xml)
-          if [ "$COVERAGE" -lt "80" ]; then
-            echo "Code coverage is below 80%, build failed."
-            exit 1
-          fi
+          mvn clean verify sonar:sonar \
+            -Dsonar.projectKey=ShopSmartSG_profile-service \
+            -Dsonar.organization=shopsmartsg \
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
+            -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
       - name: Log in to Amazon ECR Public
         run: |
@@ -66,36 +64,6 @@ jobs:
       - name: Push Docker image to ECR
         run: |
           docker push ${{ secrets.ECR_REPO_URI }}:latest
-
-      - name: SonarCloud Scan
-        uses: sonarsource/sonarcloud-github-action@v2.1.0
-        with:
-          projectBaseDir: .
-          args: >
-            -Dsonar.projectKey=ShopSmartSG_profile-service
-            -Dsonar.organization=shopsmartsg
-            -Dsonar.host.url=https://sonarcloud.io
-            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
-            -Dsonar.java.binaries=target/classes
-            -Dsonar.exclusions=**/test/**,**/tests/**
-            -Dsonar.java.source=21
-            -Dsonar.java.target=21
-            -Dsonar.java.lint=true
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-      - name: Check SonarCloud Quality Gate
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: |
-          STATUS=$(curl -s "https://sonarcloud.io/api/qualitygates/project_status?projectKey=ShopSmartSG_profile-service" \
-            -H "Authorization: Bearer $SONAR_TOKEN" | jq -r '.projectStatus.status')
-          if [ "$STATUS" != "OK" ]; then
-            echo "SonarCloud Quality Gate failed: $STATUS"
-            exit 1
-          else
-            echo "SonarCloud Quality Gate passed: $STATUS"
-          fi
 
       - name: Upload SAST and Lint Reports
         uses: actions/upload-artifact@v3
