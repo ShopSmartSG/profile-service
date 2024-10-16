@@ -158,11 +158,17 @@
 				</executions>
 			</plugin>
 			<plugin>
-				<groupId>org.owasp</groupId>
-				<artifactId>dependency-check-maven</artifactId>
-				<version>10.0.3</version>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>3.1.2</version>
+				<configuration>
+					<configLocation>google_checks.xml</configLocation> <!-- You can use sun_checks.xml or your custom config -->
+					<consoleOutput>true</consoleOutput>
+					<failOnViolation>true</failOnViolation>
+				</configuration>
 				<executions>
 					<execution>
+						<phase>validate</phase>
 						<goals>
 							<goal>check</goal>
 						</goals>
