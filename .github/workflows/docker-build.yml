@@ -1,7 +1,10 @@
-name: Build, Test, and Push Docker Image
+name: Build, Test, SAST, and Push Docker Image
 
 on:
   push:
+    branches:
+      - main
+  pull_request:
     branches:
       - main
   workflow_dispatch: # allows manual triggering
@@ -33,6 +36,43 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
+
+      # Run SAST and Linting with SonarCloud
+      - name: Install SonarCloud Scanner
+        run: |
+          curl -sSLo sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.6.2.2472-linux.zip
+          unzip sonar-scanner.zip -d $HOME
+          export PATH=$HOME/sonar-scanner-4.6.2.2472-linux/bin:$PATH
+
+      - name: SonarCloud Scan with Linting
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          sonar-scanner \
+            -Dsonar.projectKey=ShopSmartSG_profile-service \
+            -Dsonar.organization= \
+            -Dsonar.sources=. \
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
+            -Dsonar.java.binaries=target/classes \
+            -Dsonar.exclusions=**/test/**,**/tests/** \
+            -Dsonar.java.source=21 \
+            -Dsonar.java.target=21 \
+            -Dsonar.java.lint=true  # Enabling linting for Java 21 sources
+
+      # Check SonarCloud scan result and fail if quality gate fails
+      - name: Check SonarCloud Quality Gate
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          STATUS=$(curl -s "https://sonarcloud.io/api/qualitygates/project_status?projectKey=ShopSmartSG_profile-service" \
+            -H "Authorization: Bearer $SONAR_TOKEN" | jq -r '.projectStatus.status')
+          if [ "$STATUS" != "OK" ]; then
+            echo "SonarCloud Quality Gate failed: $STATUS"
+            exit 1
+          else
+            echo "SonarCloud Quality Gate passed: $STATUS"
+          fi
 
       - name: Build and run tests with JaCoCo
         run: |
