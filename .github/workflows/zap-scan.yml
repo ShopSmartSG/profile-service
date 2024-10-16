@@ -32,7 +32,12 @@ jobs:
           tags: profile-service:latest
 
       - name: Run Docker Container
-        run: docker run -d -p 8080:8080 profile-service:latest
+        run: docker run -d --name profile-service -p 8080:8080 profile-service:latest
+
+      - name: Wait for Application to Start
+        run: |
+          echo "Waiting for the application to start..."
+          sleep 60
 
       - name: ZAP Full Scan
         uses: zaproxy/action-full-scan@v0.11.0
@@ -40,7 +45,6 @@ jobs:
           target: 'http://localhost:8080'
           token: ${{ secrets.GITHUB_TOKEN }}
           cmd_options: '-t http://localhost:8080 -r zap_report.html'
-          artifact_name: 'zap_scan_report'
 
       - name: Upload ZAP Report
         uses: actions/upload-artifact@v3
