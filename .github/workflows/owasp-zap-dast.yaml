@@ -1,8 +1,9 @@
-name: DAST with ZAP
+name: DAST with OWASP ZAP
 
 on:
   pull_request:
-    branches: [master]
+    branches: 
+      - feature/shopsmart-72
   workflow_dispatch:
 
 permissions:
