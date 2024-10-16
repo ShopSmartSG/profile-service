@@ -37,6 +37,9 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
+      - name: Verify Java Installation
+        run: java -version
+
       # Build and run tests with JaCoCo
       - name: Build and run tests with JaCoCo
         run: |
