@@ -1,0 +1,39 @@
+name: ZAP Full Scan
+
+on:
+  push:
+    branches: [main, feature/*]
+  pull_request:
+    branches: [main]
+
+jobs:
+  zap_scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v2
+        with:
+          java-version: '21'
+
+      - name: Build and Run Spring Boot Application
+        run: |
+          mvn clean package
+          java -jar target/profile-service-*.jar &
+          sleep 60 # Wait for the application to start
+
+      - name: ZAP Full Scan
+        uses: zaproxy/action-full-scan@v1
+        with:
+          target: 'http://localhost:8080'
+          token: ${{ secrets.GITHUB_TOKEN }}
+          cmd_options: '-t http://localhost:8080 -r zap_report.html'
+
+      - name: Archive ZAP Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: zap-report
+          path: zap_report.html
