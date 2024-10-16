@@ -41,15 +41,17 @@ jobs:
       - name: SonarCloud Scan with Linting
         uses: sonarsource/sonarcloud-github-action@v1.5
         with:
-          projectKey: ShopSmartSG_profile-service
-          organization: your-organization  # Replace with your SonarCloud organization
-          token: ${{ secrets.SONAR_TOKEN }}
-          extraProperties: |
-            sonar.java.binaries=target/classes
-            sonar.exclusions=**/test/**,**/tests/**
-            sonar.java.source=21
-            sonar.java.target=21
-            sonar.java.lint=true  # Optional: Extra control for Java linting
+          entryPoint: sonar-scanner
+          args: >
+            -Dsonar.projectKey=ShopSmartSG_profile-service
+            -Dsonar.organization=shopsmartsg
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+            -Dsonar.java.binaries=target/classes
+            -Dsonar.exclusions=**/test/**,**/tests/**
+            -Dsonar.java.source=21
+            -Dsonar.java.target=21
+            -Dsonar.java.lint=true  # Optional: Extra control for Java linting
+          projectBaseDir: .  # Adjust the path to the project root
 
       # Check SonarCloud scan result and fail if quality gate fails
       - name: Check SonarCloud Quality Gate
