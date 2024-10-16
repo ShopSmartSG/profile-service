@@ -109,7 +109,7 @@ jobs:
             -Dsonar.exclusions=**/test/**,**/tests/** \
             -Dsonar.java.source=21 \
             -Dsonar.java.target=21 \
-            -Dsonar.java.lint=true
+            -Dsonar.java.lint=true \
             -Dsonar.host.url=https://sonarcloud.io
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
