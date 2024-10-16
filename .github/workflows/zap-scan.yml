@@ -20,11 +20,19 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
-      - name: Build and Run Spring Boot Application
-        run: |
-          mvn clean package
-          java -jar target/profile-service-*.jar &
-          sleep 60 # Wait for the application to start
+      - name: Build with Maven
+        run: mvn clean package
+
+      - name: Build Docker Image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile
+          push: false
+          tags: profile-service:latest
+
+      - name: Run Docker Container
+        run: docker run -d -p 8080:8080 profile-service:latest
 
       - name: ZAP Full Scan
         uses: zaproxy/action-full-scan@v0.11.0
@@ -32,8 +40,9 @@ jobs:
           target: 'http://localhost:8080'
           token: ${{ secrets.GITHUB_TOKEN }}
           cmd_options: '-t http://localhost:8080 -r zap_report.html'
+          artifact_name: 'zap_scan_report'
 
-      - name: Archive ZAP Report
+      - name: Upload ZAP Report
         uses: actions/upload-artifact@v3
         with:
           name: zap-report
