@@ -57,7 +57,7 @@ jobs:
             echo "Code coverage is below 80%, build failed."
             exit 1
           fi
-        shell: /bin/bash
+        shell: bash
 
       - name: Debug AWS Credentials
         run: |
@@ -79,21 +79,13 @@ jobs:
         run: |
           docker push ${{ secrets.ECR_REPO_URI }}:latest
 
-      - name: Verify Shell Availability
-        run: |
-          ls -l /bin/sh
-          ls -l /bin/bash
-          ls -l /usr/bin/env
-          /bin/sh -c 'echo /bin/sh is available'
-          /bin/bash -c 'echo /bin/bash is available'
-
       - name: Install SonarCloud Scanner
         run: |
           curl -sSLo sonar-scanner-cli.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.6.2.2472-linux.zip
           unzip sonar-scanner-cli.zip -d $HOME
           export PATH="$HOME/sonar-scanner-4.6.2.2472-linux/bin:$PATH"
           echo "$HOME/sonar-scanner-4.6.2.2472-linux/bin" >> $GITHUB_PATH
-        shell: /bin/bash
+        shell: sh
 
       - name: SonarCloud Scan with Linting
         run: |
