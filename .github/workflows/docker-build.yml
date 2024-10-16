@@ -81,6 +81,7 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.4-7/x64
+          PATH: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.4-7/x64/bin:${{ env.PATH }}
         with:
           args: >
             -Dsonar.projectKey=ShopSmartSG_profile-service
