@@ -40,6 +40,11 @@ jobs:
       - name: Verify Java Installation
         run: java -version
 
+      - name: Debug Environment Variables
+        run: |
+          echo "JAVA_HOME=$JAVA_HOME"
+          echo "PATH=$PATH"  
+
       # Build and run tests with JaCoCo
       - name: Build and run tests with JaCoCo
         run: |
