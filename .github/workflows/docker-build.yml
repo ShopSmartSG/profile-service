@@ -3,10 +3,10 @@ name: Build, Test, SAST, and Push Docker Image
 on:
   push:
     branches:
-      - main
+      - feature/shopsmart-72
   pull_request:
     branches:
-      - main
+      - feature/shopsmart-72
   workflow_dispatch: # allows manual triggering
 
 jobs:
