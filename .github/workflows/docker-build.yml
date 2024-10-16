@@ -17,6 +17,8 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       ECR_REPO_URI: ${{ secrets.ECR_REPO_URI }}
+      PATH: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.4-7/x64/bin:/snap/bin:/home/runner/.local/bin:/opt/pipx_bin:/home/runner/.cargo/bin:/home/runner/.config/composer/vendor/bin:/usr/local/.ghcup/bin:/home/runner/.dotnet/tools:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -37,10 +39,25 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
+      - name: Verify Java Installation
+        run: java -version
+        shell: bash
+
+      - name: Check Bash Availability
+        run: which bash
+        shell: bash
+
+      - name: Debug Environment Variables
+        run: |
+          echo "JAVA_HOME=$JAVA_HOME"
+          echo "PATH=$PATH"
+        shell: bash
+
       - name: Build and run tests with JaCoCo
         run: |
           mvn clean test
           mvn jacoco:report
+        shell: bash
 
       - name: Check JaCoCo Coverage Threshold
         run: |
@@ -49,6 +66,7 @@ jobs:
             echo "Code coverage is below 80%, build failed."
             exit 1
           fi
+        shell: bash
 
       - name: Debug AWS Credentials
         run: |
@@ -56,27 +74,30 @@ jobs:
           echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}"
           echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}"
           echo "ECR_REPO_URI=${{ secrets.ECR_REPO_URI }}"
-          echo "PATH=$PATH"
-          echo "env_PATH=${{ env.PATH }}"
+        shell: bash
 
       - name: Log in to Amazon ECR Public
         run: |
           aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/l0d0i0v3
+        shell: bash
 
       - name: Build Docker image
         run: |
           docker build -t shopsmartsg/profile-service .
           docker tag shopsmartsg/profile-service:latest ${{ secrets.ECR_REPO_URI }}:latest
+        shell: bash
 
-      - name: Push to ECR
+      - name: Push Docker image to ECR
         run: |
           docker push ${{ secrets.ECR_REPO_URI }}:latest
+        shell: bash
 
       - name: Install SonarCloud Scanner
         run: |
           curl -sSLo sonar-scanner-cli.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.6.2.2472-linux.zip
           unzip sonar-scanner-cli.zip -d $HOME
           echo "$HOME/sonar-scanner-4.6.2.2472-linux/bin" >> $GITHUB_PATH
+        shell: bash
 
       - name: SonarCloud Scan with Linting
         run: |
@@ -92,7 +113,8 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.4-7/x64
-          PATH: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.4-7/x64/bin
+          PATH: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.4-7/x64/bin:${{ env.PATH }}
+        shell: bash
 
       - name: Check SonarCloud Quality Gate
         env:
@@ -106,6 +128,7 @@ jobs:
           else
             echo "SonarCloud Quality Gate passed: $STATUS"
           fi
+        shell: bash
 
       - name: Upload SAST and Lint Reports
         uses: actions/upload-artifact@v3
