@@ -48,6 +48,7 @@ jobs:
         run: |
           mvn clean test
           mvn jacoco:report
+
       - name: Check JaCoCo Coverage Threshold
         run: |
           #!/bin/bash
@@ -57,21 +58,21 @@ jobs:
           cat target/site/jacoco/jacoco.xml
 
           # Extract the total lines covered
-          TOTAL_LINES_COVERED=$(xmllint --xpath "//counter[@type='LINE']/@covered" target/site/jacoco/jacoco.xml | cut -d'"' -f2)
+          TOTAL_LINES_COVERED=$(xmllint --xpath "(//counter[@type='LINE']/@covered)[1]" target/site/jacoco/jacoco.xml | cut -d'"' -f2)
           echo "Total lines covered: $TOTAL_LINES_COVERED"
 
           # Extract the total lines
-          TOTAL_LINES=$(xmllint --xpath "//counter[@type='LINE']/@missed" target/site/jacoco/jacoco.xml | cut -d'"' -f2)
+          TOTAL_LINES=$(xmllint --xpath "(//counter[@type='LINE']/@missed)[1]" target/site/jacoco/jacoco.xml | cut -d'"' -f2)
           echo "Total lines: $TOTAL_LINES"
 
           # Calculate coverage percentage
-          if [ -z "$TOTAL_LINES_COVERED" ] || [ -z "$TOTAL_LINES" ]; then
-              echo "Failed to extract coverage values. Ensure the JaCoCo report is correct."
+          if [[ $TOTAL_LINES_COVERED =~ ^[0-9]+$ ]] && [[ $TOTAL_LINES =~ ^[0-9]+$ ]]; then
+              COVERAGE_PERCENTAGE=$(echo "scale=2; ($TOTAL_LINES_COVERED / ($TOTAL_LINES + $TOTAL_LINES_COVERED)) * 100" | bc)
+              echo "Calculated Coverage Percentage: $COVERAGE_PERCENTAGE%"
+          else
+              echo "Invalid coverage or total line count extracted."
               exit 1
           fi
-
-          COVERAGE_PERCENTAGE=$(echo "scale=2; ($TOTAL_LINES_COVERED / ($TOTAL_LINES + $TOTAL_LINES_COVERED)) * 100" | bc)
-          echo "Calculated Coverage Percentage: $COVERAGE_PERCENTAGE%"
 
           if (( $(echo "$COVERAGE_PERCENTAGE < 80" | bc -l) )); then
               echo "Code coverage is below 80%, build failed."
