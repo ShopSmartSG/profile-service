@@ -44,7 +44,25 @@ data:
         ssl => false
       }
     }
-
+    
+    filter {
+      grok {
+        match => { "message" => "%{TIME:time} \[%{WORD:thread}\] %{LOGLEVEL:loglevel} %{JAVACLASS:class} - %{GREEDYDATA:json_message}" }
+        tag_on_failure => []
+      }
+    
+      if "_grokparsefailure" in [tags] {
+        grok {
+          match => { "message" => "%{TIME:time} \[%{WORD:thread}\] %{LOGLEVEL:loglevel} %{JAVACLASS:class} - %{GREEDYDATA:logmessage}" }
+          tag_on_failure => []
+        }
+      }
+    
+      if "_grokparsefailure" in [tags] {
+        drop { }
+      }
+    }
+    
     output {
       if [fields][service] == "profile-service" {
         elasticsearch {
@@ -58,14 +76,19 @@ data:
           index => "utility-service-%{+YYYY.MM.dd}"
           action => "create"
         }
+      } else if [fields][service] == "central-hub" {
+        elasticsearch {
+          hosts => ["elasticsearch:9200"]
+          index => "central-hub-%{+YYYY.MM.dd}"
+          action => "create"
+        }
       }
       stdout { codec => rubydebug }
       file {
         path => "/tmp/logstash.log"
         codec => rubydebug
-      }  
+      }
     }
-
   logstash.yml: |
     http.host: "0.0.0.0"
     http.port: 9600
@@ -77,9 +100,9 @@ kind: Service
 metadata:
   name: logstash
 spec:
-    selector:
-        app: logstash
-    ports:
-        - protocol: TCP
-          port: 5044
-          targetPort: 5044
+  selector:
+    app: logstash
+  ports:
+    - protocol: TCP
+      port: 5044
+      targetPort: 5044
