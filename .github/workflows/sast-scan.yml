@@ -23,25 +23,8 @@ jobs:
       - name: Install Maven
         run: sudo apt-get install maven -y
 
-      - name: Cache Maven dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
-
-      - name: Cache OWASP Dependency Check data
-        uses: actions/cache@v3
-        with:
-          path: ~/.m2/repository/org/owasp/dependency-check-data/
-          key: owasp-dependency-check-data
-
       - name: Run OWASP Dependency Check
-        run: |
-          mvn --no-transfer-progress clean package -DskipTests -DnvdApiKey=${{ secrets.NVD_API_KEY }} -DskipITs -Dmax.cvss.score=8 \
-          org.owasp:dependency-check-maven:check -l ${{ github.workspace }}/mvn-output.txt
-
+        run: mvn org.owasp:dependency-check-maven:check
 
       - name: Archive Dependency Check Report
         uses: actions/upload-artifact@v3
