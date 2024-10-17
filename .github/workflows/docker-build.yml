@@ -44,26 +44,37 @@ jobs:
         run: |
           mvn clean test
           mvn jacoco:report
-
       - name: Check JaCoCo Coverage Threshold
         run: |
-          if [ ! -f target/site/jacoco/jacoco.xml ]; then
-            echo "JaCoCo report not found. Ensure the report is generated correctly."
-            exit 1
+          #!/bin/bash
+
+          # Debug: Print the content of the JaCoCo report
+          echo "Content of JaCoCo report:"
+          cat target/site/jacoco/jacoco.xml
+
+          # Extract the total lines covered
+          TOTAL_LINES_COVERED=$(xmllint --xpath "//counter[@type='LINE']/@covered" target/site/jacoco/jacoco.xml | cut -d'"' -f2)
+          echo "Total lines covered: $TOTAL_LINES_COVERED"
+
+          # Extract the total lines
+          TOTAL_LINES=$(xmllint --xpath "//counter[@type='LINE']/@missed" target/site/jacoco/jacoco.xml | cut -d'"' -f2)
+          echo "Total lines: $TOTAL_LINES"
+
+          # Calculate coverage percentage
+          if [ -z "$TOTAL_LINES_COVERED" ] || [ -z "$TOTAL_LINES" ]; then
+              echo "Failed to extract coverage values. Ensure the JaCoCo report is correct."
+              exit 1
           fi
 
-          COVERAGE=$(grep -oPm1 "(?<=<counter type=\"LINE\" missed=\")\d+" target/site/jacoco/jacoco.xml)
-          echo "Extracted Coverage: $COVERAGE"
+          COVERAGE_PERCENTAGE=$(echo "scale=2; ($TOTAL_LINES_COVERED / ($TOTAL_LINES + $TOTAL_LINES_COVERED)) * 100" | bc)
+          echo "Calculated Coverage Percentage: $COVERAGE_PERCENTAGE%"
 
-          if [ -z "$COVERAGE" ] || ! [[ "$COVERAGE" =~ ^[0-9]+$ ]]; then
-            echo "Failed to extract coverage value. Ensure the JaCoCo report is correct."
-            exit 1
+          if (( $(echo "$COVERAGE_PERCENTAGE < 80" | bc -l) )); then
+              echo "Code coverage is below 80%, build failed."
+              exit 1
           fi
 
-          if [ "$COVERAGE" -lt "80" ]; then
-            echo "Code coverage is below 80%, build failed."
-            exit 1
-          fi
+          echo "Code coverage check passed!"
         shell: bash
       - name: Debug AWS Credentials
         run: |
