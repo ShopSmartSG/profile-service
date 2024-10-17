@@ -24,7 +24,9 @@ jobs:
         run: sudo apt-get install maven -y
 
       - name: Run OWASP Dependency Check
-        run: mvn org.owasp:dependency-check-maven:check
+        env:
+          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+        run: mvn org.owasp:dependency-check-maven:check -Dnvd.apiKey=${NVD_API_KEY}
 
       - name: Archive Dependency Check Report
         uses: actions/upload-artifact@v3
