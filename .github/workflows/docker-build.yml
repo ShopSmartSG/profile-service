@@ -40,6 +40,10 @@ jobs:
       - name: Verify Java Installation
         run: java -version
 
+      - name: Install required tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libxml2-utils bc
       - name: Build and run tests with JaCoCo
         run: |
           mvn clean test
