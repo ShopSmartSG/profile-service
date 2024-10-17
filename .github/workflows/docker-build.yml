@@ -112,10 +112,3 @@ jobs:
       - name: Push Docker image to ECR
         run: |
           docker push ${{ secrets.ECR_REPO_URI }}:latest
-
-      - name: Upload SAST and Lint Reports
-        uses: actions/upload-artifact@v3
-        with:
-          name: sonarcloud-reports
-          path: |
-            ./SAST-report
