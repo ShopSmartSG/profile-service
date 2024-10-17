@@ -47,7 +47,19 @@ jobs:
 
       - name: Check JaCoCo Coverage Threshold
         run: |
+          if [ ! -f target/site/jacoco/jacoco.xml ]; then
+            echo "JaCoCo report not found. Ensure the report is generated correctly."
+            exit 1
+          fi
+
           COVERAGE=$(grep -oPm1 "(?<=<counter type=\"LINE\" missed=\")\d+" target/site/jacoco/jacoco.xml)
+          echo "Extracted Coverage: $COVERAGE"
+
+          if [ -z "$COVERAGE" ] || ! [[ "$COVERAGE" =~ ^[0-9]+$ ]]; then
+            echo "Failed to extract coverage value. Ensure the JaCoCo report is correct."
+            exit 1
+          fi
+
           if [ "$COVERAGE" -lt "80" ]; then
             echo "Code coverage is below 80%, build failed."
             exit 1
