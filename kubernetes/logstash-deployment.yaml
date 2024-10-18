@@ -67,19 +67,31 @@ data:
       if [fields][service] == "profile-service" {
         elasticsearch {
           hosts => ["elasticsearch:9200"]
-          index => "profile-service-%{+YYYY.MM.dd}"
+          index => "profile-service-logs"
           action => "create"
         }
       } else if [fields][service] == "utility-service" {
         elasticsearch {
           hosts => ["elasticsearch:9200"]
-          index => "utility-service-%{+YYYY.MM.dd}"
+          index => "utility-service-logs"
           action => "create"
         }
       } else if [fields][service] == "central-hub" {
         elasticsearch {
           hosts => ["elasticsearch:9200"]
-          index => "central-hub-%{+YYYY.MM.dd}"
+          index => "central-hub-logs"
+          action => "create"
+        }
+      }else if [fields][service] == "product-service" {
+        elasticsearch {
+          hosts => ["elasticsearch:9200"]
+          index => "product-service-logs"
+          action => "create"
+        }
+      }else if [fields][service] == "order-service" {
+        elasticsearch {
+          hosts => ["elasticsearch:9200"]
+          index => "order-service-logs"
           action => "create"
         }
       }
