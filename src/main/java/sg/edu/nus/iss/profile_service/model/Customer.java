@@ -37,9 +37,9 @@ public class Customer implements Profile {
     @Pattern(regexp = "^[0-9]{6}$", message = "Pincode must be a 6-digit number")
     private String pincode;
 
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Double latitude;
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Double longitude;
 
     @JsonIgnore
