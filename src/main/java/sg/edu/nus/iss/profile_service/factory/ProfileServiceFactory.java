@@ -81,6 +81,32 @@ public class ProfileServiceFactory implements ProfileService {
         throw new IllegalArgumentException("Invalid profile id");
     }
 
+    @Override
+    public void blacklistProfile(UUID id) {
+        Optional<Merchant> merchant = merchantRepository.findByMerchantIdAndDeletedFalse(id);
+        if (merchant.isPresent()) {
+            Merchant m = merchant.get();
+            m.setBlacklisted(true);
+            merchantRepository.save(m);
+            return;
+        }
+
+        throw new IllegalArgumentException("Invalid profile id");
+    }
+
+    @Override
+    public void unblacklistProfile(UUID id) {
+        Optional<Merchant> merchant = merchantRepository.findByMerchantIdAndDeletedFalse(id);
+        if (merchant.isPresent()) {
+            Merchant m = merchant.get();
+            m.setBlacklisted(false);
+            merchantRepository.save(m);
+            return;
+        }
+
+        throw new IllegalArgumentException("Invalid profile id");
+    }
+
 
     @Override
     public Optional<Profile> getProfileById(String type, UUID id) {

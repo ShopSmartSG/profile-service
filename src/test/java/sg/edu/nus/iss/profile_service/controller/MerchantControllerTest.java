@@ -171,4 +171,28 @@ public class MerchantControllerTest {
         assertEquals(1, errors.size());
         assertEquals("must not be null", errors.get("email"));
     }
+
+    // Test blacklisting a merchant - success
+    @Test
+    public void testBlacklistMerchant_Success() {
+        UUID merchantId = UUID.randomUUID();
+
+        ResponseEntity<String> response = merchantController.blacklistMerchant(merchantId);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Merchant blacklisted successfully", response.getBody());
+        verify(profileServiceFactory, times(1)).blacklistProfile(merchantId);
+    }
+
+    // Test unblacklisting a merchant - success
+    @Test
+    public void testUnblacklistMerchant_Success() {
+        UUID merchantId = UUID.randomUUID();
+
+        ResponseEntity<String> response = merchantController.unblacklistMerchant(merchantId);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Merchant blacklisted successfully", response.getBody());
+        verify(profileServiceFactory, times(1)).unblacklistProfile(merchantId);
+    }
 }

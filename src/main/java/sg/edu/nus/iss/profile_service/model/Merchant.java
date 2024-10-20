@@ -45,6 +45,8 @@ public class Merchant implements Profile {
 
     @JsonIgnore
     private boolean deleted = false;
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private boolean blacklisted = false;
     @Override
     public void createProfile() {
 
