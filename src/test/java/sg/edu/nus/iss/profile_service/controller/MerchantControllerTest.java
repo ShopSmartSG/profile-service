@@ -192,7 +192,7 @@ public class MerchantControllerTest {
         ResponseEntity<String> response = merchantController.unblacklistMerchant(merchantId);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Merchant blacklisted successfully", response.getBody());
+        assertEquals("Merchant unblacklisted successfully", response.getBody());
         verify(profileServiceFactory, times(1)).unblacklistProfile(merchantId);
     }
 }
