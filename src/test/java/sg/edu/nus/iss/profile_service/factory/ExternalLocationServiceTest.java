@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.client.RestTemplate;
 import sg.edu.nus.iss.profile_service.model.LatLng;
 
@@ -19,6 +20,9 @@ public class ExternalLocationServiceTest {
     @InjectMocks
     private ExternalLocationService externalLocationService;
 
+    @Value("${location.service.url}")
+    private String locationServiceUrl;
+
     @BeforeEach
     public void setup() {
         MockitoAnnotations.openMocks(this);
@@ -29,8 +33,9 @@ public class ExternalLocationServiceTest {
     public void testGetCoordinates_Success() {
         String pincode = "228714";
         LatLng latLng = new LatLng(1.3521, 103.8198);  // Mock LatLng response
-        String url = "http://localhost:8083/location/coordinates?pincode=" + pincode;
+        String url = locationServiceUrl+"/location/coordinates?pincode=" + pincode;
 
+        // Set the location service URL
         // Mock the RestTemplate response
         when(restTemplate.getForObject(url, LatLng.class)).thenReturn(latLng);
 
@@ -47,7 +52,7 @@ public class ExternalLocationServiceTest {
     @Test
     public void testGetCoordinates_Failure() {
         String pincode = "228714";
-        String url = "http://localhost:8083/location/coordinates?pincode=" + pincode;
+        String url = locationServiceUrl+"/location/coordinates?pincode=" + pincode;
 
         // Mock the RestTemplate to throw an exception
         when(restTemplate.getForObject(url, LatLng.class)).thenThrow(new RuntimeException("Service unavailable"));
