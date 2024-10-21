@@ -12,6 +12,8 @@ public interface ProfileService {
     Profile createProfile(Profile profile);
     void updateProfile(Profile profile);
     void deleteProfile(UUID id);
+    void blacklistProfile(UUID id);
+    void unblacklistProfile(UUID id);
     Optional<Profile> getProfileById(String type, UUID id);
 
     List<Profile> getProfilesByType(String type);
