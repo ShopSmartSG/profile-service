@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: filebeat-config
+data:
+  filebeat.yml: |
+    filebeat.inputs:
+      - type: log
+        enabled: true
+        paths:
+          - /var/log/profile-service/profile-service.log
+        fields:
+          service: profile-service
+
+      - type: log
+        enabled: true
+        paths:
+          - /var/log/utility-service/utility-service.log  # New log path for utility-service
+        fields:
+          service: utility-service
+    
+      - type: log
+        enabled: true
+        paths:
+          - /var/log/order-service/order-service.log  # New log path for order-service
+        fields:
+          service: order-service
+      
+      - type: log
+        enabled: true
+        paths:
+          - /var/log/product-service/product-service.log  # New log path for product-service
+        fields:
+          service: product-service
+    
+      - type: log
+        enabled: true
+        paths:
+          - /var/log/central-hub/central-hub.log  # New log path for central hub(shopsmartsg-backend)
+        fields:
+          service: central-hub
+
+    output.logstash:
+      hosts: ["logstash:5044"]
+      ssl.enabled: false

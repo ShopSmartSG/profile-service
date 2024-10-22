@@ -29,4 +29,3 @@ public class HomeControllerTest {
                 .andExpect(content().string("Welcome to Shopsmart Profile Management"));
     }
 }
-

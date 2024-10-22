@@ -35,6 +35,7 @@ public class ExternalLocationServiceTest {
         LatLng latLng = new LatLng(1.3521, 103.8198);  // Mock LatLng response
         String url = locationServiceUrl+"/location/coordinates?pincode=" + pincode;
 
+        // Set the location service URL
         // Mock the RestTemplate response
         when(restTemplate.getForObject(url, LatLng.class)).thenReturn(latLng);
 

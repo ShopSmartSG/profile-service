@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+import sg.edu.nus.iss.profile_service.ProfileServiceApplication;
 import sg.edu.nus.iss.profile_service.dto.MerchantDTO;
 import sg.edu.nus.iss.profile_service.factory.ProfileServiceFactory;
 import sg.edu.nus.iss.profile_service.model.Merchant;
@@ -25,6 +28,8 @@ import java.util.*;
 @RequestMapping("/merchants")
 @Tag(name = "Merchants", description = "Manage merchants in Shopsmart Profile Management API")
 public class MerchantController {
+
+    private static final Logger log = LoggerFactory.getLogger(MerchantController.class);
 
     private final ProfileServiceFactory profileServiceFactory;
 
@@ -43,12 +48,19 @@ public class MerchantController {
     public ResponseEntity<?> getAllMerchants(
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "size", required = false) Integer size) {
+
+
         if (page == null || size == null) {
+            log.info("{\"message\": \"Fetching all merchants with no pagination"+"\"}");
             List<Merchant> merchantList = profileServiceFactory.getProfilesByType(MERCHANT_STRING).stream()
                     .map(Merchant.class::cast)
                     .toList();
             return ResponseEntity.ok(merchantList);
         }
+
+
+        log.info("{\"message\": \"Fetching all merchants with pagination\"}", page, size);
+
 
         // If pagination parameters are provided, return a page of merchants
         Pageable pageable = PageRequest.of(page, size);
@@ -61,6 +73,7 @@ public class MerchantController {
     @Operation(summary = "Retrieve merchants by ID")
     public ResponseEntity<Merchant> getMerchant(@PathVariable UUID merchantId) {
 
+        log.info("{\"message\": \"Fetching merchant with ID: " + merchantId + "\"}");
             Optional<Profile> profile = profileServiceFactory.getProfileById(MERCHANT_STRING, merchantId);
             if (profile.isPresent() && profile.get() instanceof Merchant merchant) {
                 return ResponseEntity.ok(merchant);
@@ -71,7 +84,11 @@ public class MerchantController {
     @PutMapping("/{merchantId}")
     @Operation(summary = "Update merchants")
     public ResponseEntity<String> updateMerchant(@PathVariable UUID merchantId, @Valid @RequestBody MerchantDTO merchantDTO) {
-           Optional<Profile> existingMerchantOpt = profileServiceFactory.getProfileById(MERCHANT_STRING, merchantId);
+
+        log.info("{\"message\": \"Updating merchant with ID: {}\"}", merchantId);
+
+               // Check if the merchant exists
+        Optional<Profile> existingMerchantOpt = profileServiceFactory.getProfileById(MERCHANT_STRING, merchantId);
                if (existingMerchantOpt.isEmpty()) {
                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Merchant not found");
                }
@@ -105,6 +122,8 @@ public class MerchantController {
     @DeleteMapping("/{merchantId}")
     @Operation(summary = "Delete merchant by ID")
     public ResponseEntity<String> deleteMerchant(@PathVariable UUID merchantId) {
+
+        log.info("{\"message\": \"Deleting merchant with ID: {}\"}", merchantId);
         profileServiceFactory.deleteProfile(merchantId);
         return ResponseEntity.ok("Delete: successful");
     }
@@ -129,6 +148,7 @@ public class MerchantController {
     @Operation(summary = "Register a new merchant")
     public ResponseEntity<String> registerMerchant(@Valid @RequestBody Merchant merchant) {
 
+        log.info("{\"message\": \"Registering new merchant\"}", merchant);
         Optional<Profile> merchantByEmail = profileServiceFactory.getProfileByEmailAddress(merchant.getEmailAddress(), MERCHANT_STRING );
         if (merchantByEmail.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email is already registered");

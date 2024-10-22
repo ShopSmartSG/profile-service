@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.Optional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +21,8 @@ import sg.edu.nus.iss.profile_service.service.ProfileService;
 
 @Service
 public class ProfileServiceFactory implements ProfileService {
+
+    private static final Logger log = LoggerFactory.getLogger(ProfileServiceFactory.class);
 
     private final MerchantRepository merchantRepository;
     private final CustomerRepository customerRepository;
@@ -37,9 +42,11 @@ public class ProfileServiceFactory implements ProfileService {
     @Override
     public Profile createProfile(Profile profile) {
         if (profile instanceof Merchant merchant) {
+            log.info("{\"message\": \"Creating merchant profile : {}\"}", merchant);
             setMerchantCoordinates(merchant);
             return merchantRepository.save(merchant);
         } else if (profile instanceof Customer customer) {
+            log.info("{\"message\": \"Creating customer profile : {}\"}", customer);
             setCustomerCoordinates(customer);
             return customerRepository.save(customer);
         }
@@ -49,10 +56,12 @@ public class ProfileServiceFactory implements ProfileService {
     @Override
     public void updateProfile(Profile profile) {
         if (profile instanceof Merchant merchant) {
+            log.info("{\"message\": \"Updating merchant profile : {}\"}", merchant);
             setMerchantCoordinates(merchant);
             merchantRepository.save(merchant);
             return;
         } else if (profile instanceof Customer customer) {
+            log.info("{\"message\": \"Updating customer profile : {}\"}", customer);
             setCustomerCoordinates(customer);
             customerRepository.save(customer);
             return;
@@ -64,6 +73,7 @@ public class ProfileServiceFactory implements ProfileService {
     public void deleteProfile(UUID id) {
         Optional<Merchant> merchant = merchantRepository.findByMerchantIdAndDeletedFalse(id);
         if (merchant.isPresent()) {
+            log.info("{\"message\": \"Deleting merchant profile with ID: {}\"}", id);
             Merchant m = merchant.get();
             m.setDeleted(true);
             merchantRepository.save(m);
@@ -72,6 +82,7 @@ public class ProfileServiceFactory implements ProfileService {
 
         Optional<Customer> customer = customerRepository.findByCustomerIdAndDeletedFalse(id);
         if (customer.isPresent()) {
+            log.info("{\"message\": \"Deleting customer profile with ID: {}\"}", id);
             Customer c = customer.get();
             c.setDeleted(true);
             customerRepository.save(c);
@@ -112,9 +123,11 @@ public class ProfileServiceFactory implements ProfileService {
     public Optional<Profile> getProfileById(String type, UUID id) {
 
         if (MERCHANT.equalsIgnoreCase(type)) {
+            log.info("{\"message\": \"Fetching merchant with ID: " + id + "\"}");
             Optional<Merchant> merchant = merchantRepository.findByMerchantIdAndDeletedFalse(id);
             return Optional.ofNullable(merchant.orElse(null));
         }else if (CUSTOMER.equalsIgnoreCase(type)) {
+            log.info("{\"message\": \"Fetching customer with ID: {}\"}", id);
             Optional<Customer> customer = customerRepository.findByCustomerIdAndDeletedFalse(id);
             return Optional.ofNullable(customer.orElse(null));
         }else {
@@ -127,8 +140,10 @@ public class ProfileServiceFactory implements ProfileService {
 
     public List<Profile> getProfilesByType(String type) {
         if (MERCHANT.equalsIgnoreCase(type)) {
+            log.info("{\"message\": \"Fetching all merchants\"}");
             return new ArrayList<>(merchantRepository.findAllByDeletedFalse());
         } else if (CUSTOMER.equalsIgnoreCase(type)) {
+            log.info("{\"message\": \"Fetching all customers\"}");
             return new ArrayList<>(customerRepository.findAllByDeletedFalse());
         } else {
             throw new IllegalArgumentException(INVALID_PROFILE_TYPE);
@@ -138,9 +153,11 @@ public class ProfileServiceFactory implements ProfileService {
     @Override
     public Page<Profile> getProfilesWithPagination(String type, Pageable pageable) {
         if (MERCHANT.equalsIgnoreCase(type)) {
+            log.info("{\"message\": \"Fetching merchants with pagination attributes: page {} and size {}\"}", pageable.getPageNumber(), pageable.getPageSize());
             Page<Merchant> merchantPage = merchantRepository.findAllByDeletedFalse(pageable);
             return merchantPage.map(merchant -> (Profile) merchant);
         } else if (CUSTOMER.equalsIgnoreCase(type)) {
+            log.info("{\"message\": \"Fetching customers with pagination attributes: page {} and size {}\"}", pageable.getPageNumber(), pageable.getPageSize());
             Page<Customer> customerPage = customerRepository.findAllByDeletedFalse(pageable);
             return customerPage.map(customer -> (Profile) customer);
         } else {
@@ -153,9 +170,11 @@ public class ProfileServiceFactory implements ProfileService {
     public Optional<Profile> getProfileByEmailAddress(String email, String type) {
 
         if (MERCHANT.equalsIgnoreCase(type)) {
+            log.info("{\"message\": \"Fetching merchant with email: {}\"}", email);
             Optional<Merchant> merchant = merchantRepository.findByEmailAddressAndDeletedFalse(email);
             return Optional.ofNullable(merchant.orElse(null));
         }else if (CUSTOMER.equalsIgnoreCase(type)) {
+            log.info("{\"message\": \"Fetching customer with email: {}\"}", email);
             Optional<Customer> customer = customerRepository.findByEmailAddressAndDeletedFalse(email);
             return Optional.ofNullable(customer.orElse(null));
         }else {
@@ -171,6 +190,7 @@ public class ProfileServiceFactory implements ProfileService {
                 throw new IllegalArgumentException("Coordinates not found for pincode: " + merchant.getPincode());
             }
 
+            log.info("{\"message\": \"Setting coordinates for merchant with pincode: {} - {}\"}", merchant.getPincode(), coordinates);
             merchant.setLatitude(coordinates.getLat());
             merchant.setLongitude(coordinates.getLng());
 
@@ -189,6 +209,8 @@ public class ProfileServiceFactory implements ProfileService {
                 throw new IllegalArgumentException("Coordinates not found for pincode: " + customer.getPincode());
             }
 
+
+            log.info("{\"message\": \"Setting coordinates for customer with pincode: {} - {}\"}", customer.getPincode(), coordinates);
             customer.setLatitude(coordinates.getLat());
             customer.setLongitude(coordinates.getLng());
 
