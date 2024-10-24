@@ -160,10 +160,13 @@ public class MerchantController {
     @GetMapping("/email/{email}")
     @Operation(summary = "Retrieve merchant by email address")
     public ResponseEntity<?> getMerchantByEmail(@RequestParam String email) {
+        log.info("{\"message\": \"Fetching merchant with email: {}\"}", email);
         Optional<Profile> profile = profileServiceFactory.getProfileByEmailAddress(email, MERCHANT_STRING);
         if (profile.isPresent() && profile.get() instanceof Merchant merchant) {
+            log.info("{\"message\": \"Found merchant with email: {}\"}", email);
             return ResponseEntity.ok(merchant.getMerchantId());
         }
+        log.error("{\"message\": \"Couldn't fine merchant with email: {}\"}", email);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Merchant not found");
     }
 

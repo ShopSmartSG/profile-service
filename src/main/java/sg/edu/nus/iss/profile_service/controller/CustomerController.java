@@ -141,8 +141,10 @@ public class CustomerController {
         log.info("{\"message\": \"Fetching customer with email: {}\"}", email);
         Optional<Profile> profile = profileServiceFactory.getProfileByEmailAddress(email, CUSTOMER_TYPE);
         if (profile.isPresent() && profile.get() instanceof Customer customer) {
+            log.info("{\"message\": \"Found customer with email: {}\"}", email);
             return ResponseEntity.ok(customer.getCustomerId());
         }
+        log.error("{\"message\": \"Couldn't fine customer with email: {}\"}", email);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Customer not found");
     }
 
