@@ -171,4 +171,17 @@ public class CustomerControllerTest {
         assertEquals(1, errors.size());
         assertEquals("must not be null", errors.get("email"));
     }
+
+
+    // Test getCustomerByEmail - customer found
+    @Test
+    public void testGetCustomerByEmail_Success() {
+        Customer customer = new Customer();
+        when(profileServiceFactory.getProfileByEmailAddress("testcustomer@gmail.com", "customer")).thenReturn(Optional.of(customer));
+
+        ResponseEntity<?> response = customerController.getCustomerByEmail("testcustomer@gmail.com");
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(customer.getCustomerId(), response.getBody());
+    }
 }

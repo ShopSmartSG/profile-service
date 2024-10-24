@@ -195,4 +195,18 @@ public class MerchantControllerTest {
         assertEquals("Merchant unblacklisted successfully", response.getBody());
         verify(profileServiceFactory, times(1)).unblacklistProfile(merchantId);
     }
+
+
+    // Test getMerchantByEmail - merchant found
+    @Test
+    public void testGetMerchantByEmail_Success() {
+        String email = "test@example.com";
+        Merchant merchant = new Merchant();
+        when(profileServiceFactory.getProfileByEmailAddress(email, "merchant")).thenReturn(Optional.of(merchant));
+
+        ResponseEntity<?> response = merchantController.getMerchantByEmail(email);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(merchant.getMerchantId(), response.getBody());
+    }
 }

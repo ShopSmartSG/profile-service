@@ -157,6 +157,16 @@ public class MerchantController {
         return ResponseEntity.status(HttpStatus.CREATED).body("Created Merchant");
     }
 
+    @GetMapping("/email/{email}")
+    @Operation(summary = "Retrieve merchant by email address")
+    public ResponseEntity<?> getMerchantByEmail(@RequestParam String email) {
+        Optional<Profile> profile = profileServiceFactory.getProfileByEmailAddress(email, MERCHANT_STRING);
+        if (profile.isPresent() && profile.get() instanceof Merchant merchant) {
+            return ResponseEntity.ok(merchant.getMerchantId());
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Merchant not found");
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException ex) {
