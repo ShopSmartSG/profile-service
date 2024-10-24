@@ -133,6 +133,21 @@ public class CustomerController {
             return ResponseEntity.status(HttpStatus.CREATED).body("Created customer");
     }
 
+    // add an API to get profile by email address
+
+    @GetMapping("/email/{email}")
+    @Operation(summary = "Retrieve customer by email address")
+    public ResponseEntity<?> getCustomerByEmail(@PathVariable String email) {
+        log.info("{\"message\": \"Fetching customer with email: {}\"}", email);
+        Optional<Profile> profile = profileServiceFactory.getProfileByEmailAddress(email, CUSTOMER_TYPE);
+        if (profile.isPresent() && profile.get() instanceof Customer customer) {
+            log.info("{\"message\": \"Found customer with email: {}\"}", email);
+            return ResponseEntity.ok(customer.getCustomerId());
+        }
+        log.error("{\"message\": \"Couldn't fine customer with email: {}\"}", email);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Customer not found");
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException ex) {
