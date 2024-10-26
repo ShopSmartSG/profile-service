@@ -159,7 +159,7 @@ public class MerchantController {
 
     @GetMapping("/email/{email}")
     @Operation(summary = "Retrieve merchant by email address")
-    public ResponseEntity<?> getMerchantByEmail(@RequestParam String email) {
+    public ResponseEntity<?> getMerchantByEmail(@PathVariable String email) {
         log.info("{\"message\": \"Fetching merchant with email: {}\"}", email);
         Optional<Profile> profile = profileServiceFactory.getProfileByEmailAddress(email, MERCHANT_STRING);
         if (profile.isPresent() && profile.get() instanceof Merchant merchant) {
