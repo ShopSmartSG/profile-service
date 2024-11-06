@@ -20,7 +20,9 @@ import sg.edu.nus.iss.profile_service.dto.CustomerDTO;
 import sg.edu.nus.iss.profile_service.factory.ProfileServiceFactory;
 import sg.edu.nus.iss.profile_service.model.Customer;
 import sg.edu.nus.iss.profile_service.model.Profile;
+import sg.edu.nus.iss.profile_service.model.Rewards;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 @RestController
@@ -148,6 +150,45 @@ public class CustomerController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Customer not found");
     }
 
+    @PutMapping("/{customer-id}/rewards/{order-price}")
+    @Operation(summary = "Update Customer Reward Points" , description = "Customer Order Value = Number of Reward Points")
+    public ResponseEntity<?> patchRewardPoints(@PathVariable(name = "customer-id") UUID customerId ,@PathVariable("order-price") BigDecimal amount){
+
+        Optional<Profile> profile = profileServiceFactory.getProfileById(CUSTOMER_TYPE,customerId);
+        if(profile.isPresent() && profile.get() instanceof Customer customer){
+            // get order price and set reward points
+            // 100 -> 100
+            customer.setRewardPoints(BigDecimal.valueOf(amount.doubleValue()));
+            profileServiceFactory.updateProfile(customer);
+            return ResponseEntity.ok("Reward points updated successfully");
+        }
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Customer Not found");
+    }
+
+
+    @GetMapping("/{customer-id}/rewards")
+    @Operation(summary = "get reward points and reward amount equivalent for a customer" , description = "100 Reward points = 1 S$")
+    public ResponseEntity<?> retrieveRewardDetails(@PathVariable(name = "customer-id") UUID customerId) {
+        // get points give back amount
+        // 100 reward points to 10$
+        try {
+            Optional<Profile> profile = profileServiceFactory.getProfileById(CUSTOMER_TYPE, customerId);
+            if (profile.isPresent() && profile.get() instanceof Customer customer) {
+                Rewards rewards = new Rewards();
+                // set reward points as is
+                rewards.setRewardPoints(customer.getRewardPoints());
+                // reward points are stored at customer , reward points to reward amount coversion is to done here
+                rewards.setRewardAmount(rewards.getRewardPoints().multiply(BigDecimal.valueOf(0.010)));
+                return ResponseEntity.ok(rewards);
+            }
+            return ResponseEntity.ok("Customer not found");
+        } catch (Exception exception) {
+            return ResponseEntity.internalServerError().body("Error when converting rewardPoints to reward amount : " + exception.getMessage());
+        }
+
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException ex) {
@@ -159,4 +200,7 @@ public class CustomerController {
         });
         return errors;
     }
+
+
+
 }

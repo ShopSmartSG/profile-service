@@ -16,12 +16,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
-import sg.edu.nus.iss.profile_service.ProfileServiceApplication;
 import sg.edu.nus.iss.profile_service.dto.MerchantDTO;
 import sg.edu.nus.iss.profile_service.factory.ProfileServiceFactory;
 import sg.edu.nus.iss.profile_service.model.Merchant;
 import sg.edu.nus.iss.profile_service.model.Profile;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 @RestController
@@ -168,6 +168,22 @@ public class MerchantController {
         }
         log.error("{\"message\": \"Couldn't fine merchant with email: {}\"}", email);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Merchant not found");
+    }
+
+    @PutMapping("/{merchant-id}/rewards/{order-price}")
+    @Operation(summary = "Update Merchant Earnings")
+    public ResponseEntity<?> patchRewardPoints(@PathVariable(name = "merchant-id") UUID merchantId ,@PathVariable("order-price") BigDecimal amount){
+
+        Optional<Profile> profile = profileServiceFactory.getProfileById(MERCHANT_STRING,merchantId);
+        if(profile.isPresent() && profile.get() instanceof Merchant merchant){
+            // get order price and set reward points
+            // 100 -> 100
+            merchant.setRewardPoints(BigDecimal.valueOf(amount.doubleValue()));
+            profileServiceFactory.updateProfile(merchant);
+            return ResponseEntity.ok("Merchant Earnings updated successfully");
+        }
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Merchant Not found");
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
