@@ -18,7 +18,9 @@ import sg.edu.nus.iss.profile_service.dto.CustomerDTO;
 import sg.edu.nus.iss.profile_service.factory.ProfileServiceFactory;
 import sg.edu.nus.iss.profile_service.model.Customer;
 import sg.edu.nus.iss.profile_service.model.Profile;
+import sg.edu.nus.iss.profile_service.model.Rewards;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 public class CustomerControllerTest {
@@ -183,5 +185,52 @@ public class CustomerControllerTest {
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(customer.getCustomerId(), response.getBody());
+    }
+
+
+    // add a test for patchRewardPoints and retrieveRewardDetails
+
+    // Test patchRewardPoints - success
+    @Test
+    public void testPatchRewardPoints_Success() {
+        UUID customerId = UUID.randomUUID();
+        Customer customer = new Customer();
+        customer.setCustomerId(customerId);
+        customer.setRewardPoints(BigDecimal.valueOf(100));
+        when(profileServiceFactory.getProfileById("customer", customerId)).thenReturn(Optional.of(customer));
+
+        ResponseEntity<?> response = customerController.patchRewardPoints(customerId, BigDecimal.valueOf(100));
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Reward points updated successfully", response.getBody());
+        assertEquals(BigDecimal.valueOf(100.0), customer.getRewardPoints());
+        verify(profileServiceFactory, times(1)).updateProfile(customer);
+    }
+
+    // Test patchRewardPoints - customer not found
+    @Test
+    public void testPatchRewardPoints_CustomerNotFound() {
+        UUID customerId = UUID.randomUUID();
+        when(profileServiceFactory.getProfileById("customer", customerId)).thenReturn(Optional.empty());
+
+        ResponseEntity<?> response = customerController.patchRewardPoints(customerId, BigDecimal.valueOf(100));
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals("Customer Not found", response.getBody());
+    }
+
+    @Test
+    public void testRetrieveRewardDetails_Success() {
+        UUID customerId = UUID.randomUUID();
+
+        Customer customer = new Customer();
+        customer.setRewardPoints(BigDecimal.valueOf(100));
+        when(profileServiceFactory.getProfileById("customer", customerId)).thenReturn(Optional.of(customer));
+
+        ResponseEntity<?> response = customerController.retrieveRewardDetails(customerId);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(0, ((Rewards) response.getBody()).getRewardAmount().compareTo(BigDecimal.valueOf(1.0)));
+        assertEquals(BigDecimal.valueOf(100), ((Rewards) response.getBody()).getRewardPoints());
     }
 }

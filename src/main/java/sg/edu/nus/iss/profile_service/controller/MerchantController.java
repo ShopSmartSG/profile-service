@@ -172,7 +172,7 @@ public class MerchantController {
 
     @PutMapping("/{merchant-id}/rewards/{order-price}")
     @Operation(summary = "Update Merchant Earnings")
-    public ResponseEntity<?> patchRewardPoints(@PathVariable(name = "merchant-id") UUID merchantId ,@PathVariable("order-price") BigDecimal amount){
+    public ResponseEntity<?> patchMerchantEarnings(@PathVariable(name = "merchant-id") UUID merchantId , @PathVariable("order-price") BigDecimal amount){
 
         Optional<Profile> profile = profileServiceFactory.getProfileById(MERCHANT_STRING,merchantId);
         if(profile.isPresent() && profile.get() instanceof Merchant merchant){
