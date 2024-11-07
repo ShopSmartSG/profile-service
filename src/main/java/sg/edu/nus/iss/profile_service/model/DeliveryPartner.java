@@ -1,32 +1,31 @@
 package sg.edu.nus.iss.profile_service.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import org.hibernate.annotations.UuidGenerator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.math.BigDecimal;
 import java.util.UUID;
 
 @Data
 @Entity
-public class Merchant implements Profile {
+public class DeliveryPartner implements Profile {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @UuidGenerator
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private UUID merchantId;
+    private UUID deliveryPartnerId;
 
-    @NotBlank(message = "Merchant name is mandatory")
+    @NotBlank(message = "Delivery Partner name is mandatory")
     private String name;
-    @NotBlank(message = "Merchant email is mandatory")
+    @NotBlank(message = "Delivery Partner email is mandatory")
     @Email(message = "Email should be valid")
     private String emailAddress;
     private String addressLine1;
@@ -48,10 +47,6 @@ public class Merchant implements Profile {
     private boolean deleted = false;
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private boolean blacklisted = false;
-
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private BigDecimal earnings;
-
     @Override
     public void createProfile() {
 

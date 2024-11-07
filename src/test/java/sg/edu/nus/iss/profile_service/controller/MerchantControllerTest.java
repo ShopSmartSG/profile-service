@@ -19,6 +19,7 @@ import sg.edu.nus.iss.profile_service.factory.ProfileServiceFactory;
 import sg.edu.nus.iss.profile_service.model.Merchant;
 import sg.edu.nus.iss.profile_service.model.Profile;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 public class MerchantControllerTest {
@@ -208,5 +209,24 @@ public class MerchantControllerTest {
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(merchant.getMerchantId(), response.getBody());
+    }
+
+
+    // Test patchMerchantEarnings
+    @Test
+    public void testPatchMerchantEarnings_Success() {
+        UUID merchantId = UUID.randomUUID();
+        BigDecimal amount = BigDecimal.valueOf(100);
+
+        Merchant merchant = new Merchant();
+        merchant.setMerchantId(merchantId);
+        merchant.setEarnings(BigDecimal.valueOf(100));
+        when(profileServiceFactory.getProfileById("merchant", merchantId)).thenReturn(Optional.of(merchant));
+
+        ResponseEntity<?> response = merchantController.patchMerchantEarnings(merchantId, amount);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Merchant Earnings updated successfully", response.getBody());
+        verify(profileServiceFactory, times(1)).updateProfile(merchant);
     }
 }
