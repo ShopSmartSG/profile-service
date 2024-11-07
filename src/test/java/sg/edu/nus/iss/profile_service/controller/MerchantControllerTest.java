@@ -220,7 +220,7 @@ public class MerchantControllerTest {
 
         Merchant merchant = new Merchant();
         merchant.setMerchantId(merchantId);
-        merchant.setRewardPoints(BigDecimal.valueOf(100));
+        merchant.setEarnings(BigDecimal.valueOf(100));
         when(profileServiceFactory.getProfileById("merchant", merchantId)).thenReturn(Optional.of(merchant));
 
         ResponseEntity<?> response = merchantController.patchMerchantEarnings(merchantId, amount);
