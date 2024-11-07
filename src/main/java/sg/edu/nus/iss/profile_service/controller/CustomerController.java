@@ -169,7 +169,7 @@ public class CustomerController {
 
     @GetMapping("/{customer-id}/rewards")
     @Operation(summary = "get reward points and reward amount equivalent for a customer" , description = "100 Reward points = 1 S$")
-    public ResponseEntity<?> retrieveRewardDetails(@PathVariable(name = "customer-id") UUID customerId) {
+    public ResponseEntity<Rewards> retrieveRewardDetails(@PathVariable(name = "customer-id") UUID customerId) {
         // get points give back amount
         // 100 reward points to 10$
         try {
@@ -182,9 +182,9 @@ public class CustomerController {
                 rewards.setRewardAmount(rewards.getRewardPoints().multiply(BigDecimal.valueOf(0.010)));
                 return ResponseEntity.ok(rewards);
             }
-            return ResponseEntity.ok("Customer not found");
+            return ResponseEntity.notFound().build();
         } catch (Exception exception) {
-            return ResponseEntity.internalServerError().body("Error when converting rewardPoints to reward amount : " + exception.getMessage());
+            return ResponseEntity.internalServerError().build();
         }
 
     }
