@@ -42,15 +42,18 @@ public class ProfileServiceFactory implements ProfileService {
 
     @Override
     public Profile createProfile(Profile profile) {
-        if (profile instanceof Merchant merchant) {
+        if (profile instanceof Merchant ) {
+            Merchant merchant = (Merchant) profile;
             log.info("{\"message\": \"Creating merchant profile : {}\"}", merchant);
             setMerchantCoordinates(merchant);
             return merchantRepository.save(merchant);
-        } else if (profile instanceof Customer customer) {
+        } else if (profile instanceof Customer) {
+            Customer customer = (Customer) profile;
             log.info("{\"message\": \"Creating customer profile : {}\"}", customer);
             setCustomerCoordinates(customer);
             return customerRepository.save(customer);
-        }else if (profile instanceof DeliveryPartner deliveryPartner) {
+        }else if (profile instanceof DeliveryPartner ) {
+            DeliveryPartner deliveryPartner = (DeliveryPartner) profile;
             log.info("{\"message\": \"Creating delivery partner profile : {}\"}", deliveryPartner);
             setDeliveryPartnerCoordinates(deliveryPartner);
             return deliveryPartnerRepository.save(deliveryPartner);
@@ -60,17 +63,20 @@ public class ProfileServiceFactory implements ProfileService {
 
     @Override
     public void updateProfile(Profile profile) {
-        if (profile instanceof Merchant merchant) {
+        if (profile instanceof Merchant ) {
+            Merchant merchant = (Merchant) profile;
             log.info("{\"message\": \"Updating merchant profile : {}\"}", merchant);
             setMerchantCoordinates(merchant);
             merchantRepository.save(merchant);
             return;
-        } else if (profile instanceof Customer customer) {
+        } else if (profile instanceof Customer) {
+            Customer customer = (Customer) profile;
             log.info("{\"message\": \"Updating customer profile : {}\"}", customer);
             setCustomerCoordinates(customer);
             customerRepository.save(customer);
             return;
-        }else if (profile instanceof DeliveryPartner deliveryPartner) {
+        }else if (profile instanceof DeliveryPartner ) {
+            DeliveryPartner deliveryPartner = (DeliveryPartner) profile;
             log.info("{\"message\": \"Updating delivery partner profile : {}\"}", deliveryPartner);
             setDeliveryPartnerCoordinates(deliveryPartner);
             deliveryPartnerRepository.save(deliveryPartner);
