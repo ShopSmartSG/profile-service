@@ -10,6 +10,5 @@ class ProfileServiceApplicationTests {
         // Call the main method directly
         ProfileServiceApplication.main(new String[] {});
     }
-
 }
 
