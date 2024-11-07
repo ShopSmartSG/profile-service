@@ -50,7 +50,7 @@ public class Merchant implements Profile {
     private boolean blacklisted = false;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private BigDecimal rewardPoints;
+    private BigDecimal earnings;
 
     @Override
     public void createProfile() {

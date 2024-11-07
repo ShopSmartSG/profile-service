@@ -178,7 +178,7 @@ public class MerchantController {
         if(profile.isPresent() && profile.get() instanceof Merchant merchant){
             // get order price and set reward points
             // 100 -> 100
-            merchant.setRewardPoints(BigDecimal.valueOf(amount.doubleValue()));
+            merchant.setEarnings(BigDecimal.valueOf(amount.doubleValue()));
             profileServiceFactory.updateProfile(merchant);
             return ResponseEntity.ok("Merchant Earnings updated successfully");
         }
