@@ -5,9 +5,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 class ProfileServiceApplicationTests {
-
     @Test
-    void contextLoads() {
+    void main() {
+        // Call the main method directly
+        ProfileServiceApplication.main(new String[] {});
     }
 
 }
