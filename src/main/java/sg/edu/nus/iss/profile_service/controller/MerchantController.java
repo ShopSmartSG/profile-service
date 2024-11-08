@@ -69,9 +69,9 @@ public class MerchantController {
         return ResponseEntity.ok(merchantPage);
     }
 
-    @GetMapping("/{merchantId}")
+    @GetMapping("/{merchant-id}")
     @Operation(summary = "Retrieve merchants by ID")
-    public ResponseEntity<Merchant> getMerchant(@PathVariable UUID merchantId) {
+    public ResponseEntity<Merchant> getMerchant(@PathVariable(name = "merchant-id") UUID merchantId) {
 
         log.info("{\"message\": \"Fetching merchant with ID: " + merchantId + "\"}");
             Optional<Profile> profile = profileServiceFactory.getProfileById(MERCHANT_STRING, merchantId);
@@ -82,9 +82,9 @@ public class MerchantController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
-    @PutMapping("/{merchantId}")
+    @PutMapping("/{merchant-id}")
     @Operation(summary = "Update merchants")
-    public ResponseEntity<String> updateMerchant(@PathVariable UUID merchantId, @Valid @RequestBody MerchantDTO merchantDTO) {
+    public ResponseEntity<String> updateMerchant(@PathVariable(name = "merchant-id") UUID merchantId, @Valid @RequestBody MerchantDTO merchantDTO) {
 
         log.info("{\"message\": \"Updating merchant with ID: {}\"}", merchantId);
 
@@ -120,25 +120,25 @@ public class MerchantController {
                return ResponseEntity.ok("Merchant updated successfully");
 }
 
-    @DeleteMapping("/{merchantId}")
+    @DeleteMapping("/{merchant-id}")
     @Operation(summary = "Delete merchant by ID")
-    public ResponseEntity<String> deleteMerchant(@PathVariable UUID merchantId) {
+    public ResponseEntity<String> deleteMerchant(@PathVariable(name = "merchant-id") UUID merchantId) {
 
         log.info("{\"message\": \"Deleting merchant with ID: {}\"}", merchantId);
         profileServiceFactory.deleteProfile(merchantId);
         return ResponseEntity.ok("Delete: successful");
     }
 
-    @PutMapping("/blacklist/{merchantId}")
+    @PutMapping("/blacklist/{merchant-id}")
     @Operation(summary = "Blacklist a merchant")
-    public ResponseEntity<String> blacklistMerchant(@PathVariable UUID merchantId) {
+    public ResponseEntity<String> blacklistMerchant(@PathVariable(name = "merchant-id") UUID merchantId) {
         profileServiceFactory.blacklistProfile(merchantId);
         return ResponseEntity.ok("Merchant blacklisted successfully");
     }
 
-    @PutMapping("/unblacklist/{merchantId}")
+    @PutMapping("/unblacklist/{merchant-id}")
     @Operation(summary = "Unblacklist a merchant")
-    public ResponseEntity<String> unblacklistMerchant(@PathVariable UUID merchantId) {
+    public ResponseEntity<String> unblacklistMerchant(@PathVariable(name = "merchant-id") UUID merchantId) {
         profileServiceFactory.unblacklistProfile(merchantId);
         return ResponseEntity.ok("Merchant unblacklisted successfully");
     }
