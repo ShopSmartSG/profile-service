@@ -75,7 +75,8 @@ public class MerchantController {
 
         log.info("{\"message\": \"Fetching merchant with ID: " + merchantId + "\"}");
             Optional<Profile> profile = profileServiceFactory.getProfileById(MERCHANT_STRING, merchantId);
-            if (profile.isPresent() && profile.get() instanceof Merchant merchant) {
+            if (profile.isPresent() && profile.get() instanceof Merchant) {
+                Merchant merchant = (Merchant) profile.get();
                 return ResponseEntity.ok(merchant);
             }
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -162,7 +163,8 @@ public class MerchantController {
     public ResponseEntity<?> getMerchantByEmail(@PathVariable String email) {
         log.info("{\"message\": \"Fetching merchant with email: {}\"}", email);
         Optional<Profile> profile = profileServiceFactory.getProfileByEmailAddress(email, MERCHANT_STRING);
-        if (profile.isPresent() && profile.get() instanceof Merchant merchant) {
+        if (profile.isPresent() && profile.get() instanceof Merchant) {
+            Merchant merchant = (Merchant) profile.get();
             log.info("{\"message\": \"Found merchant with email: {}\"}", email);
             return ResponseEntity.ok(merchant.getMerchantId());
         }
@@ -175,7 +177,8 @@ public class MerchantController {
     public ResponseEntity<?> patchMerchantEarnings(@PathVariable(name = "merchant-id") UUID merchantId , @PathVariable("order-price") BigDecimal amount){
 
         Optional<Profile> profile = profileServiceFactory.getProfileById(MERCHANT_STRING,merchantId);
-        if(profile.isPresent() && profile.get() instanceof Merchant merchant){
+        if(profile.isPresent() && profile.get() instanceof Merchant){
+            Merchant merchant = (Merchant) profile.get();
             // get order price and set reward points
             // 100 -> 100
             merchant.setEarnings(BigDecimal.valueOf(amount.doubleValue()));

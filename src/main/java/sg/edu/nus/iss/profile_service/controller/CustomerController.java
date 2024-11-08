@@ -74,7 +74,8 @@ public class CustomerController {
         log.info("{\"message\": \"Fetching customer with ID: {}\"}", customerId);
 
         Optional<Profile> profile = profileServiceFactory.getProfileById(CUSTOMER_TYPE, customerId);
-        if (profile.isPresent() && profile.get() instanceof Customer customer) {
+        if (profile.isPresent() && profile.get() instanceof Customer ) {
+            Customer customer = (Customer) profile.get();
             return ResponseEntity.ok(customer);
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -142,7 +143,8 @@ public class CustomerController {
     public ResponseEntity<?> getCustomerByEmail(@PathVariable String email) {
         log.info("{\"message\": \"Fetching customer with email: {}\"}", email);
         Optional<Profile> profile = profileServiceFactory.getProfileByEmailAddress(email, CUSTOMER_TYPE);
-        if (profile.isPresent() && profile.get() instanceof Customer customer) {
+        if (profile.isPresent() && profile.get() instanceof Customer ) {
+            Customer customer = (Customer) profile.get();
             log.info("{\"message\": \"Found customer with email: {}\"}", email);
             return ResponseEntity.ok(customer.getCustomerId());
         }
@@ -155,7 +157,8 @@ public class CustomerController {
     public ResponseEntity<?> patchRewardPoints(@PathVariable(name = "customer-id") UUID customerId ,@PathVariable("order-price") BigDecimal amount){
 
         Optional<Profile> profile = profileServiceFactory.getProfileById(CUSTOMER_TYPE,customerId);
-        if(profile.isPresent() && profile.get() instanceof Customer customer){
+        if(profile.isPresent() && profile.get() instanceof Customer ){
+            Customer customer = (Customer) profile.get();
             // get order price and set reward points
             // 100 -> 100
             customer.setRewardPoints(BigDecimal.valueOf(amount.doubleValue()));
@@ -174,7 +177,8 @@ public class CustomerController {
         // 100 reward points to 10$
         try {
             Optional<Profile> profile = profileServiceFactory.getProfileById(CUSTOMER_TYPE, customerId);
-            if (profile.isPresent() && profile.get() instanceof Customer customer) {
+            if (profile.isPresent() && profile.get() instanceof Customer ) {
+                Customer customer = (Customer) profile.get();
                 Rewards rewards = new Rewards();
                 // set reward points as is
                 rewards.setRewardPoints(customer.getRewardPoints());

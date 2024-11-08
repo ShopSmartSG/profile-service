@@ -71,7 +71,8 @@ public class DeliveryPartnerController {
 
         log.info("{\"message\": \"Fetching delivery partner with ID: " + deliveryPartnerId + "\"}");
             Optional<Profile> profile = profileServiceFactory.getProfileById(DELIVERY_STRING, deliveryPartnerId);
-            if (profile.isPresent() && profile.get() instanceof DeliveryPartner deliveryPartner) {
+            if (profile.isPresent() && profile.get() instanceof DeliveryPartner) {
+                DeliveryPartner deliveryPartner = (DeliveryPartner) profile.get();
                 return ResponseEntity.ok(deliveryPartner);
             }
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -151,7 +152,8 @@ public class DeliveryPartnerController {
     public ResponseEntity<?> getDeliveryPartnerByEmail(@PathVariable String email) {
         log.info("{\"message\": \"Fetching delivery partner with email: {}\"}", email);
         Optional<Profile> profile = profileServiceFactory.getProfileByEmailAddress(email, DELIVERY_STRING);
-        if (profile.isPresent() && profile.get() instanceof DeliveryPartner deliveryPartner) {
+        if (profile.isPresent() && profile.get() instanceof DeliveryPartner ) {
+            DeliveryPartner deliveryPartner = (DeliveryPartner) profile.get();
             log.info("{\"message\": \"Found delivery partner with email: {}\"}", email);
             return ResponseEntity.ok(deliveryPartner.getDeliveryPartnerId());
         }
