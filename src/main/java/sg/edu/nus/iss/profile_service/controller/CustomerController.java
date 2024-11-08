@@ -67,9 +67,9 @@ public class CustomerController {
         return ResponseEntity.ok(customerPage);
     }
 
-    @GetMapping("/{customerId}")
+    @GetMapping("/{customer-id}")
     @Operation(summary = "Retrieve customers by ID")
-    public ResponseEntity<Customer> getCustomer(@PathVariable UUID customerId) {
+    public ResponseEntity<Customer> getCustomer(@PathVariable(name = "customer-id") UUID customerId) {
 
         log.info("{\"message\": \"Fetching customer with ID: {}\"}", customerId);
 
@@ -81,9 +81,9 @@ public class CustomerController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
-    @PutMapping("/{customerId}")
+    @PutMapping("/{customer-id}")
     @Operation(summary = "Update customers")
-    public ResponseEntity<String> updateCustomer(@PathVariable UUID customerId, @Valid @RequestBody CustomerDTO customerDTO) {
+    public ResponseEntity<String> updateCustomer(@PathVariable(name = "customer-id") UUID customerId, @Valid @RequestBody CustomerDTO customerDTO) {
             Optional<Profile> existingCustomerOpt = profileServiceFactory.getProfileById(CUSTOMER_TYPE, customerId);
         log.info("{\"message\": \"Updating customer with ID: {}\"}", customerId);
             if (existingCustomerOpt.isEmpty()) {
@@ -116,9 +116,9 @@ public class CustomerController {
             return ResponseEntity.ok("Customer updated successfully");
     }
 
-    @DeleteMapping("/{customerId}")
+    @DeleteMapping("/{customer-id}")
     @Operation(summary = "Delete customer by ID")
-    public ResponseEntity<String> deleteCustomer(@PathVariable UUID customerId) {
+    public ResponseEntity<String> deleteCustomer(@PathVariable(name = "customer-id") UUID customerId) {
         log.info("{\"message\": \"Deleting customer with ID: {}\"}", customerId);
         profileServiceFactory.deleteProfile(customerId);
         return ResponseEntity.ok("Delete: successful");
