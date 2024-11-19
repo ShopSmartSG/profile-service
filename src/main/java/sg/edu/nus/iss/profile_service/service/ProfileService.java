@@ -14,6 +14,7 @@ public interface ProfileService {
     void deleteProfile(UUID id);
     void blacklistProfile(UUID id);
     void unblacklistProfile(UUID id);
+    void setProfileCoordinates(Profile profile);
     Optional<Profile> getProfileById(String type, UUID id);
 
     List<Profile> getProfilesByType(String type);

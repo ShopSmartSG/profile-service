@@ -343,7 +343,7 @@ public class ProfileServiceFactoryTest {
         LatLng latLng = new LatLng(1.3521, 103.8198);
         when(externalLocationService.getCoordinates(merchant.getPincode())).thenReturn(latLng);
 
-        profileServiceFactory.setMerchantCoordinates(merchant);
+        profileServiceFactory.setProfileCoordinates(merchant);
 
         assertEquals(1.3521, merchant.getLatitude());
         assertEquals(103.8198, merchant.getLongitude());
@@ -358,7 +358,7 @@ public class ProfileServiceFactoryTest {
         LatLng latLng = new LatLng(1.3521, 103.8198);
         when(externalLocationService.getCoordinates(deliveryPartner.getPincode())).thenReturn(latLng);
 
-        profileServiceFactory.setDeliveryPartnerCoordinates(deliveryPartner);
+        profileServiceFactory.setProfileCoordinates(deliveryPartner);
 
         assertEquals(1.3521, deliveryPartner.getLatitude());
         assertEquals(103.8198, deliveryPartner.getLongitude());
@@ -373,7 +373,7 @@ public class ProfileServiceFactoryTest {
         when(externalLocationService.getCoordinates(merchant.getPincode())).thenThrow(new IllegalArgumentException("Invalid pincode"));
 
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            profileServiceFactory.setMerchantCoordinates(merchant);
+            profileServiceFactory.setProfileCoordinates(merchant);
         });
 
         assertEquals("Invalid pincode: invalidPincode", exception.getMessage());
@@ -387,7 +387,7 @@ public class ProfileServiceFactoryTest {
         when(externalLocationService.getCoordinates(deliveryPartner.getPincode())).thenThrow(new IllegalArgumentException("Invalid pincode"));
 
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            profileServiceFactory.setDeliveryPartnerCoordinates(deliveryPartner);
+            profileServiceFactory.setProfileCoordinates(deliveryPartner);
         });
 
         assertEquals("Invalid pincode: invalidPincode", exception.getMessage());
@@ -401,7 +401,7 @@ public class ProfileServiceFactoryTest {
         LatLng latLng = new LatLng(1.3521, 103.8198);
         when(externalLocationService.getCoordinates(customer.getPincode())).thenReturn(latLng);
 
-        profileServiceFactory.setCustomerCoordinates(customer);
+        profileServiceFactory.setProfileCoordinates(customer);
 
         assertEquals(1.3521, customer.getLatitude());
         assertEquals(103.8198, customer.getLongitude());
@@ -416,7 +416,7 @@ public class ProfileServiceFactoryTest {
         when(externalLocationService.getCoordinates(customer.getPincode())).thenThrow(new IllegalArgumentException("Invalid pincode"));
 
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            profileServiceFactory.setCustomerCoordinates(customer);
+            profileServiceFactory.setProfileCoordinates(customer);
         });
 
         assertEquals("Invalid pincode: invalidPincode", exception.getMessage());
@@ -505,6 +505,65 @@ public class ProfileServiceFactoryTest {
 
         assertEquals("Invalid profile type", exception.getMessage());
     }
+
+    @Test
+    public void testSetProfileCoordinates_Merchant_Success() {
+        Merchant merchant = new Merchant();
+        merchant.setPincode("228714");
+
+        LatLng latLng = new LatLng(1.3521, 103.8198);
+        when(externalLocationService.getCoordinates(merchant.getPincode())).thenReturn(latLng);
+
+        profileServiceFactory.setProfileCoordinates(merchant);
+
+        assertEquals(1.3521, merchant.getLatitude());
+        assertEquals(103.8198, merchant.getLongitude());
+        verify(externalLocationService, times(1)).getCoordinates(merchant.getPincode());
+    }
+
+    @Test
+    public void testSetProfileCoordinates_Customer_Success() {
+        Customer customer = new Customer();
+        customer.setPincode("228714");
+
+        LatLng latLng = new LatLng(1.3521, 103.8198);
+        when(externalLocationService.getCoordinates(customer.getPincode())).thenReturn(latLng);
+
+        profileServiceFactory.setProfileCoordinates(customer);
+
+        assertEquals(1.3521, customer.getLatitude());
+        assertEquals(103.8198, customer.getLongitude());
+        verify(externalLocationService, times(1)).getCoordinates(customer.getPincode());
+    }
+
+    @Test
+    public void testSetProfileCoordinates_DeliveryPartner_Success() {
+        DeliveryPartner deliveryPartner = new DeliveryPartner();
+        deliveryPartner.setPincode("228714");
+
+        LatLng latLng = new LatLng(1.3521, 103.8198);
+        when(externalLocationService.getCoordinates(deliveryPartner.getPincode())).thenReturn(latLng);
+
+        profileServiceFactory.setProfileCoordinates(deliveryPartner);
+
+        assertEquals(1.3521, deliveryPartner.getLatitude());
+        assertEquals(103.8198, deliveryPartner.getLongitude());
+        verify(externalLocationService, times(1)).getCoordinates(deliveryPartner.getPincode());
+    }
+
+
+    @Test
+    public void testSetProfileCoordinates_InvalidProfile_ThrowsException() {
+        Profile invalidProfile = mock(Profile.class);
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            profileServiceFactory.setProfileCoordinates(invalidProfile);
+        });
+
+        assertEquals("Invalid profile type", exception.getMessage());
+    }
+
+
 
 
 
