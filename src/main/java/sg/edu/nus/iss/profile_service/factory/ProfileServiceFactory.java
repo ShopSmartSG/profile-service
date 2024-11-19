@@ -66,7 +66,7 @@ public class ProfileServiceFactory implements ProfileService {
         if (profile instanceof Merchant ) {
             Merchant merchant = (Merchant) profile;
             log.info("{\"message\": \"Updating merchant profile : {}\"}", merchant);
-            setMerchantCoordinates(merchant);
+            setProfileCoordinates(merchant);
             merchantRepository.save(merchant);
             return;
         } else if (profile instanceof Customer) {
@@ -153,6 +153,24 @@ public class ProfileServiceFactory implements ProfileService {
         throw new IllegalArgumentException("Invalid profile id");
     }
 
+    @Override
+    public void setProfileCoordinates(Profile profile) {
+        if (profile instanceof Merchant ) {
+            Merchant merchant = (Merchant) profile;
+            setMerchantCoordinates(merchant);
+            return;
+        } else if (profile instanceof Customer) {
+            Customer customer = (Customer) profile;
+            setCustomerCoordinates(customer);
+            return;
+        }else if (profile instanceof DeliveryPartner ) {
+            DeliveryPartner deliveryPartner = (DeliveryPartner) profile;
+            setDeliveryPartnerCoordinates(deliveryPartner);
+            return;
+        }
+        throw new IllegalArgumentException(INVALID_PROFILE_TYPE);
+    }
+
 
     @Override
     public Optional<Profile> getProfileById(String type, UUID id) {
@@ -232,7 +250,7 @@ public class ProfileServiceFactory implements ProfileService {
         }
     }
 
-    public void setMerchantCoordinates(Merchant merchant) {
+    private void setMerchantCoordinates(Merchant merchant) {
         try {
             LatLng coordinates = externalLocationService.getCoordinates(merchant.getPincode());
 
@@ -251,7 +269,9 @@ public class ProfileServiceFactory implements ProfileService {
         }
     }
 
-    public void setDeliveryPartnerCoordinates(DeliveryPartner deliveryPartner) {
+
+
+    private void setDeliveryPartnerCoordinates(DeliveryPartner deliveryPartner) {
         try {
             LatLng coordinates = externalLocationService.getCoordinates(deliveryPartner.getPincode());
 
@@ -270,7 +290,7 @@ public class ProfileServiceFactory implements ProfileService {
         }
     }
 
-    public void setCustomerCoordinates(Customer customer) {
+    private void setCustomerCoordinates(Customer customer) {
         try {
             LatLng coordinates = externalLocationService.getCoordinates(customer.getPincode());
 
