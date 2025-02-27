@@ -40,22 +40,43 @@ jobs:
 
       # Step 3: Run the Docker container for the application in the zap-network
       - name: Run Docker Container
-        run: docker run -d --name profile-service --network zap-network -p 8080:80 profile-service:latest
+        run: |
+          docker run -d --name profile-service \
+            --network zap-network \
+            -p 8080:8080 \
+            -e SPRING_PROFILES_ACTIVE=default \
+            -e MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE=health \
+            -e MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS=always \
+            profile-service:latest
+          
+          # Print container logs for debugging
+          sleep 10
+          docker logs profile-service
 
       # Step 4: Wait for the application to start and be available
       - name: Wait for Application to Start
         run: |
           echo "Waiting for the application to start..."
-          timeout 300 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:8080/actuator/health)" != "200" ]]; do sleep 5; done' || exit 1
+          for i in {1..30}; do
+            echo "Attempt $i: Checking if application is up..."
+            if curl -s http://localhost:8080/actuator/health; then
+              echo "Application is up!"
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "Application failed to start"
+          docker logs profile-service
+          exit 1
 
       # Step 5: Run ZAP Full Scan in the same Docker network
       - name: ZAP Full Scan
         uses: zaproxy/action-full-scan@v0.11.0
         with:
-          target: 'http://profile-service:80'
+          target: 'http://profile-service:8080'
           token: ${{ secrets.GITHUB_TOKEN }}
           cmd_options: >
-            -t http://profile-service:80
+            -t http://profile-service:8080
             -r zap_report.html
             -z "-config scanner.attackStrength=HIGH 
                 -config scanner.alertThreshold=MEDIUM
