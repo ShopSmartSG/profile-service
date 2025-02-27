@@ -19,8 +19,11 @@ public class SecurityConfig {
                 .frameOptions(frame -> frame.deny())
                 .httpStrictTransportSecurity(hsts -> hsts.includeSubDomains(true).maxAgeInSeconds(31536000))
             )
-            .csrf(csrf -> csrf.disable());  // Since behind reverse proxy
-            
+            .csrf(csrf -> csrf.disable())  // Since behind reverse proxy
+            .authorizeHttpRequests(auth -> auth
+                .anyRequest().permitAll()  // Allow all requests since auth is handled by proxy
+            );
+            // TODO: See if we need authentication
         return http.build();
     }
 } 
