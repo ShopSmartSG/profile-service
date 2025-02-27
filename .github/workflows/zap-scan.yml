@@ -57,10 +57,12 @@ jobs:
           echo "Waiting for the application to start..."
           for i in {1..30}; do
             echo "Attempt $i: Checking if application is up..."
-            if curl -s http://localhost:8080/actuator/health; then
+            if curl -v http://localhost:8080/actuator/health; then
               echo "Application is up!"
               exit 0
             fi
+            echo "Application not ready yet..."
+            docker logs profile-service
             sleep 10
           done
           echo "Application failed to start"
