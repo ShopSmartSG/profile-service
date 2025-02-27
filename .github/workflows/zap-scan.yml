@@ -105,13 +105,14 @@ jobs:
       - name: Check ZAP Report
         if: always()
         run: |
-          echo "=== Checking ZAP Report Content ==="
-          cat zap_report.html
-          echo "=== Searching for Critical/High findings ==="
-          grep "Critical\|High" zap_report.html || true
-          echo "=== End of search ==="
+          # Look for actual findings in the risk level rows
+          HIGH_COUNT=$(grep -A1 'class="risk-3".*High' zap_report.html | grep -o '<div>[0-9]*</div>' | grep -o '[0-9]*')
+          echo "High severity count: $HIGH_COUNT"
           
-          if grep -q "Critical\|High" zap_report.html; then
+          if [ "$HIGH_COUNT" -gt "0" ]; then
             echo "Critical or High severity vulnerabilities found!"
             exit 1
+          else
+            echo "No Critical or High severity vulnerabilities found."
+            exit 0
           fi
