@@ -105,6 +105,12 @@ jobs:
       - name: Check ZAP Report
         if: always()
         run: |
+          echo "=== Checking ZAP Report Content ==="
+          cat zap_report.html
+          echo "=== Searching for Critical/High findings ==="
+          grep "Critical\|High" zap_report.html || true
+          echo "=== End of search ==="
+          
           if grep -q "Critical\|High" zap_report.html; then
             echo "Critical or High severity vulnerabilities found!"
             exit 1
