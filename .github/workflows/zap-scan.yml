@@ -44,9 +44,7 @@ jobs:
           docker run -d --name profile-service \
             --network zap-network \
             -p 8080:8080 \
-            -e SPRING_PROFILES_ACTIVE=default \
-            -e MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE=health \
-            -e MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS=always \
+            -e SPRING_PROFILES_ACTIVE=zapscan \
             profile-service:latest
           
           # Print container logs for debugging
