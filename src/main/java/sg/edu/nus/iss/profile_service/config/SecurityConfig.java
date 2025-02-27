@@ -9,7 +9,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
-@Profile("!test")
+@Profile("!test")  // Not active during tests
 public class SecurityConfig {
 
     @Bean
@@ -19,14 +19,10 @@ public class SecurityConfig {
                 .xssProtection(xss -> xss.disable())  // Modern browsers have built-in XSS protection
                 .contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'self'"))
                 .frameOptions(frame -> frame.deny())
-                .httpStrictTransportSecurity(hsts -> hsts.includeSubDomains(true).maxAgeInSeconds(31536000))
+                .httpStrictTransportSecurity(hsts -> hsts.includeSubDomains(true))
             )
             .csrf(csrf -> csrf.disable())  // Since behind reverse proxy
-            .securityMatcher("/**")
-            .authorizeHttpRequests(auth -> auth
-                .anyRequest().permitAll()  // Allow all requests since auth is handled by proxy
-            )
-            .httpBasic(basic -> basic.disable());  // Disable HTTP Basic auth
+            .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());  // Allow all requests since auth is handled by proxy
             
         return http.build();
     }
