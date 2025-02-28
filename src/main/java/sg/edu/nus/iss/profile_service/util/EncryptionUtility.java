@@ -1,4 +1,4 @@
-package sg.edu.nus.iss.profile_service.service;
+package sg.edu.nus.iss.profile_service.util;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -8,11 +8,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 @Service
-public class EncryptionService {
+public class EncryptionUtility {
 
     private final String encryptionKey;
 
-    public EncryptionService(@Value("${encryption.key}") String encryptionKey) {
+    public EncryptionUtility(@Value("${encryption.key}") String encryptionKey) {
         this.encryptionKey = encryptionKey;
     }
 

@@ -1,19 +1,18 @@
-package sg.edu.nus.iss.profile_service.config;
+package sg.edu.nus.iss.profile_service.util;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import sg.edu.nus.iss.profile_service.service.EncryptionService;
 
 @Converter
 @Component
 public class StringEncryptionConverter implements AttributeConverter<String, String> {
 
-    private final EncryptionService encryptionService;
+    private final EncryptionUtility encryptionService;
 
     @Autowired
-    public StringEncryptionConverter(EncryptionService encryptionService) {
+    public StringEncryptionConverter(EncryptionUtility encryptionService) {
         this.encryptionService = encryptionService;
     }
 

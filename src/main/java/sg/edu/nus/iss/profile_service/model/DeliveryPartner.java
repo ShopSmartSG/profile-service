@@ -8,7 +8,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import org.hibernate.annotations.UuidGenerator;
-import sg.edu.nus.iss.profile_service.config.StringEncryptionConverter;
+import sg.edu.nus.iss.profile_service.util.StringEncryptionConverter;
 
 import java.util.UUID;
 

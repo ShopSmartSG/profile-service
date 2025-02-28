@@ -28,7 +28,7 @@
 	</scm>
 	<properties>
 		<java.version>21</java.version>
-		<sonar.coverage.exclusions>**/sg/edu/nus/iss/profile_service/ProfileServiceApplication.java,**/sg/edu/nus/iss/profile_service/service/ProfileService.java,**/sg/edu/nus/iss/profile_service/GlobalExceptionHandler.java,**/sg/edu/nus/iss/profile_service/model/**,**/sg/edu/nus/iss/profile_service/dto/**,**/sg/edu/nus/iss/profile_service/config/**,**/sg/edu/nus/iss/profile_service/repository/**</sonar.coverage.exclusions>
+		<sonar.coverage.exclusions>**/sg/edu/nus/iss/profile_service/ProfileServiceApplication.java,**/sg/edu/nus/iss/profile_service/service/ProfileService.java,**/sg/edu/nus/iss/profile_service/GlobalExceptionHandler.java,**/sg/edu/nus/iss/profile_service/model/**,**/sg/edu/nus/iss/profile_service/dto/**,**/sg/edu/nus/iss/profile_service/config/**,**/sg/edu/nus/iss/profile_service/util/**,**/sg/edu/nus/iss/profile_service/repository/**</sonar.coverage.exclusions>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -156,6 +156,7 @@
 						<exclude>sg/edu/nus/iss/profile_service/model/**</exclude>
 						<exclude>sg/edu/nus/iss/profile_service/dto/**</exclude>
 						<exclude>sg/edu/nus/iss/profile_service/config/**</exclude>
+						<exclude>sg/edu/nus/iss/profile_service/util/**</exclude>
 						<exclude>sg/edu/nus/iss/profile_service/repository/**</exclude>
 					</excludes>
 				</configuration>

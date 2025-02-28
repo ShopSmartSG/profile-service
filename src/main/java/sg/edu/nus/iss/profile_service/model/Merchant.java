@@ -8,7 +8,7 @@ import lombok.Data;
 import org.hibernate.annotations.UuidGenerator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import sg.edu.nus.iss.profile_service.config.StringEncryptionConverter;
+import sg.edu.nus.iss.profile_service.util.StringEncryptionConverter;
 
 import java.math.BigDecimal;
 import java.util.UUID;
