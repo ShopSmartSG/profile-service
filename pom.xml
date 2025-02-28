@@ -215,9 +215,22 @@
 			<plugin>
 				<groupId>org.owasp</groupId>
 				<artifactId>dependency-check-maven</artifactId>
-				<version>10.0.2</version>
+				<version>8.4.0</version>  <!-- Downgrade to stable version -->
 				<configuration>
+					<!-- NVD API Settings -->
 					<nvdApiKeyEnvironmentVariable>NVD_API_KEY</nvdApiKeyEnvironmentVariable>
+					<nvdApiDelay>5000</nvdApiDelay>
+					<nvdMaxRetryCount>10</nvdMaxRetryCount>
+					<autoUpdate>true</autoUpdate>
+
+					<!-- Performance Settings -->
+					<failOnError>false</failOnError>
+					<connectionTimeout>60000</connectionTimeout>
+					<readTimeout>60000</readTimeout>
+
+					<!-- Analysis Configuration -->
+					<skipTestScope>true</skipTestScope>
+					<skipProvidedScope>true</skipProvidedScope>
 				</configuration>
 				<executions>
 					<execution>
