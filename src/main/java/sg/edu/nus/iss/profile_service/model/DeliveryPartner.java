@@ -2,10 +2,7 @@ package sg.edu.nus.iss.profile_service.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -32,7 +29,6 @@ public class DeliveryPartner implements Profile {
     private String addressLine2;
 
     @Pattern(regexp = "^\\+?[0-9. ()-]{7,25}$", message = "Phone number is invalid")
-
     private String phoneNumber;
 
     @Pattern(regexp = "^[0-9]{6}$", message = "Pincode must be a 6-digit number")
@@ -46,6 +42,8 @@ public class DeliveryPartner implements Profile {
     @JsonIgnore
     private boolean deleted = false;
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @Column(columnDefinition = "boolean default false")
+    // TODO: This field is set to null in database , but to be set false in code , need to update db columns to put default values
     private boolean blacklisted = false;
     @Override
     public void createProfile() {

@@ -1,9 +1,6 @@
 package sg.edu.nus.iss.profile_service.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -33,7 +30,6 @@ public class Merchant implements Profile {
     private String addressLine2;
 
     @Pattern(regexp = "^\\+?[0-9. ()-]{7,25}$", message = "Phone number is invalid")
-
     private String phoneNumber;
 
     @Pattern(regexp = "^[0-9]{6}$", message = "Pincode must be a 6-digit number")
@@ -47,10 +43,12 @@ public class Merchant implements Profile {
     @JsonIgnore
     private boolean deleted = false;
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @Column(columnDefinition = "boolean default false")
     private boolean blacklisted = false;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private BigDecimal earnings;
+    // TODO: This field is set to null in database , but to be set 0 in code , need to update db columns to put default values
+    private BigDecimal earnings= BigDecimal.ZERO;
 
     @Override
     public void createProfile() {

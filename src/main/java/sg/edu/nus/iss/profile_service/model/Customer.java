@@ -1,16 +1,13 @@
 package sg.edu.nus.iss.profile_service.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import org.hibernate.annotations.UuidGenerator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -26,10 +23,13 @@ public class Customer implements Profile {
 
     @NotBlank(message = "Customer name is mandatory")
     private String name;
+
     @NotBlank(message = "Customer email is mandatory")
     @Email(message = "Email should be valid")
     private String emailAddress;
+
     private String addressLine1;
+
     private String addressLine2;
 
     @Pattern(regexp = "^\\+?[0-9. ()-]{7,25}$", message = "Phone number is invalid")
@@ -40,6 +40,7 @@ public class Customer implements Profile {
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Double latitude;
+
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Double longitude;
 
@@ -47,20 +48,21 @@ public class Customer implements Profile {
     private boolean deleted = false;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private BigDecimal rewardPoints;
+    // TODO: This field is set to null in database , but to be set 0 in code , need to update db columns to put default values
+    private BigDecimal rewardPoints = BigDecimal.ZERO;
 
     @Override
     public void createProfile() {
-
+        // Implementation remains unchanged
     }
 
     @Override
     public void updateProfile() {
-
+        // Implementation remains unchanged
     }
 
     @Override
     public void deleteProfile() {
-
+        // Implementation remains unchanged
     }
 }
