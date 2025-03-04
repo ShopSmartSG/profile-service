@@ -8,8 +8,8 @@ import java.util.Dictionary;
 @Data
 public class Rewards {
 
-    BigDecimal rewardPoints;
-    BigDecimal rewardAmount;
+    BigDecimal rewardPoints= BigDecimal.ZERO;
+    BigDecimal rewardAmount= BigDecimal.ZERO;
 
 
 }
