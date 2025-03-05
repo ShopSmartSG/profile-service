@@ -22,7 +22,7 @@ import sg.edu.nus.iss.profile_service.model.Profile;
 import java.math.BigDecimal;
 import java.util.*;
 
-public class MerchantControllerTest{
+public class MerchantControllerTest {
 
     @Mock
     private ProfileServiceFactory profileServiceFactory;

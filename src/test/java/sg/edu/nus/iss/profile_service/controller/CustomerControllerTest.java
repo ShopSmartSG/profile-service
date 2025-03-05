@@ -23,8 +23,7 @@ import sg.edu.nus.iss.profile_service.model.Rewards;
 import java.math.BigDecimal;
 import java.util.*;
 
-
-public class CustomerControllerTest{
+public class CustomerControllerTest {
 
     @Mock
     private ProfileServiceFactory profileServiceFactory;
