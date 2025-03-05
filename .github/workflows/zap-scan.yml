@@ -85,13 +85,13 @@ jobs:
       - name: Create ZAP Rules File
         run: |
           cat > zap-rules.tsv << 'EOL'
-          10010	IGNORE	(Cookie No HttpOnly Flag)
-          10011	IGNORE	(Cookie Without Secure Flag)
-          10015	IGNORE	(Incomplete or No Cache-control Header Set)
-          10023	IGNORE	(Information Disclosure - Debug Error Messages)
-          90004	IGNORE	(Insufficient Site Isolation Against Spectre Vulnerability)
-          90022	IGNORE	(Application Error Disclosure)
-          100001	IGNORE	(Unexpected Content-Type was returned)
+          10010 IGNORE (Cookie No HttpOnly Flag)
+          10011 IGNORE (Cookie Without Secure Flag)
+          10015 IGNORE (Incomplete or No Cache-control Header Set)
+          10023 IGNORE (Information Disclosure - Debug Error Messages)
+          90004 IGNORE (Insufficient Site Isolation Against Spectre Vulnerability)
+          90022 IGNORE (Application Error Disclosure)
+          100001 IGNORE (Unexpected Content-Type was returned)
           # Add more rules as needed for your specific application
           EOL
 
@@ -104,6 +104,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           rules_file_name: 'zap-rules.tsv'
           allow_issue_writing: false  # Prevent GitHub issue creation
+          artifact_name: ''  # Disable the built-in artifact upload
           cmd_options: >
             -z "-config scanner.attackStrength=HIGH 
                 -config scanner.alertThreshold=MEDIUM
@@ -125,6 +126,9 @@ jobs:
         run: |
           mkdir -p reports
           cp report_html.html reports/zap_report.html || echo "No HTML report found"
+          cp report_json.json reports/zap_report.json || echo "No JSON report found"
+          cp report_md.md reports/zap_report.md || echo "No Markdown report found"
+          
           echo "## DAST Scan Summary" > reports/summary.md
           if [ -f "reports/zap_report.html" ]; then
             grep -A5 "Risk Level.*Number of Alerts" reports/zap_report.html | sed 's/<[^>]*>//g' >> reports/summary.md || echo "No risk level information found in report" >> reports/summary.md
