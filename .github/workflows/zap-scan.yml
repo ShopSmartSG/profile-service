@@ -81,10 +81,16 @@ jobs:
             exit 1
           fi
 
-      # Step 6: Create ZAP Rules File
+      # Step 6: Create reports directory with proper permissions
+      - name: Create Reports Directory
+        run: |
+          mkdir -p reports
+          chmod 777 reports  # Give full permissions to the reports directory
+
+      # Step 7: Create ZAP Rules File directly in the reports directory
       - name: Create ZAP Rules File
         run: |
-          cat > zap-rules.tsv << 'EOL'
+          cat > reports/zap-rules.tsv << 'EOL'
           10010	IGNORE	(Cookie No HttpOnly Flag)
           10011	IGNORE	(Cookie Without Secure Flag)
           10015	IGNORE	(Incomplete or No Cache-control Header Set)
@@ -95,12 +101,6 @@ jobs:
           # Add more rules as needed for your specific application
           EOL
 
-      # Step 7: Create reports directory with proper permissions
-      - name: Create Reports Directory
-        run: |
-          mkdir -p reports
-          chmod 777 reports  # Give full permissions to the reports directory
-
       # Step 8: Run ZAP API Scan directly with Docker
       - name: ZAP API Scan
         run: |
@@ -108,9 +108,9 @@ jobs:
             ghcr.io/zaproxy/zaproxy:stable zap-api-scan.py \
             -t http://localhost:8080/v3/api-docs \
             -f openapi \
-            -J /zap/wrk/report_json.json \
-            -w /zap/wrk/report_md.md \
-            -r /zap/wrk/report_html.html \
+            -J report_json.json \
+            -w report_md.md \
+            -r report_html.html \
             -c zap-rules.tsv \
             -z "-config scanner.attackStrength=HIGH \
                 -config scanner.alertThreshold=MEDIUM \
