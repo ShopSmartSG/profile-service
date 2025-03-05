@@ -85,39 +85,39 @@ jobs:
       - name: Create ZAP Rules File
         run: |
           cat > zap-rules.tsv << 'EOL'
-          10010 IGNORE (Cookie No HttpOnly Flag)
-          10011 IGNORE (Cookie Without Secure Flag)
-          10015 IGNORE (Incomplete or No Cache-control Header Set)
-          10023 IGNORE (Information Disclosure - Debug Error Messages)
-          90004 IGNORE (Insufficient Site Isolation Against Spectre Vulnerability)
-          90022 IGNORE (Application Error Disclosure)
-          100001 IGNORE (Unexpected Content-Type was returned)
+          10010	IGNORE	(Cookie No HttpOnly Flag)
+          10011	IGNORE	(Cookie Without Secure Flag)
+          10015	IGNORE	(Incomplete or No Cache-control Header Set)
+          10023	IGNORE	(Information Disclosure - Debug Error Messages)
+          90004	IGNORE	(Insufficient Site Isolation Against Spectre Vulnerability)
+          90022	IGNORE	(Application Error Disclosure)
+          100001	IGNORE	(Unexpected Content-Type was returned)
           # Add more rules as needed for your specific application
           EOL
 
-      # Step 7: Run ZAP API Scan with OpenAPI Specification
+      # Step 7: Run ZAP API Scan directly with Docker
       - name: ZAP API Scan
-        uses: zaproxy/action-api-scan@v0.5.0
-        with:
-          target: 'http://localhost:8080/v3/api-docs'
-          format: openapi
-          token: ${{ secrets.GITHUB_TOKEN }}
-          rules_file_name: 'zap-rules.tsv'
-          allow_issue_writing: false  # Prevent GitHub issue creation
-          artifact_name: ''  # Disable the built-in artifact upload
-          cmd_options: >
-            -z "-config scanner.attackStrength=HIGH 
-                -config scanner.alertThreshold=MEDIUM
-                -config api.disablekey=true
-                -config rules.cookie.ignorelist=true
-                -config scanner.level=ATTACK
-                -config rules.ascanrules.refs.json=true
-                -config rules.ascanrules.script.injection=true
-                -config rules.ascanrules.server.side.injection=true
-                -config rules.ascanrules.sql.injection=true
-                -config rules.ascanrules.nosqli.injection=true
-                -config rules.ascanrules.xxe.injection=true
-                -config rules.ascanrules.path.traversal=true
+        run: |
+          docker run --rm -v $(pwd):/zap/wrk:rw --network=host \
+            ghcr.io/zaproxy/zaproxy:stable zap-api-scan.py \
+            -t http://localhost:8080/v3/api-docs \
+            -f openapi \
+            -J report_json.json \
+            -w report_md.md \
+            -r report_html.html \
+            -c zap-rules.tsv \
+            -z "-config scanner.attackStrength=HIGH \
+                -config scanner.alertThreshold=MEDIUM \
+                -config api.disablekey=true \
+                -config rules.cookie.ignorelist=true \
+                -config scanner.level=ATTACK \
+                -config rules.ascanrules.refs.json=true \
+                -config rules.ascanrules.script.injection=true \
+                -config rules.ascanrules.server.side.injection=true \
+                -config rules.ascanrules.sql.injection=true \
+                -config rules.ascanrules.nosqli.injection=true \
+                -config rules.ascanrules.xxe.injection=true \
+                -config rules.ascanrules.path.traversal=true \
                 -config rules.ascanrules.remote.code.execution=true"
 
       # Step 8: Generate enhanced reports
@@ -148,9 +148,9 @@ jobs:
       - name: Check for High Severity Findings
         if: always()
         run: |
-          if [ -f "reports/zap_report.html" ]; then
+          if [ -f "report_html.html" ]; then
             # Look for High severity findings in ZAP report
-            HIGH_COUNT=$(grep -A1 "Risk Level.*Number of Alerts" reports/zap_report.html | grep "High" -A1 | tail -n1 | tr -d ' \t\r\n' || echo "0")
+            HIGH_COUNT=$(grep -A1 "Risk Level.*Number of Alerts" report_html.html | grep "High" -A1 | tail -n1 | tr -d ' \t\r\n' || echo "0")
             echo "High severity count: $HIGH_COUNT"
             if [[ "$HIGH_COUNT" =~ ^[0-9]+$ ]] && [ "$HIGH_COUNT" -gt "0" ]; then
               echo "Critical or High severity vulnerabilities found!"
