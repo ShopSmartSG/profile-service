@@ -117,6 +117,7 @@ jobs:
                 -config api.disablekey=true \
                 -config rules.cookie.ignorelist=true \
                 -config scanner.level=ATTACK \
+                -config pscan.enableTags=information-disclosure \
                 -config rules.ascanrules.refs.json=true \
                 -config rules.ascanrules.script.injection=true \
                 -config rules.ascanrules.server.side.injection=true \
