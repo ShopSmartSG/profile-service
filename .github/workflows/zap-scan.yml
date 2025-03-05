@@ -106,7 +106,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           rules_file_name: 'zap-rules.tsv'
           cmd_options: >
-            -f openapi -file api-definition.json
+            -file api-definition.json
             -r zap_report.html
             -z "-config scanner.attackStrength=HIGH 
                 -config scanner.alertThreshold=MEDIUM
