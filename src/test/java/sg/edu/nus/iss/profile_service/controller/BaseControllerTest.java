@@ -7,7 +7,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import sg.edu.nus.iss.profile_service.config.SecurityConfig;
 
-@WebMvcTest
 @Import(SecurityConfig.class)
 public abstract class BaseControllerTest {
 
