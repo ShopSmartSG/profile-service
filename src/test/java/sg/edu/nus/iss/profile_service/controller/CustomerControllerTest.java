@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -23,7 +24,8 @@ import sg.edu.nus.iss.profile_service.model.Rewards;
 import java.math.BigDecimal;
 import java.util.*;
 
-public class CustomerControllerTest extends BaseControllerTest {
+
+public class CustomerControllerTest{
 
     @Mock
     private ProfileServiceFactory profileServiceFactory;
