@@ -95,16 +95,22 @@ jobs:
           # Add more rules as needed for your specific application
           EOL
 
-      # Step 7: Run ZAP API Scan directly with Docker
+      # Step 7: Create reports directory with proper permissions
+      - name: Create Reports Directory
+        run: |
+          mkdir -p reports
+          chmod 777 reports  # Give full permissions to the reports directory
+
+      # Step 8: Run ZAP API Scan directly with Docker
       - name: ZAP API Scan
         run: |
-          docker run --rm -v $(pwd):/zap/wrk:rw --network=host \
+          docker run --rm -v $(pwd)/reports:/zap/wrk:rw --network=host \
             ghcr.io/zaproxy/zaproxy:stable zap-api-scan.py \
             -t http://localhost:8080/v3/api-docs \
             -f openapi \
-            -J report_json.json \
-            -w report_md.md \
-            -r report_html.html \
+            -J /zap/wrk/report_json.json \
+            -w /zap/wrk/report_md.md \
+            -r /zap/wrk/report_html.html \
             -c zap-rules.tsv \
             -z "-config scanner.attackStrength=HIGH \
                 -config scanner.alertThreshold=MEDIUM \
@@ -120,23 +126,18 @@ jobs:
                 -config rules.ascanrules.path.traversal=true \
                 -config rules.ascanrules.remote.code.execution=true"
 
-      # Step 8: Generate enhanced reports
+      # Step 9: Generate enhanced reports
       - name: Generate Enhanced Reports
         if: always()
         run: |
-          mkdir -p reports
-          cp report_html.html reports/zap_report.html || echo "No HTML report found"
-          cp report_json.json reports/zap_report.json || echo "No JSON report found"
-          cp report_md.md reports/zap_report.md || echo "No Markdown report found"
-          
           echo "## DAST Scan Summary" > reports/summary.md
-          if [ -f "reports/zap_report.html" ]; then
-            grep -A5 "Risk Level.*Number of Alerts" reports/zap_report.html | sed 's/<[^>]*>//g' >> reports/summary.md || echo "No risk level information found in report" >> reports/summary.md
+          if [ -f "reports/report_html.html" ]; then
+            grep -A5 "Risk Level.*Number of Alerts" reports/report_html.html | sed 's/<[^>]*>//g' >> reports/summary.md || echo "No risk level information found in report" >> reports/summary.md
           else
             echo "No ZAP report found to summarize" >> reports/summary.md
           fi
 
-      # Step 9: Upload the ZAP report as an artifact
+      # Step 10: Upload the ZAP report as an artifact
       - name: Upload Security Reports
         if: always()
         uses: actions/upload-artifact@v4
@@ -144,13 +145,13 @@ jobs:
           name: zap-security-reports
           path: reports/
 
-      # Step 10: Fail on critical findings
+      # Step 11: Fail on critical findings
       - name: Check for High Severity Findings
         if: always()
         run: |
-          if [ -f "report_html.html" ]; then
+          if [ -f "reports/report_html.html" ]; then
             # Look for High severity findings in ZAP report
-            HIGH_COUNT=$(grep -A1 "Risk Level.*Number of Alerts" report_html.html | grep "High" -A1 | tail -n1 | tr -d ' \t\r\n' || echo "0")
+            HIGH_COUNT=$(grep -A1 "Risk Level.*Number of Alerts" reports/report_html.html | grep "High" -A1 | tail -n1 | tr -d ' \t\r\n' || echo "0")
             echo "High severity count: $HIGH_COUNT"
             if [[ "$HIGH_COUNT" =~ ^[0-9]+$ ]] && [ "$HIGH_COUNT" -gt "0" ]; then
               echo "Critical or High severity vulnerabilities found!"
