@@ -42,7 +42,7 @@ public class DeliveryPartnerController {
         this.mapper = mapper;
     }
 
-    @GetMapping
+    @GetMapping("/all")
     @Operation(summary = "Retrieve all delivery partners profile")
     public ResponseEntity<?> getAllDeliveryPartners(
             @RequestParam(value = "page", required = false) Integer page,

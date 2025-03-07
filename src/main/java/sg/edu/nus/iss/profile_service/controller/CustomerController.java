@@ -44,7 +44,7 @@ public class CustomerController {
         this.mapper = mapper;
     }
 
-    @GetMapping
+    @GetMapping("/all")
     @Operation(summary = "Retrieve all customers")
     public ResponseEntity<?> getAllCustomers(
             @RequestParam(value = "page", required = false) Integer page,

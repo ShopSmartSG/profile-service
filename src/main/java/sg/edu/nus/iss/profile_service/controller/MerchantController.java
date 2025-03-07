@@ -43,7 +43,7 @@ public class MerchantController {
         this.mapper = mapper;
     }
 
-    @GetMapping
+    @GetMapping("/all")
     @Operation(summary = "Retrieve all merchants")
     public ResponseEntity<?> getAllMerchants(
             @RequestParam(value = "page", required = false) Integer page,
