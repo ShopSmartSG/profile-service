@@ -69,8 +69,9 @@ public class CustomerController {
 
     @GetMapping("/{customer-id}")
     @Operation(summary = "Retrieve customers by ID")
-    public ResponseEntity<Customer> getCustomer(@PathVariable(name = "customer-id") UUID customerId) {
+    public ResponseEntity<Customer> getCustomer(@RequestParam String userId) {
 
+        UUID customerId = UUID.fromString(userId);
         log.info("{\"message\": \"Fetching customer with ID: {}\"}", customerId);
 
         Optional<Profile> profile = profileServiceFactory.getProfileById(CUSTOMER_TYPE, customerId);
@@ -83,7 +84,9 @@ public class CustomerController {
 
     @PutMapping("/{customer-id}")
     @Operation(summary = "Update customers")
-    public ResponseEntity<String> updateCustomer(@PathVariable(name = "customer-id") UUID customerId, @Valid @RequestBody CustomerDTO customerDTO) {
+    public ResponseEntity<String> updateCustomer(@RequestParam String userId, @Valid @RequestBody CustomerDTO customerDTO) {
+
+            UUID customerId = UUID.fromString(userId);
             Optional<Profile> existingCustomerOpt = profileServiceFactory.getProfileById(CUSTOMER_TYPE, customerId);
         log.info("{\"message\": \"Updating customer with ID: {}\"}", customerId);
             if (existingCustomerOpt.isEmpty()) {
@@ -118,7 +121,8 @@ public class CustomerController {
 
     @DeleteMapping("/{customer-id}")
     @Operation(summary = "Delete customer by ID")
-    public ResponseEntity<String> deleteCustomer(@PathVariable(name = "customer-id") UUID customerId) {
+    public ResponseEntity<String> deleteCustomer(@RequestParam String userId) {
+        UUID customerId = UUID.fromString(userId);
         log.info("{\"message\": \"Deleting customer with ID: {}\"}", customerId);
         profileServiceFactory.deleteProfile(customerId);
         return ResponseEntity.ok("Delete: successful");
@@ -154,8 +158,8 @@ public class CustomerController {
 
     @PutMapping("/{customer-id}/rewards/{order-price}")
     @Operation(summary = "Update Customer Reward Points" , description = "Customer Order Value = Number of Reward Points")
-    public ResponseEntity<?> patchRewardPoints(@PathVariable(name = "customer-id") UUID customerId ,@PathVariable("order-price") BigDecimal amount){
-
+    public ResponseEntity<?> patchRewardPoints(@RequestParam String userId ,@PathVariable("order-price") BigDecimal amount){
+        UUID customerId = UUID.fromString(userId);
         Optional<Profile> profile = profileServiceFactory.getProfileById(CUSTOMER_TYPE,customerId);
         if(profile.isPresent() && profile.get() instanceof Customer ){
             Customer customer = (Customer) profile.get();
@@ -172,9 +176,10 @@ public class CustomerController {
 
     @GetMapping("/{customer-id}/rewards")
     @Operation(summary = "get reward points and reward amount equivalent for a customer" , description = "100 Reward points = 1 S$")
-    public ResponseEntity<Rewards> retrieveRewardDetails(@PathVariable(name = "customer-id") UUID customerId) {
+    public ResponseEntity<Rewards> retrieveRewardDetails(@RequestParam String userId) {
         // get points give back amount
         // 100 reward points to 10$
+        UUID customerId = UUID.fromString(userId);
         try {
             Optional<Profile> profile = profileServiceFactory.getProfileById(CUSTOMER_TYPE, customerId);
             if (profile.isPresent() && profile.get() instanceof Customer ) {

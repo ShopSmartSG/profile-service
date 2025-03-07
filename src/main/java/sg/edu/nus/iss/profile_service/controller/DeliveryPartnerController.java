@@ -67,8 +67,8 @@ public class DeliveryPartnerController {
 
     @GetMapping("/{partner-id}")
     @Operation(summary = "Retrieve delivery partner profile by ID")
-    public ResponseEntity<DeliveryPartner> getDeliveryPartnerByEmail(@PathVariable(name = "partner-id") UUID deliveryPartnerId) {
-
+    public ResponseEntity<DeliveryPartner> getDeliveryPartnerById(@RequestParam String userId) {
+        UUID deliveryPartnerId = UUID.fromString(userId);
         log.info("{\"message\": \"Fetching delivery partner with ID: " + deliveryPartnerId + "\"}");
             Optional<Profile> profile = profileServiceFactory.getProfileById(DELIVERY_STRING, deliveryPartnerId);
             if (profile.isPresent() && profile.get() instanceof DeliveryPartner) {
@@ -80,8 +80,8 @@ public class DeliveryPartnerController {
 
     @PutMapping("/{partner-id}")
     @Operation(summary = "Update delivery partner profile")
-    public ResponseEntity<String> updateDeliveryPartner(@PathVariable(name = "partner-id") UUID deliveryPartnerId, @Valid @RequestBody DeliveryPartnerDTO deliveryPartnerDTO) {
-
+    public ResponseEntity<String> updateDeliveryPartner(@RequestParam String userId, @Valid @RequestBody DeliveryPartnerDTO deliveryPartnerDTO) {
+        UUID deliveryPartnerId = UUID.fromString(userId);
         log.info("{\"message\": \"Updating delivery partner with ID: {}\"}", deliveryPartnerId);
         Optional<Profile> existingDeliveryPartnerOpt = profileServiceFactory.getProfileById(DELIVERY_STRING, deliveryPartnerId);
                if (existingDeliveryPartnerOpt.isEmpty()) {
@@ -111,8 +111,8 @@ public class DeliveryPartnerController {
 
     @DeleteMapping("/{partner-id}")
     @Operation(summary = "Delete delivery partner profile by ID")
-    public ResponseEntity<String> deleteDeliveryPartner(@PathVariable(name = "partner-id") UUID deliveryPartnerId) {
-
+    public ResponseEntity<String> deleteDeliveryPartner(@RequestParam String userId) {
+        UUID deliveryPartnerId = UUID.fromString(userId);
         log.info("{\"message\": \"Deleting delivery partner with ID: {}\"}", deliveryPartnerId);
         profileServiceFactory.deleteProfile(deliveryPartnerId);
         return ResponseEntity.ok("Delete: successful");
@@ -120,14 +120,16 @@ public class DeliveryPartnerController {
 
     @PutMapping("/blacklist/{partner-id}")
     @Operation(summary = "Blacklist a Delivery Partner")
-    public ResponseEntity<String> blacklistDeliveryPartner(@PathVariable(name = "partner-id") UUID deliveryPartnerId) {
+    public ResponseEntity<String> blacklistDeliveryPartner(@RequestParam String userId) {
+        UUID deliveryPartnerId = UUID.fromString(userId);
         profileServiceFactory.blacklistProfile(deliveryPartnerId);
         return ResponseEntity.ok("Delivery Partner blacklisted successfully");
     }
 
     @PutMapping("/unblacklist/{partner-id}")
     @Operation(summary = "Unblacklist a Delivery Partner")
-    public ResponseEntity<String> unblacklistDeliveryPartner(@PathVariable(name = "partner-id") UUID deliveryPartnerId) {
+    public ResponseEntity<String> unblacklistDeliveryPartner(@RequestParam String userId) {
+        UUID deliveryPartnerId = UUID.fromString(userId);
         profileServiceFactory.unblacklistProfile(deliveryPartnerId);
         return ResponseEntity.ok("Delivery Partner unblacklisted successfully");
     }

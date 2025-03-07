@@ -58,7 +58,7 @@ public class CustomerControllerTest {
         Customer customer = new Customer();
         when(profileServiceFactory.getProfileById(eq("customer"), any(UUID.class))).thenReturn(Optional.of(customer));
 
-        ResponseEntity<?> response = customerController.getCustomer(UUID.randomUUID());
+        ResponseEntity<?> response = customerController.getCustomer("550e8400-e29b-41d4-a716-446655440000");
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(customer, response.getBody());
@@ -69,7 +69,7 @@ public class CustomerControllerTest {
     public void testGetCustomerById_NotFound() {
         when(profileServiceFactory.getProfileById(eq("customer"), any(UUID.class))).thenReturn(Optional.empty());
 
-        ResponseEntity<?> response = customerController.getCustomer(UUID.randomUUID());
+        ResponseEntity<?> response = customerController.getCustomer("550e8400-e29b-41d4-a716-446655440000");
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
@@ -77,20 +77,21 @@ public class CustomerControllerTest {
     // Test updateCustomer - success
     @Test
     public void testUpdateCustomer_Success() {
-        UUID customerId = UUID.randomUUID();
         CustomerDTO customerDTO = new CustomerDTO();
-        customerDTO.setCustomerId(customerId);
+        String userId = "50e8400-e29b-41d4-a716-446655440000";
+        customerDTO.setCustomerId(UUID.fromString(userId));
         customerDTO.setEmailAddress("test@example.com");
         customerDTO.setName("test");
 
         Customer customer = new Customer();
-        customer.setCustomerId(customerId);
+        customer.setCustomerId(UUID.fromString(userId));
         customer.setEmailAddress("test@example.com");
         customer.setName("test");
+
         when(profileServiceFactory.getProfileById(eq("customer"), eq(customerDTO.getCustomerId()))).thenReturn(Optional.of(customer));
         when(mapper.convertValue(any(CustomerDTO.class), eq(Customer.class))).thenReturn(customer);
 
-        ResponseEntity<?> response = customerController.updateCustomer(customerDTO.getCustomerId(), customerDTO);
+        ResponseEntity<?> response = customerController.updateCustomer(userId, customerDTO);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Customer updated successfully", response.getBody());
@@ -101,7 +102,8 @@ public class CustomerControllerTest {
     @Test
     public void testUpdateCustomer_EmailMismatch() {
         CustomerDTO customerDTO = new CustomerDTO();
-        customerDTO.setCustomerId(UUID.randomUUID());
+        String userId = "550e8400-e29b-41d4-a716-446655440000";
+        customerDTO.setCustomerId(UUID.fromString(userId));
         customerDTO.setEmailAddress("new@example.com");
         customerDTO.setName("new");
 
@@ -109,9 +111,10 @@ public class CustomerControllerTest {
         customer.setName("new");
         customer.setEmailAddress("old@example.com");
         customer.setCustomerId(customerDTO.getCustomerId());
+
         when(profileServiceFactory.getProfileById(eq("customer"), eq(customerDTO.getCustomerId()))).thenReturn(Optional.of(customer));
 
-        ResponseEntity<?> response = customerController.updateCustomer(customerDTO.getCustomerId(), customerDTO);
+        ResponseEntity<?> response = customerController.updateCustomer(userId, customerDTO);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Email shouldn't be changed", response.getBody());
@@ -120,9 +123,9 @@ public class CustomerControllerTest {
     // Test deleteCustomer - success
     @Test
     public void testDeleteCustomer_Success() {
-        UUID customerId = UUID.randomUUID();
+        UUID customerId = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
 
-        ResponseEntity<String> response = customerController.deleteCustomer(customerId);
+        ResponseEntity<String> response = customerController.deleteCustomer("550e8400-e29b-41d4-a716-446655440000");
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Delete: successful", response.getBody());
@@ -193,13 +196,13 @@ public class CustomerControllerTest {
     // Test patchRewardPoints - success
     @Test
     public void testPatchRewardPoints_Success() {
-        UUID customerId = UUID.randomUUID();
+        UUID customerId = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
         Customer customer = new Customer();
         customer.setCustomerId(customerId);
         customer.setRewardPoints(BigDecimal.valueOf(100));
         when(profileServiceFactory.getProfileById("customer", customerId)).thenReturn(Optional.of(customer));
 
-        ResponseEntity<?> response = customerController.patchRewardPoints(customerId, BigDecimal.valueOf(100));
+        ResponseEntity<?> response = customerController.patchRewardPoints("550e8400-e29b-41d4-a716-446655440000", BigDecimal.valueOf(100));
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Reward points updated successfully", response.getBody());
@@ -213,7 +216,7 @@ public class CustomerControllerTest {
         UUID customerId = UUID.randomUUID();
         when(profileServiceFactory.getProfileById("customer", customerId)).thenReturn(Optional.empty());
 
-        ResponseEntity<?> response = customerController.patchRewardPoints(customerId, BigDecimal.valueOf(100));
+        ResponseEntity<?> response = customerController.patchRewardPoints("550e8400-e29b-41d4-a716-446655440000", BigDecimal.valueOf(100));
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertEquals("Customer Not found", response.getBody());
@@ -221,13 +224,13 @@ public class CustomerControllerTest {
 
     @Test
     public void testRetrieveRewardDetails_Success() {
-        UUID customerId = UUID.randomUUID();
+        UUID customerId = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
 
         Customer customer = new Customer();
         customer.setRewardPoints(BigDecimal.valueOf(100));
         when(profileServiceFactory.getProfileById("customer", customerId)).thenReturn(Optional.of(customer));
 
-        ResponseEntity<?> response = customerController.retrieveRewardDetails(customerId);
+        ResponseEntity<?> response = customerController.retrieveRewardDetails("550e8400-e29b-41d4-a716-446655440000");
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(0, ((Rewards) response.getBody()).getRewardAmount().compareTo(BigDecimal.valueOf(1.0)));
