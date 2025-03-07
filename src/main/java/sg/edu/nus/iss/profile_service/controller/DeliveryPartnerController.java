@@ -65,9 +65,9 @@ public class DeliveryPartnerController {
         return ResponseEntity.ok(deliveryPartnerPage);
     }
 
-    @GetMapping("/{partner-id}")
+    @GetMapping("/")
     @Operation(summary = "Retrieve delivery partner profile by ID")
-    public ResponseEntity<DeliveryPartner> getDeliveryPartnerById(@RequestParam String userId) {
+    public ResponseEntity<DeliveryPartner> getDeliveryPartnerById(@RequestParam("partner-id") String userId) {
         UUID deliveryPartnerId = UUID.fromString(userId);
         log.info("{\"message\": \"Fetching delivery partner with ID: " + deliveryPartnerId + "\"}");
             Optional<Profile> profile = profileServiceFactory.getProfileById(DELIVERY_STRING, deliveryPartnerId);
@@ -78,9 +78,9 @@ public class DeliveryPartnerController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
-    @PutMapping("/{partner-id}")
+    @PutMapping("/")
     @Operation(summary = "Update delivery partner profile")
-    public ResponseEntity<String> updateDeliveryPartner(@RequestParam String userId, @Valid @RequestBody DeliveryPartnerDTO deliveryPartnerDTO) {
+    public ResponseEntity<String> updateDeliveryPartner(@RequestParam("partner-id") String userId, @Valid @RequestBody DeliveryPartnerDTO deliveryPartnerDTO) {
         UUID deliveryPartnerId = UUID.fromString(userId);
         log.info("{\"message\": \"Updating delivery partner with ID: {}\"}", deliveryPartnerId);
         Optional<Profile> existingDeliveryPartnerOpt = profileServiceFactory.getProfileById(DELIVERY_STRING, deliveryPartnerId);
@@ -109,26 +109,26 @@ public class DeliveryPartnerController {
                return ResponseEntity.ok("Delivery Partner updated successfully");
 }
 
-    @DeleteMapping("/{partner-id}")
+    @DeleteMapping("/")
     @Operation(summary = "Delete delivery partner profile by ID")
-    public ResponseEntity<String> deleteDeliveryPartner(@RequestParam String userId) {
+    public ResponseEntity<String> deleteDeliveryPartner(@RequestParam("partner-id") String userId) {
         UUID deliveryPartnerId = UUID.fromString(userId);
         log.info("{\"message\": \"Deleting delivery partner with ID: {}\"}", deliveryPartnerId);
         profileServiceFactory.deleteProfile(deliveryPartnerId);
         return ResponseEntity.ok("Delete: successful");
     }
 
-    @PutMapping("/blacklist/{partner-id}")
+    @PutMapping("/blacklist/")
     @Operation(summary = "Blacklist a Delivery Partner")
-    public ResponseEntity<String> blacklistDeliveryPartner(@RequestParam String userId) {
+    public ResponseEntity<String> blacklistDeliveryPartner(@RequestParam("partner-id") String userId) {
         UUID deliveryPartnerId = UUID.fromString(userId);
         profileServiceFactory.blacklistProfile(deliveryPartnerId);
         return ResponseEntity.ok("Delivery Partner blacklisted successfully");
     }
 
-    @PutMapping("/unblacklist/{partner-id}")
+    @PutMapping("/unblacklist/")
     @Operation(summary = "Unblacklist a Delivery Partner")
-    public ResponseEntity<String> unblacklistDeliveryPartner(@RequestParam String userId) {
+    public ResponseEntity<String> unblacklistDeliveryPartner(@RequestParam("partner-id") String userId) {
         UUID deliveryPartnerId = UUID.fromString(userId);
         profileServiceFactory.unblacklistProfile(deliveryPartnerId);
         return ResponseEntity.ok("Delivery Partner unblacklisted successfully");

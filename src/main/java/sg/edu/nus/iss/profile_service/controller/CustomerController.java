@@ -67,9 +67,9 @@ public class CustomerController {
         return ResponseEntity.ok(customerPage);
     }
 
-    @GetMapping("/{customer-id}")
+    @GetMapping("/")
     @Operation(summary = "Retrieve customers by ID")
-    public ResponseEntity<Customer> getCustomer(@RequestParam String userId) {
+    public ResponseEntity<Customer> getCustomer(@RequestParam("customer-id") String userId) {
 
         UUID customerId = UUID.fromString(userId);
         log.info("{\"message\": \"Fetching customer with ID: {}\"}", customerId);
@@ -82,9 +82,9 @@ public class CustomerController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
-    @PutMapping("/{customer-id}")
+    @PutMapping("/")
     @Operation(summary = "Update customers")
-    public ResponseEntity<String> updateCustomer(@RequestParam String userId, @Valid @RequestBody CustomerDTO customerDTO) {
+    public ResponseEntity<String> updateCustomer(@RequestParam("customer-id") String userId, @Valid @RequestBody CustomerDTO customerDTO) {
 
             UUID customerId = UUID.fromString(userId);
             Optional<Profile> existingCustomerOpt = profileServiceFactory.getProfileById(CUSTOMER_TYPE, customerId);
@@ -119,9 +119,9 @@ public class CustomerController {
             return ResponseEntity.ok("Customer updated successfully");
     }
 
-    @DeleteMapping("/{customer-id}")
+    @DeleteMapping("/")
     @Operation(summary = "Delete customer by ID")
-    public ResponseEntity<String> deleteCustomer(@RequestParam String userId) {
+    public ResponseEntity<String> deleteCustomer(@RequestParam("customer-id") String userId) {
         UUID customerId = UUID.fromString(userId);
         log.info("{\"message\": \"Deleting customer with ID: {}\"}", customerId);
         profileServiceFactory.deleteProfile(customerId);
@@ -156,9 +156,9 @@ public class CustomerController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Customer not found");
     }
 
-    @PutMapping("/{customer-id}/rewards/{order-price}")
+    @PutMapping("/rewards/{order-price}")
     @Operation(summary = "Update Customer Reward Points" , description = "Customer Order Value = Number of Reward Points")
-    public ResponseEntity<?> patchRewardPoints(@RequestParam String userId ,@PathVariable("order-price") BigDecimal amount){
+    public ResponseEntity<?> patchRewardPoints(@RequestParam("customer-id") String userId ,@PathVariable("order-price") BigDecimal amount){
         UUID customerId = UUID.fromString(userId);
         Optional<Profile> profile = profileServiceFactory.getProfileById(CUSTOMER_TYPE,customerId);
         if(profile.isPresent() && profile.get() instanceof Customer ){
@@ -174,9 +174,9 @@ public class CustomerController {
     }
 
 
-    @GetMapping("/{customer-id}/rewards")
+    @GetMapping("/rewards")
     @Operation(summary = "get reward points and reward amount equivalent for a customer" , description = "100 Reward points = 1 S$")
-    public ResponseEntity<Rewards> retrieveRewardDetails(@RequestParam String userId) {
+    public ResponseEntity<Rewards> retrieveRewardDetails(@RequestParam("customer-id") String userId) {
         // get points give back amount
         // 100 reward points to 10$
         UUID customerId = UUID.fromString(userId);
