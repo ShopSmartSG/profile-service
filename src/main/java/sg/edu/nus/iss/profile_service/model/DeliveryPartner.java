@@ -22,23 +22,23 @@ public class DeliveryPartner implements Profile {
     private UUID deliveryPartnerId;
 
     @NotBlank(message = "Delivery Partner name is mandatory")
-    @Convert(converter = StringEncryptionConverter.class)
+    
     private String name;
     @NotBlank(message = "Delivery Partner email is mandatory")
     @Email(message = "Email should be valid")
-    @Convert(converter = StringEncryptionConverter.class)
+    
     private String emailAddress;
-    @Convert(converter = StringEncryptionConverter.class)
+    
     private String addressLine1;
-    @Convert(converter = StringEncryptionConverter.class)
+    
     private String addressLine2;
 
     @Pattern(regexp = "^\\+?[0-9. ()-]{7,25}$", message = "Phone number is invalid")
-    @Convert(converter = StringEncryptionConverter.class)
+    
     private String phoneNumber;
 
     @Pattern(regexp = "^[0-9]{6}$", message = "Pincode must be a 6-digit number")
-    @Convert(converter = StringEncryptionConverter.class)
+    
     private String pincode;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)

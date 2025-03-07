@@ -71,7 +71,7 @@ public class MerchantController {
 
     @GetMapping("/")
     @Operation(summary = "Retrieve merchants by ID")
-    public ResponseEntity<Merchant> getMerchant(@RequestParam("merchant-id") String userId) {
+    public ResponseEntity<Merchant> getMerchant(@RequestParam("user-id") String userId) {
         UUID merchantId = UUID.fromString(userId);
         log.info("{\"message\": \"Fetching merchant with ID: " + merchantId + "\"}");
             Optional<Profile> profile = profileServiceFactory.getProfileById(MERCHANT_STRING, merchantId);
@@ -84,7 +84,7 @@ public class MerchantController {
 
     @PutMapping("/")
     @Operation(summary = "Update merchants")
-    public ResponseEntity<String> updateMerchant(@RequestParam("merchant-id") String userId, @Valid @RequestBody MerchantDTO merchantDTO) {
+    public ResponseEntity<String> updateMerchant(@RequestParam("user-id") String userId, @Valid @RequestBody MerchantDTO merchantDTO) {
         UUID merchantId = UUID.fromString(userId);
         log.info("{\"message\": \"Updating merchant with ID: {}\"}", merchantId);
 
@@ -122,7 +122,7 @@ public class MerchantController {
 
     @DeleteMapping("/")
     @Operation(summary = "Delete merchant by ID")
-    public ResponseEntity<String> deleteMerchant(@RequestParam("merchant-id") String userId) {
+    public ResponseEntity<String> deleteMerchant(@RequestParam("user-id") String userId) {
         UUID merchantId = UUID.fromString(userId);
         log.info("{\"message\": \"Deleting merchant with ID: {}\"}", merchantId);
         profileServiceFactory.deleteProfile(merchantId);
@@ -131,7 +131,7 @@ public class MerchantController {
 
     @PutMapping("/blacklist/")
     @Operation(summary = "Blacklist a merchant")
-    public ResponseEntity<String> blacklistMerchant(@RequestParam("merchant-id") String userId) {
+    public ResponseEntity<String> blacklistMerchant(@RequestParam("user-id") String userId) {
         UUID merchantId = UUID.fromString(userId);
         profileServiceFactory.blacklistProfile(merchantId);
         return ResponseEntity.ok("Merchant blacklisted successfully");
@@ -139,7 +139,7 @@ public class MerchantController {
 
     @PutMapping("/unblacklist/")
     @Operation(summary = "Unblacklist a merchant")
-    public ResponseEntity<String> unblacklistMerchant(@RequestParam(value = "merchant-id") String userId) {
+    public ResponseEntity<String> unblacklistMerchant(@RequestParam(value = "user-id") String userId) {
         UUID merchantId = UUID.fromString(userId);
         profileServiceFactory.unblacklistProfile(merchantId);
         return ResponseEntity.ok("Merchant unblacklisted successfully");
@@ -176,7 +176,7 @@ public class MerchantController {
 
     @PutMapping("/rewards/{order-price}")
     @Operation(summary = "Update Merchant Earnings")
-    public ResponseEntity<?> patchMerchantEarnings(@RequestParam("merchant-id") String userId, @PathVariable("order-price") BigDecimal amount){
+    public ResponseEntity<?> patchMerchantEarnings(@RequestParam("user-id") String userId, @PathVariable("order-price") BigDecimal amount){
         UUID merchantId = UUID.fromString(userId);
         Optional<Profile> profile = profileServiceFactory.getProfileById(MERCHANT_STRING,merchantId);
         if(profile.isPresent() && profile.get() instanceof Merchant){
