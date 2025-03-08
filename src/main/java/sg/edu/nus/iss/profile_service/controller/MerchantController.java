@@ -47,7 +47,7 @@ public class MerchantController {
         this.mapper = mapper;
     }
 
-    @GetMapping
+    @GetMapping("/all")
     @Operation(summary = "Retrieve all merchants")
     public ResponseEntity<?> getAllMerchants(
             @RequestParam(value = "page", required = false) Integer page,
@@ -69,10 +69,10 @@ public class MerchantController {
         return ResponseEntity.ok(merchantPage);
     }
 
-    @GetMapping("/{merchant-id}")
+    @GetMapping("/")
     @Operation(summary = "Retrieve merchants by ID")
-    public ResponseEntity<Merchant> getMerchant(@PathVariable(name = "merchant-id") UUID merchantId) {
-
+    public ResponseEntity<Merchant> getMerchant(@RequestParam("user-id") String userId) {
+        UUID merchantId = UUID.fromString(userId);
         log.info("{\"message\": \"Fetching merchant with ID: " + merchantId + "\"}");
             Optional<Profile> profile = profileServiceFactory.getProfileById(MERCHANT_STRING, merchantId);
             if (profile.isPresent() && profile.get() instanceof Merchant) {
@@ -82,9 +82,10 @@ public class MerchantController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
-    @PutMapping("/{merchant-id}")
+    @PutMapping("/")
     @Operation(summary = "Update merchants")
-    public ResponseEntity<String> updateMerchant(@PathVariable(name = "merchant-id") UUID merchantId, @Valid @RequestBody MerchantDTO merchantDTO) {
+    public ResponseEntity<String> updateMerchant(@RequestParam("user-id") String userId, @Valid @RequestBody MerchantDTO merchantDTO) {
+        UUID merchantId = UUID.fromString(userId);
         log.info("{\"message\": \"Updating merchant with ID: {}\"}", merchantId);
                // Check if the merchant exists
         Optional<Profile> existingMerchantOpt = profileServiceFactory.getProfileById(MERCHANT_STRING, merchantId);
@@ -116,25 +117,27 @@ public class MerchantController {
                return ResponseEntity.ok("Merchant updated successfully");
 }
 
-    @DeleteMapping("/{merchant-id}")
+    @DeleteMapping("/")
     @Operation(summary = "Delete merchant by ID")
-    public ResponseEntity<String> deleteMerchant(@PathVariable(name = "merchant-id") UUID merchantId) {
-
+    public ResponseEntity<String> deleteMerchant(@RequestParam("user-id") String userId) {
+        UUID merchantId = UUID.fromString(userId);
         log.info("{\"message\": \"Deleting merchant with ID: {}\"}", merchantId);
         profileServiceFactory.deleteProfile(merchantId);
         return ResponseEntity.ok("Delete: successful");
     }
 
-    @PutMapping("/blacklist/{merchant-id}")
+    @PutMapping("/blacklist/")
     @Operation(summary = "Blacklist a merchant")
-    public ResponseEntity<String> blacklistMerchant(@PathVariable(name = "merchant-id") UUID merchantId) {
+    public ResponseEntity<String> blacklistMerchant(@RequestParam("user-id") String userId) {
+        UUID merchantId = UUID.fromString(userId);
         profileServiceFactory.blacklistProfile(merchantId);
         return ResponseEntity.ok("Merchant blacklisted successfully");
     }
 
-    @PutMapping("/unblacklist/{merchant-id}")
+    @PutMapping("/unblacklist/")
     @Operation(summary = "Unblacklist a merchant")
-    public ResponseEntity<String> unblacklistMerchant(@PathVariable(name = "merchant-id") UUID merchantId) {
+    public ResponseEntity<String> unblacklistMerchant(@RequestParam(value = "user-id") String userId) {
+        UUID merchantId = UUID.fromString(userId);
         profileServiceFactory.unblacklistProfile(merchantId);
         return ResponseEntity.ok("Merchant unblacklisted successfully");
     }
@@ -168,10 +171,10 @@ public class MerchantController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Merchant not found");
     }
 
-    @PutMapping("/{merchant-id}/rewards/{order-price}")
+    @PutMapping("/rewards/{order-price}")
     @Operation(summary = "Update Merchant Earnings")
-    public ResponseEntity<?> patchMerchantEarnings(@PathVariable(name = "merchant-id") UUID merchantId , @PathVariable("order-price") BigDecimal amount){
-
+    public ResponseEntity<?> patchMerchantEarnings(@RequestParam("user-id") String userId, @PathVariable("order-price") BigDecimal amount){
+        UUID merchantId = UUID.fromString(userId);
         Optional<Profile> profile = profileServiceFactory.getProfileById(MERCHANT_STRING,merchantId);
         if(profile.isPresent() && profile.get() instanceof Merchant){
             Merchant merchant = (Merchant) profile.get();
