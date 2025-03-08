@@ -109,7 +109,7 @@ public class CustomerController {
             }
 
             if (!customerDTO.getEmailAddress().equals(existingCustomer.getEmailAddress())) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email change not allowed");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email shouldn't be changed");
             }
 
             // Convert CustomerDTO to Customer entity
@@ -137,7 +137,7 @@ public class CustomerController {
         log.info("{\"message\": \"Registering new customer: {}\"}", logMasker.maskEntity(customer));
             Optional<Profile> customerByEmail = profileServiceFactory.getProfileByEmailAddress(customer.getEmailAddress(), CUSTOMER_TYPE);
             if (customerByEmail.isPresent()) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email Already registered");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email already registered");
             }
             profileServiceFactory.createProfile(customer);
             return ResponseEntity.status(HttpStatus.CREATED).body("Created customer");

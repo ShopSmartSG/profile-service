@@ -81,6 +81,19 @@ public class DeliveryPartnerController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
+    @GetMapping("/{partner-id}")
+    @Operation(summary = "Retrieve delivery partner profile by delivery partner ID")
+    public ResponseEntity<DeliveryPartner> getDeliveryPartnerByPartnerId(@RequestParam("partner-id") String id) {
+        UUID deliveryPartnerId = UUID.fromString(id);
+        log.info("{\"message\": \"Fetching delivery partner with ID: " + deliveryPartnerId + "\"}");
+        Optional<Profile> profile = profileServiceFactory.getProfileById(DELIVERY_STRING, deliveryPartnerId);
+        if (profile.isPresent() && profile.get() instanceof DeliveryPartner) {
+            DeliveryPartner deliveryPartner = (DeliveryPartner) profile.get();
+            return ResponseEntity.ok(deliveryPartner);
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+
     @PutMapping("/")
     @Operation(summary = "Update delivery partner profile")
     public ResponseEntity<String> updateDeliveryPartner(@RequestParam("user-id") String userId, @Valid @RequestBody DeliveryPartnerDTO deliveryPartnerDTO) {
@@ -102,7 +115,7 @@ public class DeliveryPartnerController {
                }
 
                if (!deliveryPartnerDTO.getEmailAddress().equals(existingDeliveryPartner.getEmailAddress())) {
-                   return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email change not allowed");
+                   return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email shouldn't be changed");
                }
 
         DeliveryPartner deliveryPartner = mapper.convertValue(deliveryPartnerDTO, DeliveryPartner.class);
@@ -146,7 +159,7 @@ public class DeliveryPartnerController {
         log.info("{\"message\": \"Registering new deliveryPartner {} \"}",logMasker.maskEntity(deliveryPartner));
         Optional<Profile> deliveryPartnerByEmail = profileServiceFactory.getProfileByEmailAddress(deliveryPartner.getEmailAddress(), DELIVERY_STRING );
         if (deliveryPartnerByEmail.isPresent()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email is already registered");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email already registered");
         }
         profileServiceFactory.createProfile(deliveryPartner);
         return ResponseEntity.status(HttpStatus.CREATED).body("Created Delivery Partner");

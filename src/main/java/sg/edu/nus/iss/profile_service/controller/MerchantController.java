@@ -82,6 +82,20 @@ public class MerchantController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
+    @GetMapping("/{merchant-id}")
+    @Operation(summary = "Retrieve merchants by ID")
+    public ResponseEntity<Merchant> getMerchantByMerchantID(@PathVariable("merchant-id") String id) {
+        UUID merchantId = UUID.fromString(id);
+        log.info("{\"message\": \"Fetching merchant with ID: " + merchantId + "\"}");
+        Optional<Profile> profile = profileServiceFactory.getProfileById(MERCHANT_STRING, merchantId);
+        if (profile.isPresent() && profile.get() instanceof Merchant) {
+            Merchant merchant = (Merchant) profile.get();
+            return ResponseEntity.ok(merchant);
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+
+
     @PutMapping("/")
     @Operation(summary = "Update merchants")
     public ResponseEntity<String> updateMerchant(@RequestParam("user-id") String userId, @Valid @RequestBody MerchantDTO merchantDTO) {
@@ -151,7 +165,7 @@ public class MerchantController {
         log.info("{\"message\": \"Registering new merchant {} \"}", logMasker.maskEntity(merchant));
         Optional<Profile> merchantByEmail = profileServiceFactory.getProfileByEmailAddress(merchant.getEmailAddress(), MERCHANT_STRING );
         if (merchantByEmail.isPresent()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email is already registered");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email already registered");
         }
         profileServiceFactory.createProfile(merchant);
         return ResponseEntity.status(HttpStatus.CREATED).body("Created Merchant");
