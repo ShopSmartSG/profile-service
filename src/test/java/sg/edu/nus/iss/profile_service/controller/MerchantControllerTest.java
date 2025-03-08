@@ -57,7 +57,7 @@ public class MerchantControllerTest {
         Merchant merchant = new Merchant();
         when(profileServiceFactory.getProfileById(eq("merchant"), any(UUID.class))).thenReturn(Optional.of(merchant));
 
-        ResponseEntity<?> response = merchantController.getMerchant(UUID.randomUUID());
+        ResponseEntity<?> response = merchantController.getMerchant("550e8400-e29b-41d4-a716-446655440000");
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(merchant, response.getBody());
@@ -68,7 +68,7 @@ public class MerchantControllerTest {
     public void testGetMerchantById_NotFound() {
         when(profileServiceFactory.getProfileById(eq("merchant"), any(UUID.class))).thenReturn(Optional.empty());
 
-        ResponseEntity<?> response = merchantController.getMerchant(UUID.randomUUID());
+        ResponseEntity<?> response = merchantController.getMerchant("550e8400-e29b-41d4-a716-446655440000");
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
@@ -76,7 +76,7 @@ public class MerchantControllerTest {
     // Test updatemerchant - success
     @Test
     public void testUpdateMerchant_Success() {
-        UUID merchantId = UUID.randomUUID();
+        UUID merchantId = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
         MerchantDTO merchantDTO = new MerchantDTO();
         merchantDTO.setMerchantId(merchantId);
         merchantDTO.setEmailAddress("test@example.com");
@@ -89,7 +89,7 @@ public class MerchantControllerTest {
         when(profileServiceFactory.getProfileById(eq("merchant"), eq(merchantDTO.getMerchantId()))).thenReturn(Optional.of(merchant));
         when(mapper.convertValue(any(MerchantDTO.class), eq(Merchant.class))).thenReturn(merchant);
 
-        ResponseEntity<?> response = merchantController.updateMerchant(merchantDTO.getMerchantId(), merchantDTO);
+        ResponseEntity<?> response = merchantController.updateMerchant("550e8400-e29b-41d4-a716-446655440000", merchantDTO);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Merchant updated successfully", response.getBody());
@@ -100,7 +100,7 @@ public class MerchantControllerTest {
     @Test
     public void testUpdatemerchant_EmailMismatch() {
         MerchantDTO merchantDTO = new MerchantDTO();
-        merchantDTO.setMerchantId(UUID.randomUUID());
+        merchantDTO.setMerchantId(UUID.fromString("550e8400-e29b-41d4-a716-446655440000"));
         merchantDTO.setEmailAddress("new@example.com");
         merchantDTO.setName("new");
 
@@ -110,7 +110,7 @@ public class MerchantControllerTest {
         merchant.setMerchantId(merchantDTO.getMerchantId());
         when(profileServiceFactory.getProfileById(eq("merchant"), eq(merchantDTO.getMerchantId()))).thenReturn(Optional.of(merchant));
 
-        ResponseEntity<?> response = merchantController.updateMerchant(merchantDTO.getMerchantId(), merchantDTO);
+        ResponseEntity<?> response = merchantController.updateMerchant("550e8400-e29b-41d4-a716-446655440000", merchantDTO);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Email shouldn't be changed", response.getBody());
@@ -119,9 +119,9 @@ public class MerchantControllerTest {
     // Test deletemerchant - success
     @Test
     public void testDeleteMerchant_Success() {
-        UUID merchantId = UUID.randomUUID();
+        UUID merchantId = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
 
-        ResponseEntity<String> response = merchantController.deleteMerchant(merchantId);
+        ResponseEntity<String> response = merchantController.deleteMerchant("550e8400-e29b-41d4-a716-446655440000");
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Delete: successful", response.getBody());
@@ -176,9 +176,9 @@ public class MerchantControllerTest {
     // Test blacklisting a merchant - success
     @Test
     public void testBlacklistMerchant_Success() {
-        UUID merchantId = UUID.randomUUID();
+        UUID merchantId = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
 
-        ResponseEntity<String> response = merchantController.blacklistMerchant(merchantId);
+        ResponseEntity<String> response = merchantController.blacklistMerchant("550e8400-e29b-41d4-a716-446655440000");
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Merchant blacklisted successfully", response.getBody());
@@ -188,9 +188,9 @@ public class MerchantControllerTest {
     // Test unblacklisting a merchant - success
     @Test
     public void testUnblacklistMerchant_Success() {
-        UUID merchantId = UUID.randomUUID();
+        UUID merchantId = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
 
-        ResponseEntity<String> response = merchantController.unblacklistMerchant(merchantId);
+        ResponseEntity<String> response = merchantController.unblacklistMerchant("550e8400-e29b-41d4-a716-446655440000");
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Merchant unblacklisted successfully", response.getBody());
@@ -215,7 +215,7 @@ public class MerchantControllerTest {
     // Test patchMerchantEarnings
     @Test
     public void testPatchMerchantEarnings_Success() {
-        UUID merchantId = UUID.randomUUID();
+        UUID merchantId = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
         BigDecimal amount = BigDecimal.valueOf(100);
 
         Merchant merchant = new Merchant();
@@ -223,7 +223,7 @@ public class MerchantControllerTest {
         merchant.setEarnings(BigDecimal.valueOf(100));
         when(profileServiceFactory.getProfileById("merchant", merchantId)).thenReturn(Optional.of(merchant));
 
-        ResponseEntity<?> response = merchantController.patchMerchantEarnings(merchantId, amount);
+        ResponseEntity<?> response = merchantController.patchMerchantEarnings("550e8400-e29b-41d4-a716-446655440000", amount);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Merchant Earnings updated successfully", response.getBody());

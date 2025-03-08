@@ -59,7 +59,7 @@ public class DeliveryPartnerControllerTest {
         DeliveryPartner deliveryPartner = new DeliveryPartner();
         when(profileServiceFactory.getProfileById(eq("deliveryPartner"), any(UUID.class))).thenReturn(Optional.of(deliveryPartner));
 
-        ResponseEntity<?> response = deliveryPartnerController.getDeliveryPartnerByEmail(UUID.randomUUID());
+        ResponseEntity<?> response = deliveryPartnerController.getDeliveryPartnerById("550e8400-e29b-41d4-a716-446655440000");
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(deliveryPartner, response.getBody());
@@ -70,7 +70,7 @@ public class DeliveryPartnerControllerTest {
     public void testGetdeliveryPartnerById_NotFound() {
         when(profileServiceFactory.getProfileById(eq("deliveryPartner"), any(UUID.class))).thenReturn(Optional.empty());
 
-        ResponseEntity<?> response = deliveryPartnerController.getDeliveryPartnerByEmail(UUID.randomUUID());
+        ResponseEntity<?> response = deliveryPartnerController.getDeliveryPartnerById("550e8400-e29b-41d4-a716-446655440000");
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
@@ -78,7 +78,7 @@ public class DeliveryPartnerControllerTest {
     // Test updatedeliveryPartner - success
     @Test
     public void testUpdatedeliveryPartner_Success() {
-        UUID deliveryPartnerId = UUID.randomUUID();
+        UUID deliveryPartnerId = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
         DeliveryPartnerDTO deliveryPartnerDTO = new DeliveryPartnerDTO();
         deliveryPartnerDTO.setDeliveryPartnerId(deliveryPartnerId);
         deliveryPartnerDTO.setEmailAddress("test@example.com");
@@ -91,7 +91,7 @@ public class DeliveryPartnerControllerTest {
         when(profileServiceFactory.getProfileById(eq("deliveryPartner"), eq(deliveryPartnerDTO.getDeliveryPartnerId()))).thenReturn(Optional.of(deliveryPartner));
         when(mapper.convertValue(any(DeliveryPartnerDTO.class), eq(DeliveryPartner.class))).thenReturn(deliveryPartner);
 
-        ResponseEntity<?> response = deliveryPartnerController.updateDeliveryPartner(deliveryPartnerDTO.getDeliveryPartnerId(), deliveryPartnerDTO);
+        ResponseEntity<?> response = deliveryPartnerController.updateDeliveryPartner("550e8400-e29b-41d4-a716-446655440000", deliveryPartnerDTO);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Delivery Partner updated successfully", response.getBody());
@@ -102,7 +102,7 @@ public class DeliveryPartnerControllerTest {
     @Test
     public void testUpdatedeliverypartner_EmailMismatch() {
         DeliveryPartnerDTO deliveryPartnerDTO = new DeliveryPartnerDTO();
-        deliveryPartnerDTO.setDeliveryPartnerId(UUID.randomUUID());
+        deliveryPartnerDTO.setDeliveryPartnerId(UUID.fromString("550e8400-e29b-41d4-a716-446655440000"));
         deliveryPartnerDTO.setEmailAddress("new@example.com");
         deliveryPartnerDTO.setName("new");
 
@@ -112,7 +112,7 @@ public class DeliveryPartnerControllerTest {
         deliveryPartner.setDeliveryPartnerId(deliveryPartnerDTO.getDeliveryPartnerId());
         when(profileServiceFactory.getProfileById(eq("deliveryPartner"), eq(deliveryPartnerDTO.getDeliveryPartnerId()))).thenReturn(Optional.of(deliveryPartner));
 
-        ResponseEntity<?> response = deliveryPartnerController.updateDeliveryPartner(deliveryPartnerDTO.getDeliveryPartnerId(), deliveryPartnerDTO);
+        ResponseEntity<?> response = deliveryPartnerController.updateDeliveryPartner("550e8400-e29b-41d4-a716-446655440000", deliveryPartnerDTO);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Email shouldn't be changed", response.getBody());
@@ -121,9 +121,9 @@ public class DeliveryPartnerControllerTest {
     // Test deletedeliveryPartner - success
     @Test
     public void testDeletePartner_Success() {
-        UUID deliveryPartnerId = UUID.randomUUID();
+        UUID deliveryPartnerId = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
 
-        ResponseEntity<String> response = deliveryPartnerController.deleteDeliveryPartner(deliveryPartnerId);
+        ResponseEntity<String> response = deliveryPartnerController.deleteDeliveryPartner("550e8400-e29b-41d4-a716-446655440000");
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Delete: successful", response.getBody());
@@ -178,9 +178,9 @@ public class DeliveryPartnerControllerTest {
     // Test blacklisting a deliveryPartner - success
     @Test
     public void testBlacklistPartner_Success() {
-        UUID deliveryPartnerId = UUID.randomUUID();
+        UUID deliveryPartnerId = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
 
-        ResponseEntity<String> response = deliveryPartnerController.blacklistDeliveryPartner(deliveryPartnerId);
+        ResponseEntity<String> response = deliveryPartnerController.blacklistDeliveryPartner("550e8400-e29b-41d4-a716-446655440000");
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Delivery Partner blacklisted successfully", response.getBody());
@@ -190,9 +190,9 @@ public class DeliveryPartnerControllerTest {
     // Test unblacklisting a deliveryPartner - success
     @Test
     public void testUnblacklistPartner_Success() {
-        UUID deliveryPartnerId = UUID.randomUUID();
+        UUID deliveryPartnerId = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
 
-        ResponseEntity<String> response = deliveryPartnerController.unblacklistDeliveryPartner(deliveryPartnerId);
+        ResponseEntity<String> response = deliveryPartnerController.unblacklistDeliveryPartner("550e8400-e29b-41d4-a716-446655440000");
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Delivery Partner unblacklisted successfully", response.getBody());
