@@ -1,10 +1,5 @@
 package sg.edu.nus.iss.profile_service.factory;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-import java.util.Optional;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,12 +11,20 @@ import sg.edu.nus.iss.profile_service.repository.CustomerRepository;
 import sg.edu.nus.iss.profile_service.repository.DeliveryPartnerRepository;
 import sg.edu.nus.iss.profile_service.repository.MerchantRepository;
 import sg.edu.nus.iss.profile_service.service.ProfileService;
+import sg.edu.nus.iss.profile_service.util.LogMasker;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class ProfileServiceFactory implements ProfileService {
 
     private static final Logger log = LoggerFactory.getLogger(ProfileServiceFactory.class);
 
+    @Autowired
+    LogMasker logMaskingUtil;
     private final MerchantRepository merchantRepository;
     private final DeliveryPartnerRepository deliveryPartnerRepository;
     private final CustomerRepository customerRepository;
@@ -33,7 +36,7 @@ public class ProfileServiceFactory implements ProfileService {
     private static final String INVALID_PROFILE_TYPE = "Invalid profile type";
 
     @Autowired
-    public ProfileServiceFactory(MerchantRepository merchantRepository, CustomerRepository customerRepository,DeliveryPartnerRepository deliveryPartnerRepository, ExternalLocationService externalLocationService) {
+    public ProfileServiceFactory(MerchantRepository merchantRepository, CustomerRepository customerRepository, DeliveryPartnerRepository deliveryPartnerRepository, ExternalLocationService externalLocationService) {
         this.merchantRepository = merchantRepository;
         this.customerRepository = customerRepository;
         this.deliveryPartnerRepository = deliveryPartnerRepository;
@@ -44,17 +47,17 @@ public class ProfileServiceFactory implements ProfileService {
     public Profile createProfile(Profile profile) {
         if (profile instanceof Merchant ) {
             Merchant merchant = (Merchant) profile;
-            log.info("{\"message\": \"Creating merchant profile : {}\"}", merchant);
+            log.info("{\"message\": \"Creating merchant profile : {}\"}", logMaskingUtil.maskEntity(merchant));
             setMerchantCoordinates(merchant);
             return merchantRepository.save(merchant);
         } else if (profile instanceof Customer) {
             Customer customer = (Customer) profile;
-            log.info("{\"message\": \"Creating customer profile : {}\"}", customer);
+            log.info("{\"message\": \"Creating customer profile : {}\"}", logMaskingUtil.maskEntity(customer));
             setCustomerCoordinates(customer);
             return customerRepository.save(customer);
         }else if (profile instanceof DeliveryPartner ) {
             DeliveryPartner deliveryPartner = (DeliveryPartner) profile;
-            log.info("{\"message\": \"Creating delivery partner profile : {}\"}", deliveryPartner);
+            log.info("{\"message\": \"Creating delivery partner profile : {}\"}", logMaskingUtil.maskEntity(deliveryPartner));
             setDeliveryPartnerCoordinates(deliveryPartner);
             return deliveryPartnerRepository.save(deliveryPartner);
         }
@@ -65,19 +68,19 @@ public class ProfileServiceFactory implements ProfileService {
     public void updateProfile(Profile profile) {
         if (profile instanceof Merchant ) {
             Merchant merchant = (Merchant) profile;
-            log.info("{\"message\": \"Updating merchant profile : {}\"}", merchant);
+            log.info("{\"message\": \"Updating merchant profile : {}\"}", logMaskingUtil.maskEntity(merchant));
             setProfileCoordinates(merchant);
             merchantRepository.save(merchant);
             return;
         } else if (profile instanceof Customer) {
             Customer customer = (Customer) profile;
-            log.info("{\"message\": \"Updating customer profile : {}\"}", customer);
+            log.info("{\"message\": \"Updating customer profile : {}\"}", logMaskingUtil.maskEntity(customer));
             setCustomerCoordinates(customer);
             customerRepository.save(customer);
             return;
         }else if (profile instanceof DeliveryPartner ) {
             DeliveryPartner deliveryPartner = (DeliveryPartner) profile;
-            log.info("{\"message\": \"Updating delivery partner profile : {}\"}", deliveryPartner);
+            log.info("{\"message\": \"Updating delivery partner profile : {}\"}", logMaskingUtil.maskEntity(deliveryPartner));
             setDeliveryPartnerCoordinates(deliveryPartner);
             deliveryPartnerRepository.save(deliveryPartner);
             return;
@@ -234,15 +237,15 @@ public class ProfileServiceFactory implements ProfileService {
     public Optional<Profile> getProfileByEmailAddress(String email, String type) {
 
         if (MERCHANT.equalsIgnoreCase(type)) {
-            log.info("{\"message\": \"Fetching merchant with email: {}\"}", email);
+            log.info("{\"message\": \"Fetching merchant with email: {}\"}", logMaskingUtil.maskEmail(email));
             Optional<Merchant> merchant = merchantRepository.findByEmailAddressAndDeletedFalse(email);
             return Optional.ofNullable(merchant.orElse(null));
         }else if (CUSTOMER.equalsIgnoreCase(type)) {
-            log.info("{\"message\": \"Fetching customer with email: {}\"}", email);
+            log.info("{\"message\": \"Fetching customer with email: {}\"}", logMaskingUtil.maskEmail(email));
             Optional<Customer> customer = customerRepository.findByEmailAddressAndDeletedFalse(email);
             return Optional.ofNullable(customer.orElse(null));
         }else if (DELIVERY_PARTNER.equalsIgnoreCase(type)) {
-            log.info("{\"message\": \"Fetching delivery partner with email: {}\"}", email);
+            log.info("{\"message\": \"Fetching delivery partner with email: {}\"}", logMaskingUtil.maskEmail(email));
             Optional<DeliveryPartner> deliveryPartner = deliveryPartnerRepository.findByEmailAddressAndDeletedFalse(email);
             return Optional.ofNullable(deliveryPartner.orElse(null));
         }else {
@@ -258,7 +261,7 @@ public class ProfileServiceFactory implements ProfileService {
                 throw new IllegalArgumentException("Coordinates not found for pincode: " + merchant.getPincode());
             }
 
-            log.info("{\"message\": \"Setting coordinates for merchant with pincode: {} - {}\"}", merchant.getPincode(), coordinates);
+            log.info("{\"message\": \"Setting coordinates for merchant with pincode: {} - {}\"}", logMaskingUtil.maskEmail(merchant.getPincode()), coordinates);
             merchant.setLatitude(coordinates.getLat());
             merchant.setLongitude(coordinates.getLng());
 

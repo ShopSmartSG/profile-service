@@ -21,6 +21,7 @@ import sg.edu.nus.iss.profile_service.factory.ProfileServiceFactory;
 import sg.edu.nus.iss.profile_service.model.Customer;
 import sg.edu.nus.iss.profile_service.model.Profile;
 import sg.edu.nus.iss.profile_service.model.Rewards;
+import sg.edu.nus.iss.profile_service.util.LogMasker;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -31,6 +32,9 @@ import java.util.*;
 public class CustomerController {
 
     private static final Logger log = LoggerFactory.getLogger(CustomerController.class);
+
+    @Autowired
+    LogMasker logMasker;
 
     private final ProfileServiceFactory profileServiceFactory;
 
@@ -89,7 +93,6 @@ public class CustomerController {
             if (existingCustomerOpt.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Customer not found");
             }
-
             Customer existingCustomer = (Customer) existingCustomerOpt.get();
 
             // Check if the Customer ID matches
@@ -99,11 +102,11 @@ public class CustomerController {
 
             // Ensure customer name and email haven't changed
             if (!customerDTO.getName().equals(existingCustomer.getName())) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Customer name shouldn't be changed");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("name change not allowed");
             }
 
             if (!customerDTO.getEmailAddress().equals(existingCustomer.getEmailAddress())) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email shouldn't be changed");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email change not allowed");
             }
 
             // Convert CustomerDTO to Customer entity
@@ -127,10 +130,10 @@ public class CustomerController {
     @PostMapping
     @Operation(summary = "Register a new customer")
     public ResponseEntity<String> registerCustomer(@Valid @RequestBody Customer customer) {
-        log.info("{\"message\": \"Registering new customer: {}\"}", customer);
+        log.info("{\"message\": \"Registering new customer: {}\"}", logMasker.maskEntity(customer));
             Optional<Profile> customerByEmail = profileServiceFactory.getProfileByEmailAddress(customer.getEmailAddress(), CUSTOMER_TYPE);
             if (customerByEmail.isPresent()) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email is already registered");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email Already registered");
             }
             profileServiceFactory.createProfile(customer);
             return ResponseEntity.status(HttpStatus.CREATED).body("Created customer");
@@ -141,14 +144,14 @@ public class CustomerController {
     @GetMapping("/email/{email}")
     @Operation(summary = "Retrieve customer by email address")
     public ResponseEntity<?> getCustomerByEmail(@PathVariable String email) {
-        log.info("{\"message\": \"Fetching customer with email: {}\"}", email);
+        log.info("{\"message\": \"Fetching customer with email: {}\"}", logMasker.maskEmail(email));
         Optional<Profile> profile = profileServiceFactory.getProfileByEmailAddress(email, CUSTOMER_TYPE);
         if (profile.isPresent() && profile.get() instanceof Customer ) {
             Customer customer = (Customer) profile.get();
-            log.info("{\"message\": \"Found customer with email: {}\"}", email);
+            log.info("{\"message\": \"Found customer with email: {}\"}", logMasker.maskEmail(email));
             return ResponseEntity.ok(customer.getCustomerId());
         }
-        log.error("{\"message\": \"Couldn't fine customer with email: {}\"}", email);
+        log.error("{\"message\": \"Couldn't fine customer with email: {}\"}", logMasker.maskEmail(email));
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Customer not found");
     }
 
@@ -165,7 +168,6 @@ public class CustomerController {
             profileServiceFactory.updateProfile(customer);
             return ResponseEntity.ok("Reward points updated successfully");
         }
-
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Customer Not found");
     }
 

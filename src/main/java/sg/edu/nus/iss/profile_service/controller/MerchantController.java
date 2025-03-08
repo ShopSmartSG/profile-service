@@ -20,6 +20,7 @@ import sg.edu.nus.iss.profile_service.dto.MerchantDTO;
 import sg.edu.nus.iss.profile_service.factory.ProfileServiceFactory;
 import sg.edu.nus.iss.profile_service.model.Merchant;
 import sg.edu.nus.iss.profile_service.model.Profile;
+import sg.edu.nus.iss.profile_service.util.LogMasker;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -32,6 +33,9 @@ public class MerchantController {
     private static final Logger log = LoggerFactory.getLogger(MerchantController.class);
 
     private final ProfileServiceFactory profileServiceFactory;
+
+    @Autowired
+    LogMasker logMasker;
 
     private final ObjectMapper mapper;
 
@@ -57,11 +61,7 @@ public class MerchantController {
                     .toList();
             return ResponseEntity.ok(merchantList);
         }
-
-
         log.info("{\"message\": \"Fetching all merchants with pagination\"}", page, size);
-
-
         // If pagination parameters are provided, return a page of merchants
         Pageable pageable = PageRequest.of(page, size);
         Page<Profile> merchantPage = profileServiceFactory.getProfilesWithPagination(MERCHANT_STRING, pageable);
@@ -85,17 +85,13 @@ public class MerchantController {
     @PutMapping("/{merchant-id}")
     @Operation(summary = "Update merchants")
     public ResponseEntity<String> updateMerchant(@PathVariable(name = "merchant-id") UUID merchantId, @Valid @RequestBody MerchantDTO merchantDTO) {
-
         log.info("{\"message\": \"Updating merchant with ID: {}\"}", merchantId);
-
                // Check if the merchant exists
         Optional<Profile> existingMerchantOpt = profileServiceFactory.getProfileById(MERCHANT_STRING, merchantId);
                if (existingMerchantOpt.isEmpty()) {
                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Merchant not found");
                }
-
                Merchant existingMerchant = (Merchant) existingMerchantOpt.get();
-
                // Check if the Merchant ID matches
                if (!existingMerchant.getMerchantId().equals(merchantDTO.getMerchantId())) {
                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Merchant ID mismatch");
@@ -149,7 +145,7 @@ public class MerchantController {
     @Operation(summary = "Register a new merchant")
     public ResponseEntity<String> registerMerchant(@Valid @RequestBody Merchant merchant) {
 
-        log.info("{\"message\": \"Registering new merchant\"}", merchant);
+        log.info("{\"message\": \"Registering new merchant {} \"}", logMasker.maskEntity(merchant));
         Optional<Profile> merchantByEmail = profileServiceFactory.getProfileByEmailAddress(merchant.getEmailAddress(), MERCHANT_STRING );
         if (merchantByEmail.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email is already registered");
@@ -161,14 +157,14 @@ public class MerchantController {
     @GetMapping("/email/{email}")
     @Operation(summary = "Retrieve merchant by email address")
     public ResponseEntity<?> getMerchantByEmail(@PathVariable String email) {
-        log.info("{\"message\": \"Fetching merchant with email: {}\"}", email);
+        log.info("{\"message\": \"Fetching merchant with email: {}\"}", logMasker.maskEmail(email));
         Optional<Profile> profile = profileServiceFactory.getProfileByEmailAddress(email, MERCHANT_STRING);
         if (profile.isPresent() && profile.get() instanceof Merchant) {
             Merchant merchant = (Merchant) profile.get();
-            log.info("{\"message\": \"Found merchant with email: {}\"}", email);
+            log.info("{\"message\": \"Found merchant with email: {}\"}", logMasker.maskEmail(email));
             return ResponseEntity.ok(merchant.getMerchantId());
         }
-        log.error("{\"message\": \"Couldn't fine merchant with email: {}\"}", email);
+        log.error("{\"message\": \"Couldn't fine merchant with email: {}\"}", logMasker.maskEmail(email));
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Merchant not found");
     }
 

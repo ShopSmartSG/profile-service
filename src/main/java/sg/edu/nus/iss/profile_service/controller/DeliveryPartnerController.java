@@ -20,6 +20,7 @@ import sg.edu.nus.iss.profile_service.dto.DeliveryPartnerDTO;
 import sg.edu.nus.iss.profile_service.factory.ProfileServiceFactory;
 import sg.edu.nus.iss.profile_service.model.DeliveryPartner;
 import sg.edu.nus.iss.profile_service.model.Profile;
+import sg.edu.nus.iss.profile_service.util.LogMasker;
 
 import java.util.*;
 
@@ -28,9 +29,13 @@ import java.util.*;
 @Tag(name = "partners", description = "Manage delivery partners in Shopsmart Profile Management API")
 public class DeliveryPartnerController {
 
+    @Autowired
+    LogMasker logMasker;
+
     private static final Logger log = LoggerFactory.getLogger(DeliveryPartnerController.class);
 
     private final ProfileServiceFactory profileServiceFactory;
+
 
     private final ObjectMapper mapper;
 
@@ -56,8 +61,6 @@ public class DeliveryPartnerController {
                     .toList();
             return ResponseEntity.ok(deliveryPartnerList);
         }
-
-
         log.info("{\"message\": \"Fetching all delivery partners with pagination\"}", page, size);
         Pageable pageable = PageRequest.of(page, size);
         Page<Profile> deliveryPartnerPage = profileServiceFactory.getProfilesWithPagination(DELIVERY_STRING, pageable);
@@ -95,11 +98,11 @@ public class DeliveryPartnerController {
 
                // Ensure delivery Partner name and email haven't changed
                if (!deliveryPartnerDTO.getName().equals(existingDeliveryPartner.getName())) {
-                   return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Delivery Partner name shouldn't be changed");
+                   return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Delivery Partner name change not allowed");
                }
 
                if (!deliveryPartnerDTO.getEmailAddress().equals(existingDeliveryPartner.getEmailAddress())) {
-                   return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email shouldn't be changed");
+                   return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email change not allowed");
                }
 
         DeliveryPartner deliveryPartner = mapper.convertValue(deliveryPartnerDTO, DeliveryPartner.class);
@@ -138,7 +141,7 @@ public class DeliveryPartnerController {
     @Operation(summary = "Register a new Delivery Partner Profile")
     public ResponseEntity<String> registerDeliveryPartner(@Valid @RequestBody DeliveryPartner deliveryPartner) {
 
-        log.info("{\"message\": \"Registering new deliveryPartner\"}", deliveryPartner);
+        log.info("{\"message\": \"Registering new deliveryPartner {} \"}",logMasker.maskEntity(deliveryPartner));
         Optional<Profile> deliveryPartnerByEmail = profileServiceFactory.getProfileByEmailAddress(deliveryPartner.getEmailAddress(), DELIVERY_STRING );
         if (deliveryPartnerByEmail.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email is already registered");
@@ -150,14 +153,14 @@ public class DeliveryPartnerController {
     @GetMapping("/email/{email}")
     @Operation(summary = "Retrieve Delivery Partner by email address")
     public ResponseEntity<?> getDeliveryPartnerByEmail(@PathVariable String email) {
-        log.info("{\"message\": \"Fetching delivery partner with email: {}\"}", email);
+        log.info("{\"message\": \"Fetching delivery partner with email: {}\"}", logMasker.maskEmail(email));
         Optional<Profile> profile = profileServiceFactory.getProfileByEmailAddress(email, DELIVERY_STRING);
         if (profile.isPresent() && profile.get() instanceof DeliveryPartner ) {
             DeliveryPartner deliveryPartner = (DeliveryPartner) profile.get();
-            log.info("{\"message\": \"Found delivery partner with email: {}\"}", email);
+            log.info("{\"message\": \"Found delivery partner with email: {}\"}", logMasker.maskEmail(email));
             return ResponseEntity.ok(deliveryPartner.getDeliveryPartnerId());
         }
-        log.error("{\"message\": \"Couldn't fine delivery partner with email: {}\"}", email);
+        log.error("{\"message\": \"Couldn't fine delivery partner with email: {}\"}", logMasker.maskEmail(email));
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Delivery partner not found");
     }
 
