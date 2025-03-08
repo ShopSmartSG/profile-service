@@ -83,7 +83,7 @@ public class DeliveryPartnerController {
 
     @GetMapping("/{partner-id}")
     @Operation(summary = "Retrieve delivery partner profile by delivery partner ID")
-    public ResponseEntity<DeliveryPartner> getDeliveryPartnerByPartnerId(@RequestParam("partner-id") String id) {
+    public ResponseEntity<DeliveryPartner> getDeliveryPartnerByPartnerId(@PathVariable(name = "partner-id") String id) {
         UUID deliveryPartnerId = UUID.fromString(id);
         log.info("{\"message\": \"Fetching delivery partner with ID: " + deliveryPartnerId + "\"}");
         Optional<Profile> profile = profileServiceFactory.getProfileById(DELIVERY_STRING, deliveryPartnerId);

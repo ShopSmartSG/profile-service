@@ -84,7 +84,7 @@ public class MerchantController {
 
     @GetMapping("/{merchant-id}")
     @Operation(summary = "Retrieve merchants by ID")
-    public ResponseEntity<Merchant> getMerchantByMerchantID(@PathVariable("merchant-id") String id) {
+    public ResponseEntity<Merchant> getMerchantByMerchantID(@PathVariable(name = "merchant-id") String id) {
         UUID merchantId = UUID.fromString(id);
         log.info("{\"message\": \"Fetching merchant with ID: " + merchantId + "\"}");
         Optional<Profile> profile = profileServiceFactory.getProfileById(MERCHANT_STRING, merchantId);
