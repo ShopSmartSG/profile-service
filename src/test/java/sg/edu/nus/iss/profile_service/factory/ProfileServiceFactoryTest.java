@@ -3,7 +3,6 @@ package sg.edu.nus.iss.profile_service.factory;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.hibernate.query.sqm.mutation.internal.cte.CteInsertStrategy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -17,6 +16,7 @@ import sg.edu.nus.iss.profile_service.model.*;
 import sg.edu.nus.iss.profile_service.repository.DeliveryPartnerRepository;
 import sg.edu.nus.iss.profile_service.repository.MerchantRepository;
 import sg.edu.nus.iss.profile_service.repository.CustomerRepository;
+import sg.edu.nus.iss.profile_service.util.LogMasker;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,6 +28,9 @@ public class ProfileServiceFactoryTest {
     private MerchantRepository merchantRepository;
     @Mock
     private DeliveryPartnerRepository deliveryPartnerRepository;
+
+    @Mock
+    LogMasker masker;
 
     @Mock
     private CustomerRepository customerRepository;
@@ -103,6 +106,7 @@ public class ProfileServiceFactoryTest {
     public void testCreateMerchantProfile_Success() {
         Merchant merchant = new Merchant();
         merchant.setPincode("228714");
+        profileServiceFactory.logMasker = masker;
 
         LatLng latLng = new LatLng(1.3521, 103.8198);
         when(externalLocationService.getCoordinates(merchant.getPincode())).thenReturn(latLng);
@@ -110,6 +114,7 @@ public class ProfileServiceFactoryTest {
         when(merchantRepository.save(any(Merchant.class))).thenReturn(merchant);
 
         Profile result = profileServiceFactory.createProfile(merchant);
+
 
         assertNotNull(result);
         assertEquals(merchant, result);
@@ -119,6 +124,7 @@ public class ProfileServiceFactoryTest {
 
     @Test
     public void testCreateDeliveryProfile_Success(){
+        profileServiceFactory.logMasker = masker;
         DeliveryPartner deliveryPartner = new DeliveryPartner();
         deliveryPartner.setPincode("228714");
 
@@ -137,6 +143,7 @@ public class ProfileServiceFactoryTest {
 
     @Test
     public void testCreateCustomerProfile_Success() {
+        profileServiceFactory.logMasker = masker;
         Customer customer = new Customer();
         customer.setPincode("228714");
 
@@ -175,7 +182,7 @@ public class ProfileServiceFactoryTest {
 
         LatLng latLng = new LatLng(1.3521, 103.8198);
         when(externalLocationService.getCoordinates(merchant.getPincode())).thenReturn(latLng);
-
+        profileServiceFactory.logMasker = masker;
         profileServiceFactory.updateProfile(merchant);
 
         verify(merchantRepository, times(1)).save(merchant);
@@ -184,6 +191,7 @@ public class ProfileServiceFactoryTest {
 
     @Test
     public void testUpdateDeliveryProfile_Success(){
+        profileServiceFactory.logMasker = masker;
         DeliveryPartner deliveryPartner = new DeliveryPartner();
         UUID deliveryPartnerId = UUID.randomUUID();
         deliveryPartner.setDeliveryPartnerId(deliveryPartnerId);
@@ -208,6 +216,7 @@ public class ProfileServiceFactoryTest {
         LatLng latLng = new LatLng(1.3521, 103.8198);
         when(externalLocationService.getCoordinates(customer.getPincode())).thenReturn(latLng);
 
+        profileServiceFactory.logMasker = masker;
         profileServiceFactory.updateProfile(customer);
 
         verify(customerRepository, times(1)).save(customer);
@@ -337,6 +346,7 @@ public class ProfileServiceFactoryTest {
     // Test for setMerchantCoordinates
     @Test
     public void testSetMerchantCoordinates_Success() {
+        profileServiceFactory.logMasker = masker;
         Merchant merchant = new Merchant();
         merchant.setPincode("228714");
 
@@ -465,6 +475,7 @@ public class ProfileServiceFactoryTest {
 
     @Test
     public void testGetProfileByEmailAddress_Merchant_Success() {
+        profileServiceFactory.logMasker = masker;
         Merchant merchant = new Merchant();
         when(merchantRepository.findByEmailAddressAndDeletedFalse("test@merchant.com")).thenReturn(Optional.of(merchant));
 
@@ -477,6 +488,7 @@ public class ProfileServiceFactoryTest {
     @Test
     public void testGetProfileByEmailAddress_DeliveryPartner_Success() {
         DeliveryPartner deliveryPartner = new DeliveryPartner();
+        profileServiceFactory.logMasker = masker;
         when(deliveryPartnerRepository.findByEmailAddressAndDeletedFalse("test@partner.com")).thenReturn(Optional.of(deliveryPartner));
         Optional<Profile> result = profileServiceFactory.getProfileByEmailAddress("test@partner.com", "deliveryPartner");
 
@@ -487,6 +499,7 @@ public class ProfileServiceFactoryTest {
 
     @Test
     public void testGetProfileByEmailAddress_Customer_Success() {
+        profileServiceFactory.logMasker = masker;
         Customer customer = new Customer();
         when(customerRepository.findByEmailAddressAndDeletedFalse("test@customer.com")).thenReturn(Optional.of(customer));
 
@@ -508,6 +521,7 @@ public class ProfileServiceFactoryTest {
 
     @Test
     public void testSetProfileCoordinates_Merchant_Success() {
+        profileServiceFactory.logMasker = masker;
         Merchant merchant = new Merchant();
         merchant.setPincode("228714");
 

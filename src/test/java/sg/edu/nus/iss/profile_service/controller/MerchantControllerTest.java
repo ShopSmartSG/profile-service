@@ -18,6 +18,7 @@ import sg.edu.nus.iss.profile_service.dto.MerchantDTO;
 import sg.edu.nus.iss.profile_service.factory.ProfileServiceFactory;
 import sg.edu.nus.iss.profile_service.model.Merchant;
 import sg.edu.nus.iss.profile_service.model.Profile;
+import sg.edu.nus.iss.profile_service.util.LogMasker;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -29,6 +30,9 @@ public class MerchantControllerTest {
 
     @Mock
     private ObjectMapper mapper;
+
+    @Mock
+    LogMasker masker;
 
     @InjectMocks
     private MerchantController merchantController;
@@ -72,6 +76,32 @@ public class MerchantControllerTest {
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
+
+
+    // Test getmerchantById - merchant found
+    @Test
+    public void testGetMerchantByMerchantId_Success() {
+        Merchant merchant = new Merchant();
+        when(profileServiceFactory.getProfileById(eq("merchant"), any(UUID.class))).thenReturn(Optional.of(merchant));
+
+        ResponseEntity<?> response = merchantController.getMerchantByMerchantID("550e8400-e29b-41d4-a716-446655440000");
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(merchant, response.getBody());
+    }
+
+    // Test getmerchantById - merchant not found
+    @Test
+    public void testGetMerchantByMerchantId_NotFound() {
+        when(profileServiceFactory.getProfileById(eq("merchant"), any(UUID.class))).thenReturn(Optional.empty());
+
+        ResponseEntity<?> response = merchantController.getMerchantByMerchantID("550e8400-e29b-41d4-a716-446655440000");
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+
+
 
     // Test updatemerchant - success
     @Test
@@ -133,6 +163,7 @@ public class MerchantControllerTest {
     public void testRegistermerchant_Success() {
         Merchant merchant = new Merchant();
         merchant.setEmailAddress("test@example.com");
+        merchantController.logMasker=masker;
 
         when(profileServiceFactory.getProfileByEmailAddress(merchant.getEmailAddress(), "merchant")).thenReturn(Optional.empty());
 
@@ -150,11 +181,11 @@ public class MerchantControllerTest {
         merchant.setEmailAddress("test@example.com");
 
         when(profileServiceFactory.getProfileByEmailAddress(merchant.getEmailAddress(), "merchant")).thenReturn(Optional.of(new Merchant()));
-
+        merchantController.logMasker=masker;
         ResponseEntity<String> response = merchantController.registerMerchant(merchant);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertEquals("Email is already registered", response.getBody());
+        assertEquals("Email already registered", response.getBody());
     }
 
     // Test validation error handling
@@ -204,7 +235,7 @@ public class MerchantControllerTest {
         String email = "test@example.com";
         Merchant merchant = new Merchant();
         when(profileServiceFactory.getProfileByEmailAddress(email, "merchant")).thenReturn(Optional.of(merchant));
-
+        merchantController.logMasker=masker;
         ResponseEntity<?> response = merchantController.getMerchantByEmail(email);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
