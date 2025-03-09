@@ -78,6 +78,29 @@ public class CustomerControllerTest {
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
+
+    // Test getCustomerById - customer found
+    @Test
+    public void testGetCustomerByCustomerId_Success() {
+        Customer customer = new Customer();
+        when(profileServiceFactory.getProfileById(eq("customer"), any(UUID.class))).thenReturn(Optional.of(customer));
+
+        ResponseEntity<?> response = customerController.getCustomerByCustomerId(UUID.fromString("550e8400-e29b-41d4-a716-446655440000"));
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(customer, response.getBody());
+    }
+
+    // Test getCustomerById - customer not found
+    @Test
+    public void testGetCustomerByCustomerId_NotFound() {
+        when(profileServiceFactory.getProfileById(eq("customer"), any(UUID.class))).thenReturn(Optional.empty());
+
+        ResponseEntity<?> response = customerController.getCustomerByCustomerId(UUID.fromString("550e8400-e29b-41d4-a716-446655440000"));
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
     // Test updateCustomer - success
     @Test
     public void testUpdateCustomer_Success() {

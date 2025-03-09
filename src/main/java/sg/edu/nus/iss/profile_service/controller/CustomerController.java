@@ -86,6 +86,20 @@ public class CustomerController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
+    @GetMapping("/{customer-id}")
+    @Operation(summary = "Retrieve customers by ID")
+    public ResponseEntity<Customer> getCustomerByCustomerId(@PathVariable(name = "customer-id") UUID customerId) {
+
+        log.info("{\"message\": \"Fetching customer with ID: {}\"}", customerId);
+
+        Optional<Profile> profile = profileServiceFactory.getProfileById(CUSTOMER_TYPE, customerId);
+        if (profile.isPresent() && profile.get() instanceof Customer ) {
+            Customer customer = (Customer) profile.get();
+            return ResponseEntity.ok(customer);
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+
     @PutMapping("/")
     @Operation(summary = "Update customers")
     public ResponseEntity<String> updateCustomer(@RequestParam("user-id") String userId, @Valid @RequestBody CustomerDTO customerDTO) {
