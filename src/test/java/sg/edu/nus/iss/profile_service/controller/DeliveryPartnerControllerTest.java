@@ -15,6 +15,7 @@ import sg.edu.nus.iss.profile_service.dto.DeliveryPartnerDTO;
 import sg.edu.nus.iss.profile_service.factory.ProfileServiceFactory;
 import sg.edu.nus.iss.profile_service.model.DeliveryPartner;
 import sg.edu.nus.iss.profile_service.model.Profile;
+import sg.edu.nus.iss.profile_service.util.LogMasker;
 
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,9 @@ public class DeliveryPartnerControllerTest {
 
     @Mock
     private ObjectMapper mapper;
+
+    @Mock
+    LogMasker masker;
 
     @InjectMocks
     private DeliveryPartnerController deliveryPartnerController;
@@ -71,6 +75,29 @@ public class DeliveryPartnerControllerTest {
         when(profileServiceFactory.getProfileById(eq("deliveryPartner"), any(UUID.class))).thenReturn(Optional.empty());
 
         ResponseEntity<?> response = deliveryPartnerController.getDeliveryPartnerById("550e8400-e29b-41d4-a716-446655440000");
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+
+    // Test getdeliveryPartnerById - deliveryPartner found
+    @Test
+    public void testGetdeliveryPartnerByPartnerId_Success() {
+        DeliveryPartner deliveryPartner = new DeliveryPartner();
+        when(profileServiceFactory.getProfileById(eq("deliveryPartner"), any(UUID.class))).thenReturn(Optional.of(deliveryPartner));
+
+        ResponseEntity<?> response = deliveryPartnerController.getDeliveryPartnerByPartnerId("550e8400-e29b-41d4-a716-446655440000");
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(deliveryPartner, response.getBody());
+    }
+
+    // Test getdeliveryPartnerById - deliveryPartner not found
+    @Test
+    public void testGetdeliveryPartnerByPartnerId_NotFound() {
+        when(profileServiceFactory.getProfileById(eq("deliveryPartner"), any(UUID.class))).thenReturn(Optional.empty());
+
+        ResponseEntity<?> response = deliveryPartnerController.getDeliveryPartnerByPartnerId("550e8400-e29b-41d4-a716-446655440000");
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
@@ -135,6 +162,7 @@ public class DeliveryPartnerControllerTest {
     public void testRegisterPartner_Success() {
         DeliveryPartner deliveryPartner = new DeliveryPartner();
         deliveryPartner.setEmailAddress("test@example.com");
+        deliveryPartnerController.logMasker = masker;
 
         when(profileServiceFactory.getProfileByEmailAddress(deliveryPartner.getEmailAddress(), "deliveryPartner")).thenReturn(Optional.empty());
 
@@ -149,6 +177,8 @@ public class DeliveryPartnerControllerTest {
     @Test
     public void testRegisterPartner_EmailAlreadyRegistered() {
         DeliveryPartner deliveryPartner = new DeliveryPartner();
+        deliveryPartnerController.logMasker = masker;
+
         deliveryPartner.setEmailAddress("test@example.com");
 
         when(profileServiceFactory.getProfileByEmailAddress(deliveryPartner.getEmailAddress(), "deliveryPartner")).thenReturn(Optional.of(new DeliveryPartner()));
@@ -156,7 +186,7 @@ public class DeliveryPartnerControllerTest {
         ResponseEntity<String> response = deliveryPartnerController.registerDeliveryPartner(deliveryPartner);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertEquals("Email is already registered", response.getBody());
+        assertEquals("Email already registered", response.getBody());
     }
 
     // Test validation error handling
@@ -204,6 +234,7 @@ public class DeliveryPartnerControllerTest {
     @Test
     public void testGetdeliveryPartnerByEmail_Success() {
         String email = "test@example.com";
+        deliveryPartnerController.logMasker = masker;
         DeliveryPartner deliveryPartner = new DeliveryPartner();
         when(profileServiceFactory.getProfileByEmailAddress(email, "deliveryPartner")).thenReturn(Optional.of(deliveryPartner));
 

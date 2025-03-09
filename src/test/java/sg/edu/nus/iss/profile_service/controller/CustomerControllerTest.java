@@ -19,6 +19,7 @@ import sg.edu.nus.iss.profile_service.factory.ProfileServiceFactory;
 import sg.edu.nus.iss.profile_service.model.Customer;
 import sg.edu.nus.iss.profile_service.model.Profile;
 import sg.edu.nus.iss.profile_service.model.Rewards;
+import sg.edu.nus.iss.profile_service.util.LogMasker;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -27,6 +28,9 @@ public class CustomerControllerTest {
 
     @Mock
     private ProfileServiceFactory profileServiceFactory;
+
+    @Mock
+    LogMasker logMasker;
 
     @Mock
     private ObjectMapper mapper;
@@ -140,6 +144,7 @@ public class CustomerControllerTest {
 
         when(profileServiceFactory.getProfileByEmailAddress(customer.getEmailAddress(), "customer")).thenReturn(Optional.empty());
 
+        customerController.logMasker = logMasker;
         ResponseEntity<String> response = customerController.registerCustomer(customer);
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
@@ -153,12 +158,13 @@ public class CustomerControllerTest {
         Customer customer = new Customer();
         customer.setEmailAddress("test@example.com");
 
+        customerController.logMasker = logMasker;
         when(profileServiceFactory.getProfileByEmailAddress(customer.getEmailAddress(), "customer")).thenReturn(Optional.of(new Customer()));
 
         ResponseEntity<String> response = customerController.registerCustomer(customer);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertEquals("Email is already registered", response.getBody());
+        assertEquals("Email already registered", response.getBody());
     }
 
     // Test validation error handling
@@ -184,6 +190,7 @@ public class CustomerControllerTest {
         Customer customer = new Customer();
         when(profileServiceFactory.getProfileByEmailAddress("testcustomer@gmail.com", "customer")).thenReturn(Optional.of(customer));
 
+        customerController.logMasker = logMasker;
         ResponseEntity<?> response = customerController.getCustomerByEmail("testcustomer@gmail.com");
 
         assertEquals(HttpStatus.OK, response.getStatusCode());

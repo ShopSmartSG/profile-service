@@ -11,6 +11,4 @@ public class LatLng {
         this.lat = lat;
         this.lng = lng;
     }
-
-    // Getters and setters
 }
